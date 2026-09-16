@@ -225,6 +225,8 @@ Pihak yang mengelola operasional SiLoak.
 
 # Tautan Deployment PWS
 
+https://bagas-aulia-siloak.pws.cs.ui.ac.id/
+
 ---
 
 # Tautan Desain Figma
