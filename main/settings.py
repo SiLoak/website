@@ -30,6 +30,10 @@ SECRET_KEY = 'django-insecure-8+z*1^k0s3)(qzcx57s9**li+-+(86w%^io7*31v$)q-slu)&)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
 
+GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID', '')
+GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET', '')
+GOOGLE_OAUTH_REDIRECT_URI = os.getenv('GOOGLE_OAUTH_REDIRECT_URI', '')
+
 ALLOWED_HOSTS = ["bagas-aulia-siloak.pws.cs.ui.ac.id", "127.0.0.1:8000", "localhost:8000", "localhost", "127.0.0.1"]
 
 
