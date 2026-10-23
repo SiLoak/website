@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}SiLoak · Responsible Recycling Made Easier{% endblock %}
+
+{% block extra_head %}
+    <meta name="description" content="Give reusable and recyclable items a second life with SiLoak. Choose home pickup or a nearby drop-off point and track your materials." />
+    <meta name="theme-color" content="#faf8ff">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+    <a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white" href="#main-content">Skip to main content</a>
+    <header class="fixed inset-x-0 top-0 z-50 border-b border-outline-variant/30 bg-background/90 shadow-sm backdrop-blur-xl">
+        <div class="mx-auto flex h-16 max-w-screen-xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-20 lg:px-10">
+            <a class="flex shrink-0 items-center gap-2.5 rounded-xl text-on-surface no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="{% url 'landing_page' %}" aria-label="SiLoak home">
+                <span class="grid h-10 w-10 place-items-center rounded-xl bg-primary-container text-white shadow-button" aria-hidden="true">
+                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4.8C12.3 4.8 7.1 6.7 5.1 11.3c-1.2 2.8.3 5.6 2.9 6.2 2.8.6 5.6-1.1 6.8-4.1.8-2.1.9-4.4.9-6.2 1.2 1.5 2.2 3.5 2.2 6.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 20c2.3-3.7 5.3-5.9 9.2-7.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                </span>
+                <span class="flex items-center gap-2"><span class="text-lg font-bold tracking-tight">SiLoak</span><span class="hidden rounded-full bg-secondary-container px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-on-surface sm:inline-flex">Eco-Exchange</span></span>
+            </a>
+            <details class="relative lg:hidden">
+                <summary class="grid h-10 w-10 cursor-pointer list-none place-items-center rounded-xl text-on-surface-variant transition hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" aria-label="Open site navigation">
+                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                </summary>
+                <nav class="absolute right-0 top-12 z-50 grid min-w-48 gap-1 rounded-2xl border border-outline-variant/40 bg-white p-2 shadow-card" aria-label="Mobile navigation">
+                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#home">Home</a>
+                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#how-it-works">How It Works</a>
+                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#about">About Us</a>
+                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#contact">Contact</a>
+                </nav>
+            </details>
+            <nav class="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
+                <a class="rounded-md text-sm font-bold text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#home">Home</a>
+                <a class="rounded-md text-sm font-semibold text-on-surface-variant no-underline transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#how-it-works">How It Works</a>
+                <a class="rounded-md text-sm font-semibold text-on-surface-variant no-underline transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#about">About Us</a>
+                <a class="rounded-md text-sm font-semibold text-on-surface-variant no-underline transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#contact">Contact</a>
+            </nav>
+            <div class="flex shrink-0 items-center gap-2">
+                <a class="inline-flex min-h-10 items-center justify-center rounded-xl border border-outline-variant/70 px-3 text-sm font-semibold text-on-surface no-underline transition hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 sm:px-4" href="{% url 'auth_page' %}">Log In</a>
+                <a class="inline-flex min-h-10 items-center justify-center rounded-xl bg-primary-container px-3 text-sm font-bold text-white no-underline shadow-button transition hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 sm:px-5" href="{% url 'auth_page' %}">Sign Up</a>
+            </div>
+        </div>
+    </header>
+
+    <main id="main-content" class="pt-16 lg:pt-20" tabindex="-1">
+        <section id="home" class="relative scroll-mt-20 overflow-hidden bg-background py-14 sm:py-20 lg:py-24" aria-labelledby="hero-title">
+            <div class="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" aria-hidden="true"></div>
+            <div class="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-secondary-container/50 blur-3xl" aria-hidden="true"></div>
+            <div class="relative mx-auto grid max-w-screen-xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-10">
+                <div class="flex flex-col items-start">
+                    <p class="inline-flex items-center gap-2 rounded-full bg-surface-container-high px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-primary shadow-sm">
+                        <span class="h-2 w-2 rounded-full bg-tertiary-container" aria-hidden="true"></span>Responsible Resource Management
+                    </p>
+                    <h1 class="mt-5 max-w-2xl text-4xl font-extrabold leading-[1.12] tracking-[-0.04em] text-on-surface sm:text-5xl lg:text-[56px]">Turn Your Unwanted Items Into New Value.</h1>
+                    <p class="mt-5 max-w-xl text-base leading-7 text-on-surface-variant sm:text-lg sm:leading-8">Give your unused items a second life. Exchange recyclable goods for rewards or donate them to make a positive impact, with convenient home pickup and nearby drop-off options.</p>
+                    <div class="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
+                        <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-container px-6 py-3 text-sm font-bold text-white no-underline shadow-button transition hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="{% url 'auth_page' %}">
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4.8C12.3 4.8 7.1 6.7 5.1 11.3c-1.2 2.8.3 5.6 2.9 6.2 2.8.6 5.6-1.1 6.8-4.1.8-2.1.9-4.4.9-6.2 1.2 1.5 2.2 3.5 2.2 6.4M4.7 20c2.3-3.7 5.3-5.9 9.2-7.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Start Recycling
+                        </a>
+                        <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-on-surface no-underline shadow-sm transition hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="#how-it-works">
+                            <svg class="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M10 9.5a2.1 2.1 0 1 1 3.6 1.5c-.9.9-1.6 1.2-1.6 2.5M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>How It Works
+                        </a>
+                    </div>
+                    <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 p-0 text-xs font-semibold text-on-surface-variant sm:gap-x-6" aria-label="SiLoak service highlights">
+                        <li class="inline-flex items-center gap-1.5"><span class="text-tertiary" aria-hidden="true">✓</span>Flexible home pickup &amp; drop-off</li>
+                        <li class="inline-flex items-center gap-1.5"><span class="text-tertiary" aria-hidden="true">✓</span>Transparent weighing</li>
+                        <li class="inline-flex items-center gap-1.5"><span class="text-tertiary" aria-hidden="true">✓</span>Rewards or donation</li>
+                    </ul>
+                </div>
+                <div class="relative mx-auto w-full max-w-xl lg:max-w-none">
+                    <div class="overflow-hidden rounded-[28px] border border-white/80 bg-white p-3 shadow-card sm:p-4">
+                        <div class="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-container-low">
+                            <img class="h-full w-full object-cover" src="{% static 'images/landing-recycling.jpg' %}" alt="Organized recycling drop-off center with separate collection containers" loading="eager" fetchpriority="high">
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-on-surface/80 to-transparent p-5 pt-16 text-white sm:p-6 sm:pt-20">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-white/80">Circular ecosystem</p>
+                                <p class="mt-1 text-lg font-bold sm:text-xl">Verified sustainable processing</p>
+                            </div>
+                        </div>
+                        <div class="relative z-10 -mt-4 mx-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-outline-variant/30 bg-white p-4 shadow-card sm:mx-3 sm:p-5">
+                            <div><p class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">SiLoak rewards</p><p class="mt-1 text-lg font-extrabold tracking-tight text-on-surface">Your choice, your impact</p></div>
+                            <a class="inline-flex items-center gap-1.5 rounded-full bg-tertiary-fixed/60 px-3 py-1.5 text-xs font-bold text-on-tertiary-fixed no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="#how-it-works">Rewards or donate</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="how-it-works" class="scroll-mt-20 bg-surface-container-low py-16 sm:py-20" aria-labelledby="steps-title">
+            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
+                <div class="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
+                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Step-by-step flow</p>
+                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="steps-title">How It Works</h2>
+                    <p class="mt-3 text-sm leading-6 text-on-surface-variant sm:text-base">A straightforward, reliable circular exchange process designed for clarity and convenience.</p>
+                </div>
+                <ol class="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
+                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
+                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M6 4v6m12-6v6M5 11h14v9H5zM8 15h3m2 0h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">01</span></div>
+                        <h3 class="mt-5 text-base font-bold text-on-surface">1. Select Your Items</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Choose item categories and enter estimated weights to view potential earnings.</p><span class="mt-5 inline-flex rounded-full bg-surface-container-low px-3 py-1.5 text-[11px] font-semibold text-on-surface-variant">Transparent estimates</span>
+                    </li>
+                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
+                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-secondary-container text-secondary"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">02</span></div>
+                        <h3 class="mt-5 text-base font-bold text-on-surface">2. Choose Your Method</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Schedule a home pickup or select a nearby drop-off point according to your preference.</p><span class="mt-5 inline-flex rounded-full bg-surface-container-low px-3 py-1.5 text-[11px] font-semibold text-on-surface-variant">Doorstep or drop-off</span>
+                    </li>
+                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
+                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-secondary-container text-secondary"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 20h18M5 17h14M7 17V7h10v10M9 7V4h6v3m-3 3v4m-2-2h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">03</span></div>
+                        <h3 class="mt-5 text-base font-bold text-on-surface">3. Weigh and Verify</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Have your items weighed and verified to determine the final reward accurately.</p><span class="mt-5 inline-flex rounded-full bg-surface-container-low px-3 py-1.5 text-[11px] font-semibold text-on-surface-variant">In-person verification</span>
+                    </li>
+                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
+                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M17 7.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 3 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">04</span></div>
+                        <h3 class="mt-5 text-base font-bold text-on-surface">4. Receive Rewards or Donate</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Receive verified rewards in your SiLoak Wallet or donate your items without monetary compensation.</p><span class="mt-5 inline-flex rounded-full bg-tertiary-fixed/40 px-3 py-1.5 text-[11px] font-semibold text-on-tertiary-fixed">Wallet or giving</span>
+                    </li>
+                </ol>
+            </div>
+        </section>
+
+        <section id="about" class="scroll-mt-20 bg-background py-16 sm:py-20" aria-labelledby="about-title">
+            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
+                <div class="max-w-3xl">
+                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">About SiLoak</p>
+                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="about-title">Making Responsible Disposal Easier for Everyone.</h2>
+                    <p class="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">SiLoak is a digital platform designed to make the collection and responsible handling of unwanted goods more accessible. Through convenient pickup services and nearby drop-off points, SiLoak helps users give their unused items a new purpose while encouraging responsible resource use.</p>
+                </div>
+                <div class="mt-8 grid gap-4 md:grid-cols-3">
+                    <article class="rounded-2xl border border-outline-variant/20 bg-white p-5 shadow-sm sm:p-6"><span class="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 18h16M6 18V9l6-4 6 4v9M9 18v-5h6v5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><h3 class="mt-4 text-base font-bold">Convenient Disposal</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Make responsible disposal more convenient through doorstep scheduling and local neighborhood hubs.</p></article>
+                    <article class="rounded-2xl border border-outline-variant/20 bg-white p-5 shadow-sm sm:p-6"><span class="grid h-11 w-11 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 7h10l-2.5-2.5M17 17H7l2.5 2.5M17 7a7 7 0 0 1 1.7 9M7 17a7 7 0 0 1-1.7-9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 text-base font-bold">Circular Management</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Encourage reuse, recycling, and circular resource management to divert materials from landfills.</p></article>
+                    <article class="rounded-2xl border border-outline-variant/20 bg-white p-5 shadow-sm sm:p-6"><span class="grid h-11 w-11 place-items-center rounded-xl bg-secondary-container text-secondary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 4 6v5.5c0 4.7 3.3 8.3 8 9.5 4.7-1.2 8-4.8 8-9.5V6l-8-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 text-base font-bold">Transparent Tracking</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Track submissions, verified weights, rewards, and donations as the service grows.</p></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low py-16 sm:py-20" aria-labelledby="platform-title">
+            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
+                <div class="mb-8 max-w-2xl">
+                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Institutional profile</p>
+                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="platform-title">About the Platform</h2>
+                    <p class="mt-3 text-sm leading-6 text-on-surface-variant">SiLoak connects people with collection points and pickup services for responsible handling of used goods.</p>
+                </div>
+                <div class="rounded-3xl border border-white bg-white p-4 shadow-sm sm:p-6">
+                    <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Brand</dt><dd class="mt-2 text-base font-bold text-on-surface">SiLoak</dd><dd class="mt-1 text-xs text-primary">Digital recycling platform</dd></div>
+                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Service category</dt><dd class="mt-2 text-base font-bold text-on-surface">Used goods collection</dd><dd class="mt-1 text-xs text-on-surface-variant">Collection and responsible handling</dd></div>
+                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Collection methods</dt><dd class="mt-2 text-base font-bold text-on-surface">Pickup &amp; drop-off</dd><dd class="mt-1 text-xs text-on-surface-variant">Choose the option that works for you</dd></div>
+                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Participation</dt><dd class="mt-2 text-base font-bold text-on-surface">Rewards or donation</dd><dd class="mt-1 text-xs text-on-surface-variant">Choose how to use your collection value</dd></div>
+                    </dl>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low py-16 sm:py-20" aria-labelledby="benefits-title">
+            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
+                <div class="mx-auto mb-9 max-w-2xl text-center">
+                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Why choose SiLoak</p>
+                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="benefits-title">User Benefits</h2>
+                    <p class="mt-3 text-sm leading-6 text-on-surface-variant sm:text-base">Everything you need for more convenient, transparent, and rewarding disposal.</p>
+                </div>
+                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/></svg></span><h3 class="mt-4 font-bold">Home Pickup &amp; Drop-Off Options</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Convenient home pickup straight from your door and accessible nearby drop-off stations.</p></article>
+                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-secondary-container text-secondary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19h16M6 16V8h12v8M9 8V5h6v3M9 12h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 font-bold">Estimated Earnings Upfront</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Check estimated earnings before submitting items with current material rates.</p></article>
+                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 19h14M7 16h10M8 16V5h8v11M10 8h4m-2 2v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 font-bold">Transparent Physical Weighing</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Transparent physical weighing and incentive verification with calibrated scales.</p></article>
+                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3h7l5 5v13H7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3v5h5M10 13h6m-6 3h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><h3 class="mt-4 font-bold">Trackable Submission History</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Keep a clear record of items submitted, certified, and processed.</p></article>
+                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.8 8.7c0 5-8.8 11.3-8.8 11.3S3.2 13.7 3.2 8.7a4.7 4.7 0 0 1 8.8-2.3 4.7 4.7 0 0 1 8.8 2.3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><h3 class="mt-4 font-bold">Reward or Donation Choice</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Choose between receiving monetary rewards or donating items to social impact programs.</p></article>
+                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-secondary-container text-secondary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18m-5 5h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><h3 class="mt-4 font-bold">Wallet &amp; Withdrawal</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Manage your digital wallet balance and available withdrawal options.</p></article>
+                </div>
+            </div>
+        </section>
+
+        <section class="bg-surface-container-low py-16 sm:py-20" aria-labelledby="impact-title">
+            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
+                <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                    <div><p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Collective impact</p><h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="impact-title">Impact Tracking</h2></div>
+                    <p class="max-w-lg text-sm leading-6 text-on-surface-variant">SiLoak is designed to make responsible collection easier to follow, from handoff to verified outcome.</p>
+                </div>
+                <div class="grid gap-3 rounded-3xl border border-white bg-white p-4 shadow-sm sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
+                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Material weight</p><p class="mt-2 text-lg font-bold text-on-surface">Weighed at collection</p><p class="mt-1 text-xs text-on-surface-variant">Record verified material amounts</p></div>
+                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Submissions</p><p class="mt-2 text-lg font-bold text-on-surface">Follow each handoff</p><p class="mt-1 text-xs text-on-surface-variant">View progress through processing</p></div>
+                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Collection points</p><p class="mt-2 text-lg font-bold text-on-surface">Find a drop-off</p><p class="mt-1 text-xs text-on-surface-variant">Explore available nearby locations</p></div>
+                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Community giving</p><p class="mt-2 text-lg font-bold text-on-surface">Donation option</p><p class="mt-1 text-xs text-on-surface-variant">Choose to donate collection value</p></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="contact" class="scroll-mt-20 bg-surface-container-low py-16 sm:py-20" aria-labelledby="contact-title">
+            <div class="mx-auto grid max-w-screen-xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-10">
+                <div>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Get in touch</p>
+                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="contact-title">Contact Us</h2>
+                    <p class="mt-3 max-w-lg text-sm leading-6 text-on-surface-variant sm:text-base">Questions about recycling with SiLoak? Reach out to our team.</p>
+                    <div class="mt-7 rounded-2xl bg-white p-5 shadow-sm sm:p-6">
+                        <span class="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
+                        <p class="mt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Email</p>
+                        <a class="mt-1 inline-block text-lg font-bold text-on-surface underline decoration-primary/40 underline-offset-4 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="mailto:support@siloak.id">support@siloak.id</a>
+                    </div>
+                </div>
+                <form class="rounded-2xl border border-outline-variant/20 bg-white p-6 shadow-sm sm:p-8" action="mailto:support@siloak.id" method="post" enctype="text/plain">
+                    <h3 class="text-xl font-bold text-on-surface">Send Us a Message</h3>
+                    <p class="mt-2 text-sm leading-6 text-on-surface-variant">Have a question or inquiry? Send a message to our support team.</p>
+                    <div class="mt-5 grid gap-4 sm:grid-cols-2">
+                        <div><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-name">Name</label><input class="min-h-11 w-full rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-name" name="Name" autocomplete="name" placeholder="Your name" required></div>
+                        <div><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-email">Email</label><input class="min-h-11 w-full rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-email" name="Email" type="email" autocomplete="email" placeholder="name@example.com" required></div>
+                        <div class="sm:col-span-2"><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-subject">Subject</label><input class="min-h-11 w-full rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-subject" name="Subject" placeholder="How can we help?" required></div>
+                        <div class="sm:col-span-2"><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-message">Message</label><textarea class="min-h-28 w-full resize-y rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-message" name="Message" placeholder="Write your message..." required></textarea></div>
+                    </div>
+                    <button class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-container px-5 py-3 text-sm font-bold text-white shadow-button transition hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" type="submit"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="m21 3-7.5 18-3.3-7.2L3 10.5 21 3Zm-10.8 10.8L21 3" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>Send Message</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-surface-container-low px-4 py-10 sm:px-6 lg:px-10">
+        <div class="mx-auto max-w-screen-xl">
+            <div class="grid gap-8 border-b border-outline-variant/30 pb-8 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <a class="inline-flex items-center gap-2.5 rounded-xl text-on-surface no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="{% url 'landing_page' %}">
+                        <span class="grid h-9 w-9 place-items-center rounded-xl bg-primary-container text-white" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4.8C12.3 4.8 7.1 6.7 5.1 11.3c-1.2 2.8.3 5.6 2.9 6.2 2.8.6 5.6-1.1 6.8-4.1.8-2.1.9-4.4.9-6.2 1.2 1.5 2.2 3.5 2.2 6.4M4.7 20c2.3-3.7 5.3-5.9 9.2-7.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+                        <span class="text-lg font-bold">SiLoak</span>
+                    </a>
+                    <p class="mt-3 max-w-xs text-sm leading-6 text-on-surface-variant">A digital recycling platform helping give unwanted items a useful next step.</p>
+                </div>
+                <div><h2 class="text-xs font-bold uppercase tracking-[0.12em] text-on-surface">Platform</h2><ul class="mt-3 space-y-2 p-0 text-sm text-on-surface-variant"><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#home">Home</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#how-it-works">How It Works</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#about">About Us</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#contact">Contact</a></li></ul></div>
+                <div><h2 class="text-xs font-bold uppercase tracking-[0.12em] text-on-surface">Access</h2><ul class="mt-3 space-y-2 p-0 text-sm text-on-surface-variant"><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="{% url 'auth_page' %}">Log In</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="{% url 'auth_page' %}">Sign Up</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#about">User Benefits</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#impact-title">Our Impact</a></li></ul></div>
+                <div><h2 class="text-xs font-bold uppercase tracking-[0.12em] text-on-surface">Contact</h2><ul class="mt-3 space-y-2 p-0 text-sm text-on-surface-variant"><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="mailto:support@siloak.id">support@siloak.id</a></li></ul></div>
+            </div>
+            <div class="flex flex-col gap-2 pt-5 text-xs text-on-surface-variant sm:flex-row sm:items-center sm:justify-between"><span>© {% now "Y" %} SiLoak. All rights reserved.</span><span class="font-semibold uppercase tracking-[0.1em]">Digital recycling and waste collection platform</span></div>
+        </div>
+    </footer>
+{% endblock %}

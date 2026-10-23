@@ -1,0 +1,39 @@
+<aside class="w-full shrink-0 border-b border-outline-variant/40 bg-surface-container-lowest md:fixed md:inset-y-0 md:left-0 md:z-40 md:w-64 md:border-b-0 md:border-r" aria-label="Main menu">
+    <div class="hidden h-16 items-center gap-3 px-6 md:flex">
+        <span class="grid h-10 w-10 place-items-center rounded-xl bg-primary-container text-white shadow-button" aria-hidden="true">
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4.8C12.3 4.8 7.1 6.7 5.1 11.3c-1.2 2.8.3 5.6 2.9 6.2 2.8.6 5.6-1.1 6.8-4.1.8-2.1.9-4.4.9-6.2 1.2 1.5 2.2 3.5 2.2 6.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 20c2.3-3.7 5.3-5.9 9.2-7.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+        </span>
+        <span class="font-bold leading-none tracking-tight text-on-surface">SiLoak<span class="mt-1 block text-[10px] font-semibold uppercase tracking-[0.12em] text-on-surface-variant">Circular Exchange</span></span>
+    </div>
+    <div class="px-3 py-3 md:flex md:h-[calc(100vh-4rem)] md:min-h-0 md:flex-col md:px-4 md:py-4">
+        <nav class="flex gap-1 overflow-x-auto pb-1 md:flex-col md:overflow-visible md:pb-0" aria-label="Main navigation">
+            <a class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold no-underline transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 {% if active_item == 'dashboard' %}bg-primary-container text-white shadow-button{% else %}text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface{% endif %}" href="{% url 'dashboard' %}" {% if active_item == 'dashboard' %}aria-current="page"{% endif %}>
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg><span>Home / Dashboard</span>
+            </a>
+            <a class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface-variant no-underline transition hover:bg-surface-container-low hover:text-on-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="/waste/new/">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.7"/><path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>New Submission</span>
+            </a>
+            <a class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface-variant no-underline transition hover:bg-surface-container-low hover:text-on-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="/pickup/">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/></svg><span>Schedule Pickup</span>
+            </a>
+            <a class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface-variant no-underline transition hover:bg-surface-container-low hover:text-on-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="/location/">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z" stroke="currentColor" stroke-width="1.7"/><circle cx="12" cy="10" r="2.5" stroke="currentColor" stroke-width="1.7"/></svg><span>Drop-off Points</span>
+            </a>
+            <a class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold no-underline transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 {% if active_item == 'submissions' %}bg-primary-container text-white shadow-button{% else %}text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface{% endif %}" href="/waste/submissions/" {% if active_item == 'submissions' %}aria-current="page"{% endif %}>
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="16" height="16" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M8 8h8v2H8zM8 13h8M8 16h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg><span>My Submissions</span>
+            </a>
+            <a class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface-variant no-underline transition hover:bg-surface-container-low hover:text-on-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="/wallet/">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><rect x="3.5" y="5" width="17" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M16 14h2M3.5 9h17" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>Wallet</span>
+            </a>
+            <a class="inline-flex min-h-11 shrink-0 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface-variant no-underline transition hover:bg-surface-container-low hover:text-on-surface focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="/profile/">
+                <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c.7-3.2 3.2-5 7-5s6.3 1.8 7 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg><span>Profile</span>
+            </a>
+        </nav>
+        <div class="mt-auto hidden pt-6 md:block">
+            <a class="flex items-center gap-3 rounded-xl bg-surface-container-low p-3 text-on-surface no-underline transition hover:bg-surface-container focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="{% url 'auth_page' %}">
+                <span class="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary text-white" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="8" r="3.5" stroke="currentColor" stroke-width="1.7"/><path d="M5 20c.7-3.2 3.2-5 7-5s6.3 1.8 7 5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span>
+                <span class="min-w-0"><span class="block truncate text-sm font-bold">Sign in</span><span class="block truncate text-xs text-on-surface-variant">Access your SiLoak account</span></span>
+            </a>
+        </div>
+    </div>
+</aside>
