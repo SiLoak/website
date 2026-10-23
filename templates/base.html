@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SiLoak</title>
+    <title>{% block title %}SiLoak{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'tailwind.css' %}">
     {% block extra_head %}{% endblock %}
 </head>
-<body>
-    <div class="scanline-overlay" aria-hidden="true"></div>
+<body class="min-h-screen bg-background font-sans text-on-surface antialiased">
     {% block content %}{% endblock %}
 </body>
 </html>

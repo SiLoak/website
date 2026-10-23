@@ -1,0 +1,6 @@
+{
+  "private": true,
+  "scripts": {
+    "css:build": "tailwindcss -c tailwind.config.js -i public/tailwind.css -o static/tailwind.css --minify"
+  }
+}

@@ -9,6 +9,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model, login
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
 from django.utils.crypto import constant_time_compare
 from django.utils.text import slugify
 from django.views.decorators.http import require_GET
@@ -27,6 +28,10 @@ MAX_PENDING_STATES = 5
 
 def _oauth_error(message, status):
     return JsonResponse({"authenticated": False, "error": message}, status=status)
+
+
+def auth_page(request):
+    return render(request, "auth/login.html")
 
 
 def _oauth_configuration():
