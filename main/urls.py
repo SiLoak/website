@@ -17,6 +17,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from main.views import (
+    dashboard,
     landing_page,
 )
 
@@ -24,6 +25,7 @@ from main.views import (
 urlpatterns = [ 
     path('admin/', admin.site.urls),
     path("", landing_page, name="landing_page"),
+    path("dashboard/", dashboard, name="dashboard"),
     path('auth/', include('auth.urls')),
     path('location/', include('location.urls')),
     path('pickup/', include('pickup.urls')),

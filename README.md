@@ -87,7 +87,7 @@ Modul ini menangani proses pengguna dalam menyetorkan sampah hingga sampah terse
 - Mencatat hasil penimbangan sampah
 
 **Package:** `waste`  
-**PIC:** Samuel Kaevin Phasca
+**PIC:** Bagas Aulia Rezki
 
 ---
 
@@ -145,7 +145,7 @@ Modul ini mengelola layanan pengambilan sampah langsung dari lokasi pengguna.
 - Integrasi dengan Public API berbasis lokasi
 
 **Package:** `location`  
-**PIC:** Tiffany Ekklesia
+**PIC:** Samuel Kaevin Phasca
 
 ---
 
@@ -167,6 +167,18 @@ Public API digunakan untuk membantu aplikasi dalam:
 
 - Google OAuth:  
   https://console.cloud.google.com
+
+### Google OAuth Backend Setup
+
+The backend uses the Django session to keep users signed in. Configure an OAuth 2.0 Web application client in Google Cloud and add the callback URI below to its authorized redirect URIs. Copy `.env.example` to `.env` and set the client ID and secret:
+
+```text
+GOOGLE_OAUTH_CLIENT_ID=your-client-id
+GOOGLE_OAUTH_CLIENT_SECRET=your-client-secret
+GOOGLE_OAUTH_REDIRECT_URI=http://localhost:8000/auth/google/callback/
+```
+
+The endpoints are `GET /auth/google/login/` to begin sign-in and `GET /auth/google/callback/` for Google's callback. A successful callback sets the Django session cookie and returns the authenticated user's ID, email, and name as JSON. The callback URI must exactly match the value registered in Google Cloud. Apply the database migration before using OAuth.
 
 API akan digunakan sebagai sumber data eksternal untuk fitur lokasi, sementara data utama seperti pengguna, transaksi sampah, titik pengumpulan, pickup, dan insentif akan dikelola melalui database aplikasi.
 
@@ -232,3 +244,4 @@ https://bagas-aulia-siloak.pws.cs.ui.ac.id/
 # Tautan Desain Figma
 
 https://www.figma.com/files/team/1681860133051205638/folder/655408932?fuid=1546679538808144971
+PIC: Tiffany Ekklesia & Nadin Putri Cahyani
