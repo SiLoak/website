@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'location',
     'pickup',
     'waste',
+    'wallet',
 ]
 
 MIDDLEWARE = [
