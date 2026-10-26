@@ -2,6 +2,7 @@ from django.db import models
 from django.core.validators import MinLengthValidator
 from django.conf import settings
 from django.db.models import Q
+import uuid
 
 # Create your models here.
 class PickupRequest(models.Model):
@@ -31,6 +32,9 @@ class PickupRequest(models.Model):
     Status.CANCELLED: (),
     Status.FAILED: (),
   }
+
+  # Primary key
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
   # User relationships
   giver = models.ForeignKey(
@@ -160,6 +164,9 @@ class PickupStatusHistory(models.Model):
   """
   Audit trail for pickup status changes.
   """
+
+  # Primary key
+  id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
 
   # Pickup request relationships
   pickup = models.ForeignKey(
