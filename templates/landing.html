@@ -1,229 +1,528 @@
 {% extends "base.html" %}
-{% load static %}
-
-{% block title %}SiLoak · Responsible Recycling Made Easier{% endblock %}
-
-{% block extra_head %}
-    <meta name="description" content="Give reusable and recyclable items a second life with SiLoak. Choose home pickup or a nearby drop-off point and track your materials." />
-    <meta name="theme-color" content="#faf8ff">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-{% endblock %}
-
+{% block title %}SiLoak · Kelola Barang Bekas{% endblock %}
 {% block content %}
-    <a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white" href="#main-content">Skip to main content</a>
-    <header class="fixed inset-x-0 top-0 z-50 border-b border-outline-variant/30 bg-background/90 shadow-sm backdrop-blur-xl">
-        <div class="mx-auto flex h-16 max-w-screen-xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-20 lg:px-10">
-            <a class="flex shrink-0 items-center gap-2.5 rounded-xl text-on-surface no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="{% url 'landing_page' %}" aria-label="SiLoak home">
-                <span class="grid h-10 w-10 place-items-center rounded-xl bg-primary-container text-white shadow-button" aria-hidden="true">
-                    <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4.8C12.3 4.8 7.1 6.7 5.1 11.3c-1.2 2.8.3 5.6 2.9 6.2 2.8.6 5.6-1.1 6.8-4.1.8-2.1.9-4.4.9-6.2 1.2 1.5 2.2 3.5 2.2 6.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M4.7 20c2.3-3.7 5.3-5.9 9.2-7.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-                </span>
-                <span class="flex items-center gap-2"><span class="text-lg font-bold tracking-tight">SiLoak</span><span class="hidden rounded-full bg-secondary-container px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-on-surface sm:inline-flex">Eco-Exchange</span></span>
-            </a>
-            <details class="relative lg:hidden">
-                <summary class="grid h-10 w-10 cursor-pointer list-none place-items-center rounded-xl text-on-surface-variant transition hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" aria-label="Open site navigation">
-                    <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                </summary>
-                <nav class="absolute right-0 top-12 z-50 grid min-w-48 gap-1 rounded-2xl border border-outline-variant/40 bg-white p-2 shadow-card" aria-label="Mobile navigation">
-                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#home">Home</a>
-                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#how-it-works">How It Works</a>
-                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#about">About Us</a>
-                    <a class="rounded-xl px-3 py-2.5 text-sm font-semibold text-on-surface no-underline hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#contact">Contact</a>
-                </nav>
-            </details>
-            <nav class="hidden items-center gap-7 lg:flex" aria-label="Main navigation">
-                <a class="rounded-md text-sm font-bold text-primary no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#home">Home</a>
-                <a class="rounded-md text-sm font-semibold text-on-surface-variant no-underline transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#how-it-works">How It Works</a>
-                <a class="rounded-md text-sm font-semibold text-on-surface-variant no-underline transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#about">About Us</a>
-                <a class="rounded-md text-sm font-semibold text-on-surface-variant no-underline transition hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-4" href="#contact">Contact</a>
-            </nav>
-            <div class="flex shrink-0 items-center gap-2">
-                <a class="inline-flex min-h-10 items-center justify-center rounded-xl border border-outline-variant/70 px-3 text-sm font-semibold text-on-surface no-underline transition hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 sm:px-4" href="{% url 'auth_page' %}">Log In</a>
-                <a class="inline-flex min-h-10 items-center justify-center rounded-xl bg-primary-container px-3 text-sm font-bold text-white no-underline shadow-button transition hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2 sm:px-5" href="{% url 'auth_page' %}">Sign Up</a>
+<a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white" href="#main-content">Lewati ke konten utama</a>
+{% include "components/navbar.html" with public=True %}
+<main id="main-content" class="w-full bg-page-bg min-h-screen"><div class="flex flex-col w-full">
+<!-- SECTION 1: HERO SECTION -->
+<section class="w-full bg-page-bg py-16">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Left Content Column -->
+<div class="lg:col-span-6 flex flex-col items-start">
+<!-- Pill Badge -->
+<div class="bg-status-error-bg text-primary-container px-3.5 py-1 rounded-full text-label-sm font-label-sm inline-flex items-center gap-2 shadow-xs">
+<span>🌱</span>
+<span>Kelola barang bekas dengan mudah</span>
+</div>
+<!-- Headline -->
+<h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight mt-4">
+            Ubah barang bekasmu jadi insentif
+          </h1>
+<!-- Subtext -->
+<p class="font-body-lg text-body-lg text-text-body mt-4 max-w-xl">
+            SiLoak menghubungkan kamu dengan titik pengumpulan terdekat dan layanan pick up. Setor barang bekasmu, dapatkan insentif sesuai berat, atau donasikan untuk kebaikan.
+          </p>
+<!-- CTAs -->
+<div class="flex flex-wrap items-center gap-space-md mt-8 w-full sm:w-auto">
+<a class="inline-flex items-center justify-center gap-2 bg-secondary-container text-text-primary font-label-lg text-label-lg px-6 py-3.5 rounded-lg hover:bg-primary-container hover:text-on-primary transition-all shadow-sm" href="/waste/new/">
+<span>Mulai Setor Loak</span>
+<span class="material-symbols-outlined text-lg leading-none">arrow_forward</span>
+</a>
+<a class="inline-flex items-center justify-center gap-2 bg-surface-card text-primary-container font-label-lg text-label-lg px-5 py-3.5 rounded-lg hover:bg-surface-soft transition-all shadow-xs" href="#titik-pengumpulan">
+<span class="material-symbols-outlined text-lg leading-none">location_on</span>
+<span>Cari Titik Terdekat</span>
+</a>
+</div>
+<!-- Micro-trust checklist -->
+<div class="flex flex-wrap items-center gap-6 mt-8 pt-6 w-full text-label-md font-label-md text-text-body">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-status-success-text text-base leading-none">check_circle</span>
+<span>Ditimbang petugas</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-status-success-text text-base leading-none">check_circle</span>
+<span>Insentif sesuai berat</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-status-success-text text-base leading-none">check_circle</span>
+<span>Bisa didonasikan</span>
+</div>
+</div>
+</div>
+<!-- Right Visual Column -->
+<div class="lg:col-span-6 relative flex justify-center">
+<div class="relative w-full rounded-xl overflow-hidden shadow-md bg-surface-card">
+<img alt="Warga tersenyum memilah barang bekas kardus dan botol plastik di rumah" class="object-cover w-full h-[400px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEdNNomqo2_d3h8ZijcTn4_S6kK5E7ObbHMHOqU-2xfao7JnB-gYeQHJ8jvjymh4HFCY49M0HG58GWpjqUE5UNh-8hiKhUuGywQKQNDlprH75qMwGj7lWRvVr9CIvH-hECcWCyHaFWwT-hhbURUVwGiORYDklulVVPWDOojmPRCTBKoLFVAGkAchT2nC4DQig0BQ4fbskXWqGbpg4YuFPOEc4cxqGPZ6pGKJnUImY">
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+<!-- Floating White Card -->
+<div class="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-xl flex items-center justify-between gap-4">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-body">Insentif masuk</span>
+<span class="font-headline-sm text-headline-sm text-text-primary tabular-nums mt-0.5">Rp 45.000</span>
+</div>
+<div class="bg-status-success-bg text-status-success-text px-2.5 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1 shrink-0">
+<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
+<span>Sudah ditimbang</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: NUMBERS STRIP -->
+<section class="w-full py-10 bg-surface-card shadow-xs">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<!-- Metric 1 -->
+<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
+<span class="font-label-sm text-label-sm text-text-body">Titik pengumpulan</span>
+<span class="font-metric-display text-metric-display text-primary-container tabular-nums mt-1">128</span>
+<span class="font-body-sm text-body-sm text-text-body mt-1">Tersebar di Jabodetabek</span>
+</div>
+<!-- Metric 2 -->
+<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
+<span class="font-label-sm text-label-sm text-text-body">Barang terkumpul (kg)</span>
+<span class="font-metric-display text-metric-display text-text-primary tabular-nums mt-1">45.280 kg</span>
+<span class="font-body-sm text-body-sm text-text-body mt-1">Kardus, plastik, logam</span>
+</div>
+<!-- Metric 3 -->
+<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
+<span class="font-label-sm text-label-sm text-text-body">Pengguna aktif</span>
+<span class="font-metric-display text-metric-display text-text-primary tabular-nums mt-1">14.850+</span>
+<span class="font-body-sm text-body-sm text-text-body mt-1">Masyarakat &amp; kurir</span>
+</div>
+<!-- Metric 4 -->
+<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
+<span class="font-label-sm text-label-sm text-text-body">Insentif dibagikan (Rp)</span>
+<span class="font-metric-display text-metric-display text-status-success-text tabular-nums mt-1">Rp 320 Jt+</span>
+<span class="font-body-sm text-body-sm text-text-body mt-1">Tersalurkan langsung</span>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: TWO WAYS TO USE SILOAK -->
+<section class="w-full py-16 bg-page-bg">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
+<h2 class="font-headline-lg text-headline-lg text-text-primary">Dua cara mudah untuk mulai</h2>
+<p class="font-body-lg text-body-lg text-text-body mt-2">Pilih metode yang paling nyaman dengan jadwal dan rutinitas harianmu.</p>
+</div>
+<div class="max-w-4xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
+<!-- Card 1 (Setor Loak) -->
+<div class="bg-surface-card rounded-xl p-8 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+<div>
+<div class="w-12 h-12 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-xl mb-4">
+              🏬
             </div>
-        </div>
-    </header>
-
-    <main id="main-content" class="pt-16 lg:pt-20" tabindex="-1">
-        <section id="home" class="relative scroll-mt-20 overflow-hidden bg-background py-14 sm:py-20 lg:py-24" aria-labelledby="hero-title">
-            <div class="pointer-events-none absolute -left-32 -top-32 h-96 w-96 rounded-full bg-primary/10 blur-3xl" aria-hidden="true"></div>
-            <div class="pointer-events-none absolute -right-32 top-1/3 h-96 w-96 rounded-full bg-secondary-container/50 blur-3xl" aria-hidden="true"></div>
-            <div class="relative mx-auto grid max-w-screen-xl items-center gap-12 px-4 sm:px-6 lg:grid-cols-2 lg:gap-16 lg:px-10">
-                <div class="flex flex-col items-start">
-                    <p class="inline-flex items-center gap-2 rounded-full bg-surface-container-high px-3.5 py-2 text-[11px] font-bold uppercase tracking-[0.12em] text-primary shadow-sm">
-                        <span class="h-2 w-2 rounded-full bg-tertiary-container" aria-hidden="true"></span>Responsible Resource Management
-                    </p>
-                    <h1 class="mt-5 max-w-2xl text-4xl font-extrabold leading-[1.12] tracking-[-0.04em] text-on-surface sm:text-5xl lg:text-[56px]">Turn Your Unwanted Items Into New Value.</h1>
-                    <p class="mt-5 max-w-xl text-base leading-7 text-on-surface-variant sm:text-lg sm:leading-8">Give your unused items a second life. Exchange recyclable goods for rewards or donate them to make a positive impact, with convenient home pickup and nearby drop-off options.</p>
-                    <div class="mt-7 flex w-full flex-col gap-3 sm:w-auto sm:flex-row sm:items-center">
-                        <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-primary-container px-6 py-3 text-sm font-bold text-white no-underline shadow-button transition hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="{% url 'auth_page' %}">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4.8C12.3 4.8 7.1 6.7 5.1 11.3c-1.2 2.8.3 5.6 2.9 6.2 2.8.6 5.6-1.1 6.8-4.1.8-2.1.9-4.4.9-6.2 1.2 1.5 2.2 3.5 2.2 6.4M4.7 20c2.3-3.7 5.3-5.9 9.2-7.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Start Recycling
-                        </a>
-                        <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-bold text-on-surface no-underline shadow-sm transition hover:bg-surface-container-low focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="#how-it-works">
-                            <svg class="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/><path d="M10 9.5a2.1 2.1 0 1 1 3.6 1.5c-.9.9-1.6 1.2-1.6 2.5M12 17h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>How It Works
-                        </a>
-                    </div>
-                    <ul class="mt-6 flex flex-wrap gap-x-5 gap-y-2 p-0 text-xs font-semibold text-on-surface-variant sm:gap-x-6" aria-label="SiLoak service highlights">
-                        <li class="inline-flex items-center gap-1.5"><span class="text-tertiary" aria-hidden="true">✓</span>Flexible home pickup &amp; drop-off</li>
-                        <li class="inline-flex items-center gap-1.5"><span class="text-tertiary" aria-hidden="true">✓</span>Transparent weighing</li>
-                        <li class="inline-flex items-center gap-1.5"><span class="text-tertiary" aria-hidden="true">✓</span>Rewards or donation</li>
-                    </ul>
-                </div>
-                <div class="relative mx-auto w-full max-w-xl lg:max-w-none">
-                    <div class="overflow-hidden rounded-[28px] border border-white/80 bg-white p-3 shadow-card sm:p-4">
-                        <div class="relative aspect-[4/3] overflow-hidden rounded-2xl bg-surface-container-low">
-                            <img class="h-full w-full object-cover" src="{% static 'images/landing-recycling.jpg' %}" alt="Organized recycling drop-off center with separate collection containers" loading="eager" fetchpriority="high">
-                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-on-surface/80 to-transparent p-5 pt-16 text-white sm:p-6 sm:pt-20">
-                                <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-white/80">Circular ecosystem</p>
-                                <p class="mt-1 text-lg font-bold sm:text-xl">Verified sustainable processing</p>
-                            </div>
-                        </div>
-                        <div class="relative z-10 -mt-4 mx-2 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-outline-variant/30 bg-white p-4 shadow-card sm:mx-3 sm:p-5">
-                            <div><p class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">SiLoak rewards</p><p class="mt-1 text-lg font-extrabold tracking-tight text-on-surface">Your choice, your impact</p></div>
-                            <a class="inline-flex items-center gap-1.5 rounded-full bg-tertiary-fixed/60 px-3 py-1.5 text-xs font-bold text-on-tertiary-fixed no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="#how-it-works">Rewards or donate</a>
-                        </div>
-                    </div>
-                </div>
+<h3 class="font-headline-md text-headline-md text-text-primary">Setor Loak</h3>
+<p class="font-body-md text-body-md text-text-body mt-2 leading-relaxed">
+              Bawa barang bekasmu ke titik pengumpulan terdekat. Petugas akan menimbangnya dan insentifmu langsung dihitung.
+            </p>
+<div class="mt-4 inline-flex items-center gap-1.5 text-label-sm font-label-sm text-text-body bg-surface-container-low px-3 py-1 rounded-full">
+<span>Bebas biaya admin • Buka setiap hari</span>
+</div>
+</div>
+<a class="mt-8 bg-status-error-bg text-primary-container hover:bg-primary-container hover:text-on-primary font-label-lg text-label-lg py-3 px-5 rounded-lg transition-all text-center inline-flex items-center justify-center gap-2" href="/waste/dropoff/">
+<span>Setor Loak</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+<!-- Card 2 (Pick up Loak) -->
+<div class="bg-surface-card rounded-xl p-8 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
+<div>
+<div class="w-12 h-12 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-xl mb-4">
+              🛵
             </div>
-        </section>
-
-        <section id="how-it-works" class="scroll-mt-20 bg-surface-container-low py-16 sm:py-20" aria-labelledby="steps-title">
-            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
-                <div class="mx-auto mb-10 max-w-2xl text-center sm:mb-12">
-                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Step-by-step flow</p>
-                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="steps-title">How It Works</h2>
-                    <p class="mt-3 text-sm leading-6 text-on-surface-variant sm:text-base">A straightforward, reliable circular exchange process designed for clarity and convenience.</p>
-                </div>
-                <ol class="grid list-none gap-4 p-0 sm:grid-cols-2 lg:grid-cols-4">
-                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
-                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M4 7h16M6 4v6m12-6v6M5 11h14v9H5zM8 15h3m2 0h3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">01</span></div>
-                        <h3 class="mt-5 text-base font-bold text-on-surface">1. Select Your Items</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Choose item categories and enter estimated weights to view potential earnings.</p><span class="mt-5 inline-flex rounded-full bg-surface-container-low px-3 py-1.5 text-[11px] font-semibold text-on-surface-variant">Transparent estimates</span>
-                    </li>
-                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
-                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-secondary-container text-secondary"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 6h11v11H3zM14 10h4l3 3v4h-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">02</span></div>
-                        <h3 class="mt-5 text-base font-bold text-on-surface">2. Choose Your Method</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Schedule a home pickup or select a nearby drop-off point according to your preference.</p><span class="mt-5 inline-flex rounded-full bg-surface-container-low px-3 py-1.5 text-[11px] font-semibold text-on-surface-variant">Doorstep or drop-off</span>
-                    </li>
-                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
-                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-secondary-container text-secondary"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M3 20h18M5 17h14M7 17V7h10v10M9 7V4h6v3m-3 3v4m-2-2h4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">03</span></div>
-                        <h3 class="mt-5 text-base font-bold text-on-surface">3. Weigh and Verify</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Have your items weighed and verified to determine the final reward accurately.</p><span class="mt-5 inline-flex rounded-full bg-surface-container-low px-3 py-1.5 text-[11px] font-semibold text-on-surface-variant">In-person verification</span>
-                    </li>
-                    <li class="relative rounded-2xl border border-white bg-white p-5 shadow-sm sm:p-6">
-                        <div class="flex items-center justify-between"><span class="grid h-11 w-11 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12 3v18M17 7.5c0-1.7-2.2-3-5-3s-5 1.3-5 3 2.2 3 5 3 5 1.3 5 3-2.2 3-5 3-5-1.3-5-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><span class="text-4xl font-extrabold tracking-tight text-primary/15">04</span></div>
-                        <h3 class="mt-5 text-base font-bold text-on-surface">4. Receive Rewards or Donate</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Receive verified rewards in your SiLoak Wallet or donate your items without monetary compensation.</p><span class="mt-5 inline-flex rounded-full bg-tertiary-fixed/40 px-3 py-1.5 text-[11px] font-semibold text-on-tertiary-fixed">Wallet or giving</span>
-                    </li>
-                </ol>
+<h3 class="font-headline-md text-headline-md text-text-primary">Pick up Loak</h3>
+<p class="font-body-md text-body-md text-text-body mt-2 leading-relaxed">
+              Tidak sempat datang? Minta petugas menjemput dari rumahmu dan pantau statusnya sampai barang ditimbang.
+            </p>
+<div class="mt-4 inline-flex items-center gap-1.5 text-label-sm font-label-sm text-text-body bg-surface-container-low px-3 py-1 rounded-full">
+<span>Jadwal fleksibel • Tracking kurir real-time</span>
+</div>
+</div>
+<a class="mt-8 bg-secondary-container text-text-primary hover:bg-primary-container hover:text-on-primary font-label-lg text-label-lg py-3 px-5 rounded-lg transition-all text-center inline-flex items-center justify-center gap-2" href="/pickup/new/">
+<span>Minta Pick up</span>
+<span class="material-symbols-outlined text-base">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: HOW IT WORKS -->
+<section class="w-full py-16 bg-surface-card" id="cara-kerja">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
+<h2 class="font-headline-lg text-headline-lg text-text-primary">Cara kerja SiLoak</h2>
+<p class="font-body-lg text-body-lg text-text-body mt-2">Proses transparan dari awal hingga insentif sampai di tanganmu.</p>
+</div>
+<div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6 relative">
+<!-- Step 1 -->
+<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
+            1
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Pilih barang</h3>
+<p class="font-body-md text-body-md text-text-body mt-2">
+            Pilih jenis dan perkiraan berat barang bekasmu di aplikasi.
+          </p>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
+            2
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Setor atau pick up</h3>
+<p class="font-body-md text-body-md text-text-body mt-2">
+            Datang ke titik pengumpulan atau minta petugas menjemput langsung ke rumah.
+          </p>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
+            3
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Ditimbang petugas</h3>
+<p class="font-body-md text-body-md text-text-body mt-2">
+            Berat barang dicatat dan diverifikasi petugas dengan timbangan digital transparan.
+          </p>
+</div>
+<!-- Step 4 -->
+<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
+            4
+          </div>
+<h3 class="font-headline-sm text-headline-sm text-text-primary">Terima atau donasikan</h3>
+<p class="font-body-md text-body-md text-text-body mt-2">
+            Insentif masuk ke saldomu, atau salurkan sebagai donasi ke mitra sosial pilihanmu.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: COLLECTION POINT FINDER -->
+<section class="w-full py-16 bg-page-bg" id="titik-pengumpulan">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
+<h2 class="font-headline-lg text-headline-lg text-text-primary">Temukan titik pengumpulan terdekat</h2>
+<p class="font-body-lg text-body-lg text-text-body mt-2">Cari berdasarkan lokasi, lihat jam buka dan layanan yang tersedia.</p>
+</div>
+<!-- Master Container -->
+<div class="bg-surface-card rounded-xl p-6 lg:p-8 mt-10 shadow-sm">
+<!-- Search bar & filters row -->
+<div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-text-body">search</span>
+<input class="w-full pl-11 pr-4 py-3 bg-surface-container-low rounded-lg font-body-md text-body-md text-text-primary outline-none focus:bg-white shadow-xs" placeholder="Masukkan kelurahan, kecamatan, atau nama tempat..." type="text" value="Tebet Timur, Jakarta Selatan">
+</div>
+<div class="flex items-center gap-2 shrink-0">
+<button class="bg-primary-container text-on-primary px-3.5 py-2 rounded-lg font-label-md text-label-md">2 km</button>
+<button class="bg-surface-container-low text-text-body hover:text-text-primary px-3.5 py-2 rounded-lg font-label-md text-label-md transition-colors">5 km</button>
+<button class="bg-surface-container-low text-text-body hover:text-text-primary px-3.5 py-2 rounded-lg font-label-md text-label-md transition-colors">10 km</button>
+</div>
+<button class="bg-primary-container text-on-primary px-5 py-3 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 hover:bg-primary transition-all shrink-0">
+<span class="material-symbols-outlined text-base">near_me</span>
+<span>Cari yang terdekat</span>
+</button>
+</div>
+<!-- Two-column split below -->
+<div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+<!-- Left List -->
+<div class="lg:col-span-5 flex flex-col gap-4 max-h-[480px] overflow-y-auto pr-1">
+<!-- Point 1 (Selected) -->
+<div class="bg-status-error-bg p-4 rounded-xl shadow-xs flex flex-col gap-2 cursor-pointer transition-all">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-text-primary">TPST SiLoak Tebet Timur</span>
+<span class="bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full text-label-sm font-label-sm">Buka</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-body">Jl. Tebet Timur Dalam Raya No. 42, Jakarta Selatan</p>
+<div class="flex items-center gap-3 text-label-sm font-label-sm text-text-body mt-1">
+<span>📍 1,2 km dari kamu</span>
+<span>•</span>
+<span>⏰ 08.00 - 17.00 WIB</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-1">
+<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Kardus</span>
+<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Plastik</span>
+<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Logam</span>
+<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Minyak Jelantah</span>
+</div>
+<div class="mt-2 pt-2 flex items-center justify-end">
+<span class="font-label-md text-label-md text-primary-container flex items-center gap-1 font-semibold">
+                  Pilih Titik Ini <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</span>
+</div>
+</div>
+<!-- Point 2 -->
+<div class="bg-surface-card hover:bg-surface-container-low p-4 rounded-xl shadow-xs flex flex-col gap-2 cursor-pointer transition-all">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-text-primary">Bank Sampah Melati Indah</span>
+<span class="bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full text-label-sm font-label-sm">Buka</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-body">Jl. Pancoran Barat III No. 15, Jakarta Selatan</p>
+<div class="flex items-center gap-3 text-label-sm font-label-sm text-text-body mt-1">
+<span>📍 2,4 km dari kamu</span>
+<span>•</span>
+<span>⏰ 08.30 - 16.00 WIB</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-1">
+<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Kardus</span>
+<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Kertas</span>
+<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Plastik</span>
+</div>
+</div>
+<!-- Point 3 -->
+<div class="bg-surface-card hover:bg-surface-container-low p-4 rounded-xl shadow-xs flex flex-col gap-2 cursor-pointer transition-all">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-text-primary">Pusat Daur Ulang Manggarai</span>
+<span class="bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full text-label-sm font-label-sm">Buka</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-body">Jl. Manggarai Utara No. 8, Jakarta Selatan</p>
+<div class="flex items-center gap-3 text-label-sm font-label-sm text-text-body mt-1">
+<span>📍 3,8 km dari kamu</span>
+<span>•</span>
+<span>⏰ 09.00 - 18.00 WIB</span>
+</div>
+<div class="flex flex-wrap gap-1.5 mt-1">
+<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Semua Kategori</span>
+<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Layanan Timbang Cepat</span>
+</div>
+</div>
+</div>
+<!-- Right Map Visual Container -->
+<div class="lg:col-span-7 h-[480px] bg-surface-container-low rounded-xl overflow-hidden relative shadow-inner flex flex-col">
+<!-- Simulated OpenStreetMap graphic UI -->
+<svg class="w-full h-full object-cover" fill="none" viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg">
+<!-- Ground base -->
+<rect fill="#F1F5F9" height="480" width="700"></rect>
+<!-- Green areas / parks -->
+<path d="M40 30 C 120 40, 180 120, 150 200 C 100 230, 40 180, 40 30 Z" fill="#DCFCE7"></path>
+<path d="M480 300 C 580 290, 660 340, 640 440 C 520 460, 470 410, 480 300 Z" fill="#DCFCE7"></path>
+<!-- Water body / River -->
+<path d="M-20 380 Q 200 320, 360 410 T 720 350" fill="none" stroke="#BAE6FD" stroke-linecap="round" stroke-width="28"></path>
+<!-- Primary / Secondary Roads -->
+<path d="M0 160 L 700 130" stroke="#FFFFFF" stroke-width="14"></path>
+<path d="M0 160 L 700 130" stroke="#E2E8F0" stroke-width="10"></path>
+<path d="M320 0 L 350 480" stroke="#FFFFFF" stroke-width="16"></path>
+<path d="M320 0 L 350 480" stroke="#CBD5E1" stroke-width="12"></path>
+<path d="M120 0 L 160 480" stroke="#FFFFFF" stroke-width="10"></path>
+<path d="M480 0 L 520 480" stroke="#FFFFFF" stroke-width="10"></path>
+<path d="M0 290 Q 260 270, 520 310 T 700 280" stroke="#FFFFFF" stroke-width="12"></path>
+<path d="M0 290 Q 260 270, 520 310 T 700 280" stroke="#E2E8F0" stroke-width="8"></path>
+<!-- Road Labels -->
+<text fill="#64748B" font-family="Inter" font-size="10" font-weight="600" x="365" y="80">Jl. Prof. DR. Soepomo</text>
+<text fill="#64748B" font-family="Inter" font-size="10" font-weight="600" x="210" y="145">Jl. Tebet Barat Dalam</text>
+<!-- User Current Location Marker -->
+<circle cx="260" cy="220" fill="#0F172A" fill-opacity="0.15" r="18"></circle>
+<circle cx="260" cy="220" fill="#0F172A" r="8"></circle>
+<circle cx="260" cy="220" fill="#FFFFFF" r="3.5"></circle>
+<!-- Point 2 Marker (Pancoran) -->
+<g transform="translate(180, 310)">
+<path d="M14 0 C 6 0, 0 6, 0 14 C 0 24, 14 36, 14 36 C 14 36, 28 24, 28 14 C 28 6, 22 0, 14 0 Z" fill="#A52A2A"></path>
+<circle cx="14" cy="14" fill="#FFFFFF" r="5"></circle>
+</g>
+<!-- Point 3 Marker (Manggarai) -->
+<g transform="translate(490, 110)">
+<path d="M14 0 C 6 0, 0 6, 0 14 C 0 24, 14 36, 14 36 C 14 36, 28 24, 28 14 C 28 6, 22 0, 14 0 Z" fill="#A52A2A"></path>
+<circle cx="14" cy="14" fill="#FFFFFF" r="5"></circle>
+</g>
+<!-- Point 1 (Selected - Tebet Timur) Marker + Tooltip -->
+<g transform="translate(330, 190)">
+<path d="M16 0 C 7 0, 0 7, 0 16 C 0 28, 16 42, 16 42 C 16 42, 32 28, 32 16 C 32 7, 25 0, 16 0 Z" fill="#840F16"></path>
+<circle cx="16" cy="16" fill="#FFFFFF" r="6"></circle>
+</g>
+</svg>
+<!-- Popup Callout Overlay -->
+<div class="absolute top-36 left-1/2 -translate-x-12 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2 pointer-events-none">
+<span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-text-primary font-semibold">TPST SiLoak Tebet Timur</span>
+<span class="font-label-sm text-label-sm text-text-body">1,2 km dari posisimu</span>
+</div>
+</div>
+<!-- Map Controls Top-Left -->
+<div class="absolute top-4 left-4 flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
+<button class="w-8 h-8 flex items-center justify-center text-text-primary hover:bg-surface-soft font-bold">+</button>
+<button class="w-8 h-8 flex items-center justify-center text-text-primary hover:bg-surface-soft font-bold">-</button>
+</div>
+<!-- Attribution Bottom-Right -->
+<div class="absolute bottom-2 right-2 bg-white/85 px-2 py-0.5 rounded text-[11px] font-label-sm text-text-body">
+              © OpenStreetMap contributors
             </div>
-        </section>
-
-        <section id="about" class="scroll-mt-20 bg-background py-16 sm:py-20" aria-labelledby="about-title">
-            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
-                <div class="max-w-3xl">
-                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">About SiLoak</p>
-                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="about-title">Making Responsible Disposal Easier for Everyone.</h2>
-                    <p class="mt-4 text-sm leading-7 text-on-surface-variant sm:text-base">SiLoak is a digital platform designed to make the collection and responsible handling of unwanted goods more accessible. Through convenient pickup services and nearby drop-off points, SiLoak helps users give their unused items a new purpose while encouraging responsible resource use.</p>
-                </div>
-                <div class="mt-8 grid gap-4 md:grid-cols-3">
-                    <article class="rounded-2xl border border-outline-variant/20 bg-white p-5 shadow-sm sm:p-6"><span class="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 18h16M6 18V9l6-4 6 4v9M9 18v-5h6v5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><h3 class="mt-4 text-base font-bold">Convenient Disposal</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Make responsible disposal more convenient through doorstep scheduling and local neighborhood hubs.</p></article>
-                    <article class="rounded-2xl border border-outline-variant/20 bg-white p-5 shadow-sm sm:p-6"><span class="grid h-11 w-11 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 7h10l-2.5-2.5M17 17H7l2.5 2.5M17 7a7 7 0 0 1 1.7 9M7 17a7 7 0 0 1-1.7-9" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 text-base font-bold">Circular Management</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Encourage reuse, recycling, and circular resource management to divert materials from landfills.</p></article>
-                    <article class="rounded-2xl border border-outline-variant/20 bg-white p-5 shadow-sm sm:p-6"><span class="grid h-11 w-11 place-items-center rounded-xl bg-secondary-container text-secondary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 3 4 6v5.5c0 4.7 3.3 8.3 8 9.5 4.7-1.2 8-4.8 8-9.5V6l-8-3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m9 12 2 2 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 text-base font-bold">Transparent Tracking</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Track submissions, verified weights, rewards, and donations as the service grows.</p></article>
-                </div>
-            </div>
-        </section>
-
-        <section class="bg-surface-container-low py-16 sm:py-20" aria-labelledby="platform-title">
-            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
-                <div class="mb-8 max-w-2xl">
-                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Institutional profile</p>
-                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="platform-title">About the Platform</h2>
-                    <p class="mt-3 text-sm leading-6 text-on-surface-variant">SiLoak connects people with collection points and pickup services for responsible handling of used goods.</p>
-                </div>
-                <div class="rounded-3xl border border-white bg-white p-4 shadow-sm sm:p-6">
-                    <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Brand</dt><dd class="mt-2 text-base font-bold text-on-surface">SiLoak</dd><dd class="mt-1 text-xs text-primary">Digital recycling platform</dd></div>
-                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Service category</dt><dd class="mt-2 text-base font-bold text-on-surface">Used goods collection</dd><dd class="mt-1 text-xs text-on-surface-variant">Collection and responsible handling</dd></div>
-                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Collection methods</dt><dd class="mt-2 text-base font-bold text-on-surface">Pickup &amp; drop-off</dd><dd class="mt-1 text-xs text-on-surface-variant">Choose the option that works for you</dd></div>
-                        <div class="rounded-2xl bg-surface-container-low p-4"><dt class="text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Participation</dt><dd class="mt-2 text-base font-bold text-on-surface">Rewards or donation</dd><dd class="mt-1 text-xs text-on-surface-variant">Choose how to use your collection value</dd></div>
-                    </dl>
-                </div>
-            </div>
-        </section>
-
-        <section class="bg-surface-container-low py-16 sm:py-20" aria-labelledby="benefits-title">
-            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
-                <div class="mx-auto mb-9 max-w-2xl text-center">
-                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Why choose SiLoak</p>
-                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="benefits-title">User Benefits</h2>
-                    <p class="mt-3 text-sm leading-6 text-on-surface-variant sm:text-base">Everything you need for more convenient, transparent, and rewarding disposal.</p>
-                </div>
-                <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h11v10H3zM14 10h4l3 3v4h-7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><circle cx="7" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/><circle cx="18" cy="19" r="1.8" stroke="currentColor" stroke-width="1.7"/></svg></span><h3 class="mt-4 font-bold">Home Pickup &amp; Drop-Off Options</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Convenient home pickup straight from your door and accessible nearby drop-off stations.</p></article>
-                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-secondary-container text-secondary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 19h16M6 16V8h12v8M9 8V5h6v3M9 12h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 font-bold">Estimated Earnings Upfront</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Check estimated earnings before submitting items with current material rates.</p></article>
-                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 19h14M7 16h10M8 16V5h8v11M10 8h4m-2 2v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></span><h3 class="mt-4 font-bold">Transparent Physical Weighing</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Transparent physical weighing and incentive verification with calibrated scales.</p></article>
-                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 3h7l5 5v13H7z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="M14 3v5h5M10 13h6m-6 3h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><h3 class="mt-4 font-bold">Trackable Submission History</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Keep a clear record of items submitted, certified, and processed.</p></article>
-                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-tertiary-fixed/60 text-on-tertiary-fixed" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M20.8 8.7c0 5-8.8 11.3-8.8 11.3S3.2 13.7 3.2 8.7a4.7 4.7 0 0 1 8.8-2.3 4.7 4.7 0 0 1 8.8 2.3Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span><h3 class="mt-4 font-bold">Reward or Donation Choice</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Choose between receiving monetary rewards or donating items to social impact programs.</p></article>
-                    <article class="rounded-2xl bg-white p-5 shadow-sm"><span class="grid h-10 w-10 place-items-center rounded-xl bg-secondary-container text-secondary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="M3 9h18m-5 5h2" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg></span><h3 class="mt-4 font-bold">Wallet &amp; Withdrawal</h3><p class="mt-2 text-sm leading-6 text-on-surface-variant">Manage your digital wallet balance and available withdrawal options.</p></article>
-                </div>
-            </div>
-        </section>
-
-        <section class="bg-surface-container-low py-16 sm:py-20" aria-labelledby="impact-title">
-            <div class="mx-auto max-w-screen-xl px-4 sm:px-6 lg:px-10">
-                <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                    <div><p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Collective impact</p><h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="impact-title">Impact Tracking</h2></div>
-                    <p class="max-w-lg text-sm leading-6 text-on-surface-variant">SiLoak is designed to make responsible collection easier to follow, from handoff to verified outcome.</p>
-                </div>
-                <div class="grid gap-3 rounded-3xl border border-white bg-white p-4 shadow-sm sm:grid-cols-2 sm:p-6 lg:grid-cols-4">
-                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Material weight</p><p class="mt-2 text-lg font-bold text-on-surface">Weighed at collection</p><p class="mt-1 text-xs text-on-surface-variant">Record verified material amounts</p></div>
-                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Submissions</p><p class="mt-2 text-lg font-bold text-on-surface">Follow each handoff</p><p class="mt-1 text-xs text-on-surface-variant">View progress through processing</p></div>
-                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Collection points</p><p class="mt-2 text-lg font-bold text-on-surface">Find a drop-off</p><p class="mt-1 text-xs text-on-surface-variant">Explore available nearby locations</p></div>
-                    <div class="p-3"><p class="text-[10px] font-bold uppercase tracking-[0.1em] text-on-surface-variant">Community giving</p><p class="mt-2 text-lg font-bold text-on-surface">Donation option</p><p class="mt-1 text-xs text-on-surface-variant">Choose to donate collection value</p></div>
-                </div>
-            </div>
-        </section>
-
-        <section id="contact" class="scroll-mt-20 bg-surface-container-low py-16 sm:py-20" aria-labelledby="contact-title">
-            <div class="mx-auto grid max-w-screen-xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:gap-14 lg:px-10">
-                <div>
-                    <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-primary">Get in touch</p>
-                    <h2 class="mt-2 text-3xl font-bold tracking-tight text-on-surface sm:text-4xl" id="contact-title">Contact Us</h2>
-                    <p class="mt-3 max-w-lg text-sm leading-6 text-on-surface-variant sm:text-base">Questions about recycling with SiLoak? Reach out to our team.</p>
-                    <div class="mt-7 rounded-2xl bg-white p-5 shadow-sm sm:p-6">
-                        <span class="grid h-11 w-11 place-items-center rounded-xl bg-primary/10 text-primary" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="1.7"/><path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg></span>
-                        <p class="mt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-on-surface-variant">Email</p>
-                        <a class="mt-1 inline-block text-lg font-bold text-on-surface underline decoration-primary/40 underline-offset-4 hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="mailto:support@siloak.id">support@siloak.id</a>
-                    </div>
-                </div>
-                <form class="rounded-2xl border border-outline-variant/20 bg-white p-6 shadow-sm sm:p-8" action="mailto:support@siloak.id" method="post" enctype="text/plain">
-                    <h3 class="text-xl font-bold text-on-surface">Send Us a Message</h3>
-                    <p class="mt-2 text-sm leading-6 text-on-surface-variant">Have a question or inquiry? Send a message to our support team.</p>
-                    <div class="mt-5 grid gap-4 sm:grid-cols-2">
-                        <div><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-name">Name</label><input class="min-h-11 w-full rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-name" name="Name" autocomplete="name" placeholder="Your name" required></div>
-                        <div><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-email">Email</label><input class="min-h-11 w-full rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-email" name="Email" type="email" autocomplete="email" placeholder="name@example.com" required></div>
-                        <div class="sm:col-span-2"><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-subject">Subject</label><input class="min-h-11 w-full rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-subject" name="Subject" placeholder="How can we help?" required></div>
-                        <div class="sm:col-span-2"><label class="mb-1.5 block text-xs font-semibold text-on-surface" for="contact-message">Message</label><textarea class="min-h-28 w-full resize-y rounded-xl border border-outline-variant/50 bg-surface-container-low px-3 py-2.5 text-sm text-on-surface placeholder:text-on-surface-variant focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20" id="contact-message" name="Message" placeholder="Write your message..." required></textarea></div>
-                    </div>
-                    <button class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary-container px-5 py-3 text-sm font-bold text-white shadow-button transition hover:bg-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" type="submit"><svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="m21 3-7.5 18-3.3-7.2L3 10.5 21 3Zm-10.8 10.8L21 3" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" stroke-linecap="round"/></svg>Send Message</button>
-                </form>
-            </div>
-        </section>
-    </main>
-
-    <footer class="bg-surface-container-low px-4 py-10 sm:px-6 lg:px-10">
-        <div class="mx-auto max-w-screen-xl">
-            <div class="grid gap-8 border-b border-outline-variant/30 pb-8 sm:grid-cols-2 lg:grid-cols-4">
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <a class="inline-flex items-center gap-2.5 rounded-xl text-on-surface no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary focus-visible:outline-offset-2" href="{% url 'landing_page' %}">
-                        <span class="grid h-9 w-9 place-items-center rounded-xl bg-primary-container text-white" aria-hidden="true"><svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.2 4.8C12.3 4.8 7.1 6.7 5.1 11.3c-1.2 2.8.3 5.6 2.9 6.2 2.8.6 5.6-1.1 6.8-4.1.8-2.1.9-4.4.9-6.2 1.2 1.5 2.2 3.5 2.2 6.4M4.7 20c2.3-3.7 5.3-5.9 9.2-7.6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
-                        <span class="text-lg font-bold">SiLoak</span>
-                    </a>
-                    <p class="mt-3 max-w-xs text-sm leading-6 text-on-surface-variant">A digital recycling platform helping give unwanted items a useful next step.</p>
-                </div>
-                <div><h2 class="text-xs font-bold uppercase tracking-[0.12em] text-on-surface">Platform</h2><ul class="mt-3 space-y-2 p-0 text-sm text-on-surface-variant"><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#home">Home</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#how-it-works">How It Works</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#about">About Us</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#contact">Contact</a></li></ul></div>
-                <div><h2 class="text-xs font-bold uppercase tracking-[0.12em] text-on-surface">Access</h2><ul class="mt-3 space-y-2 p-0 text-sm text-on-surface-variant"><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="{% url 'auth_page' %}">Log In</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="{% url 'auth_page' %}">Sign Up</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#about">User Benefits</a></li><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="#impact-title">Our Impact</a></li></ul></div>
-                <div><h2 class="text-xs font-bold uppercase tracking-[0.12em] text-on-surface">Contact</h2><ul class="mt-3 space-y-2 p-0 text-sm text-on-surface-variant"><li><a class="no-underline hover:text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary" href="mailto:support@siloak.id">support@siloak.id</a></li></ul></div>
-            </div>
-            <div class="flex flex-col gap-2 pt-5 text-xs text-on-surface-variant sm:flex-row sm:items-center sm:justify-between"><span>© {% now "Y" %} SiLoak. All rights reserved.</span><span class="font-semibold uppercase tracking-[0.1em]">Digital recycling and waste collection platform</span></div>
-        </div>
-    </footer>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 6: INCENTIVE AND DONATION -->
+<section class="w-full py-16 bg-surface-card">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<!-- Left Editorial -->
+<div class="lg:col-span-7 flex flex-col items-start">
+<h2 class="font-headline-lg text-headline-lg text-text-primary">Dapat insentif, atau donasikan</h2>
+<p class="font-body-lg text-body-lg text-text-body mt-4 leading-relaxed">
+            Setiap gram barang bekas yang kamu serahkan memiliki nilai nyata. Kamu dapat menerima insentif tunai ke dompet digital (GoPay, OVO, DANA, transfer bank), atau menyalurkan nilainya sebagai donasi bagi program penghijauan dan pendidikan anak pemulung.
+          </p>
+<div class="flex flex-col gap-4 mt-8 w-full">
+<div class="flex items-start gap-4 p-4 rounded-xl bg-surface-container-low shadow-xs">
+<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">scale</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary">Transparansi Timbangan</h4>
+<p class="font-body-md text-body-md text-text-body mt-1">
+                  Menggunakan timbangan digital tera resmi langsung di hadapanmu atau diverifikasi realtime oleh kurir.
+                </p>
+</div>
+</div>
+<div class="flex items-start gap-4 p-4 rounded-xl bg-surface-container-low shadow-xs">
+<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined">volunteer_activism</span>
+</div>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary">Penyaluran Donasi Amanah</h4>
+<p class="font-body-md text-body-md text-text-body mt-1">
+                  Laporan penyaluran donasi sosial dan lingkungan tercatat transparan dengan rekam jejak digital di aplikasi.
+                </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Simulation Card -->
+<div class="lg:col-span-5">
+<div class="bg-surface-card rounded-xl p-6 shadow-md flex flex-col">
+<div class="flex items-center justify-between pb-3">
+<span class="font-label-md text-label-md text-text-body font-semibold uppercase tracking-wider">Ringkasan Setoran Simulasi</span>
+<span class="bg-surface-container px-2 py-0.5 rounded text-label-sm font-label-sm text-text-body">Live Estimate</span>
+</div>
+<!-- Itemized List -->
+<div class="flex flex-col gap-3 my-4 bg-surface-container-low p-4 rounded-lg">
+<div class="flex items-center justify-between text-body-md font-body-md">
+<div class="flex flex-col">
+<span class="text-text-primary font-medium">Kardus bekas (gelombang)</span>
+<span class="font-label-sm text-label-sm text-text-body">5,0 kg @ Rp 2.500/kg</span>
+</div>
+<span class="text-text-primary font-semibold tabular-nums">Rp 12.500</span>
+</div>
+<div class="flex items-center justify-between text-body-md font-body-md">
+<div class="flex flex-col">
+<span class="text-text-primary font-medium">Botol plastik PET bening</span>
+<span class="font-label-sm text-label-sm text-text-body">2,5 kg @ Rp 4.200/kg</span>
+</div>
+<span class="text-text-primary font-semibold tabular-nums">Rp 10.500</span>
+</div>
+<div class="flex items-center justify-between text-body-md font-body-md">
+<div class="flex flex-col">
+<span class="text-text-primary font-medium">Minyak jelantah bersih</span>
+<span class="font-label-sm text-label-sm text-text-body">3,0 kg @ Rp 7.500/kg</span>
+</div>
+<span class="text-text-primary font-semibold tabular-nums">Rp 22.000</span>
+</div>
+</div>
+<!-- Estimated Total -->
+<div class="flex items-baseline justify-between pt-2">
+<span class="font-body-md text-body-md text-text-body font-medium">Perkiraan insentif</span>
+<span class="font-headline-xl text-headline-xl text-primary-container font-bold tabular-nums">Rp 45.000</span>
+</div>
+<!-- Two-option selector control -->
+<div class="grid grid-cols-2 gap-3 mt-6">
+<button class="bg-primary-container text-on-primary font-label-lg text-label-lg py-2.5 px-4 rounded-lg text-center shadow-xs">
+                Terima insentif
+              </button>
+<button class="bg-surface-container-low text-text-body hover:bg-surface-soft hover:text-text-primary font-label-lg text-label-lg py-2.5 px-4 rounded-lg text-center transition-all">
+                Donasikan
+              </button>
+</div>
+<div class="flex items-center gap-1.5 mt-5 text-label-sm font-label-sm text-text-body">
+<span class="material-symbols-outlined text-sm leading-none">info</span>
+<span>Jumlah akhir dihitung setelah barang ditimbang petugas.</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 7: BENEFITS (KENAPA SILOAK?) -->
+<section class="w-full py-16 bg-page-bg" id="manfaat">
+<div class="max-w-[1200px] mx-auto px-margin">
+<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
+<h2 class="font-headline-lg text-headline-lg text-text-primary">Kenapa SiLoak?</h2>
+<p class="font-body-lg text-body-lg text-text-body mt-2">Dibuat untuk memudahkan warga menjaga lingkungan sembari mendapatkan manfaat nyata.</p>
+</div>
+<div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+<!-- Benefit 1 -->
+<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
+<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
+            📍
+          </div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary">Mudah menemukan lokasi</h4>
+<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
+            Titik kumpul resmi dekat dengan tempat tinggalmu.
+          </p>
+</div>
+<!-- Benefit 2 -->
+<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
+<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
+            ⚖️
+          </div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary">Insentif sesuai berat</h4>
+<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
+            Harga per kilogram transparan mengikuti standar pasar.
+          </p>
+</div>
+<!-- Benefit 3 -->
+<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
+<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
+            🛵
+          </div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary">Ada layanan pick up</h4>
+<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
+            Kurir siap menjemput tanpa repot bawa barang berat.
+          </p>
+</div>
+<!-- Benefit 4 -->
+<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
+<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
+            📦
+          </div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary">Pemilahan lebih teratur</h4>
+<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
+            Panduan jenis barang praktis mudah dipahami keluarga.
+          </p>
+</div>
+<!-- Benefit 5 -->
+<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
+<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
+            🤝
+          </div>
+<h4 class="font-headline-sm text-headline-sm text-text-primary">Bisa didonasikan</h4>
+<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
+            Bantu sesama lewat konversi barang daur ulang.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 8: FINAL CALL TO ACTION -->
+<section class="w-full bg-primary-container text-on-primary py-16 px-margin text-center">
+<div class="max-w-[1200px] mx-auto flex flex-col items-center">
+<h2 class="font-headline-xl text-headline-xl text-on-primary font-bold">Siap mulai Setor Loak?</h2>
+<p class="font-body-lg text-body-lg text-on-primary/90 max-w-xl mx-auto mt-3">
+        Daftar sekarang dan ubah barang bekasmu jadi manfaat nyata untuk kantong dan lingkungan.
+      </p>
+<div class="flex flex-wrap justify-center items-center gap-space-md mt-8">
+<a class="bg-secondary-container text-text-primary font-label-lg text-label-lg px-8 py-3.5 rounded-lg hover:bg-white transition-all shadow-md" href="/waste/new/">
+          Daftar Sekarang
+        </a>
+<a class="bg-white/10 text-on-primary hover:bg-white/20 font-label-lg text-label-lg px-6 py-3.5 rounded-lg transition-all" href="/location/">
+          Masuk ke Akun
+        </a>
+</div>
+</div>
+</section>
+</div></main>
+{% include "components/footer.html" %}
 {% endblock %}

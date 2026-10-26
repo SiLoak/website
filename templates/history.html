@@ -1,0 +1,517 @@
+{% extends "base.html" %}
+{% block title %}Riwayat · SiLoak{% endblock %}
+{% block content %}
+{% include "components/navbar.html" with active_item="history" %}
+<main id="main-content" class="w-full min-h-screen bg-page-bg"><div class="flex flex-col w-full">
+<div class="max-w-[1200px] w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col gap-6">
+<!-- 1. Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary-fixed/50 text-on-primary-fixed font-label-sm text-label-sm mb-2">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+          Aktivitas Daur Ulang Warga
+        </div>
+<h1 class="font-headline-lg text-headline-lg text-text-primary font-bold tracking-tight">Riwayat</h1>
+<p class="font-body-md text-body-md text-text-body mt-1">Semua setoran dan pick up-mu ada di sini.</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="h-10 px-4 rounded-lg bg-surface-card border border-border-slate text-text-body font-label-md text-label-md flex items-center gap-2 hover:bg-surface-soft hover:text-text-primary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+          Ekspor CSV
+        </button>
+<button class="h-10 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md flex items-center gap-2 hover:bg-tertiary transition-colors shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+          Setor Baru
+        </button>
+</div>
+</div>
+<!-- 2. Summary Metrics -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+<!-- Card 1: Total Setoran -->
+<div class="bg-surface-card border border-border-slate rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-body/80">Total setoran</span>
+<span class="font-headline-xl text-headline-xl text-text-primary font-bold tabular-nums mt-1 group-hover:text-primary transition-colors">12</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-status-success-text mt-2 font-medium">
+<span class="material-symbols-outlined text-[16px]">trending_up</span>
+              +3 bulan ini
+            </span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[24px]">recycling</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Total Berat -->
+<div class="bg-surface-card border border-border-slate rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-body/80">Total berat</span>
+<span class="font-headline-xl text-headline-xl text-text-primary font-bold tabular-nums mt-1 group-hover:text-primary transition-colors">22,5 kg</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-status-success-text mt-2 font-medium">
+<span class="material-symbols-outlined text-[16px]">eco</span>
+              Setara 18,2 kg CO₂e
+            </span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[24px]">scale</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Total Insentif -->
+<div class="bg-surface-card border border-border-slate rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-text-body/80">Total insentif</span>
+<span class="font-headline-xl text-headline-xl text-text-primary font-bold tabular-nums mt-1 group-hover:text-primary transition-colors">Rp 165.000</span>
+<span class="inline-flex items-center gap-1 font-label-sm text-label-sm text-status-success-text mt-2 font-medium">
+<span class="material-symbols-outlined text-[16px]">account_balance_wallet</span>
+              Masuk ke saldo aktif
+            </span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-primary text-[24px]">payments</span>
+</div>
+</div>
+</div>
+</div>
+<!-- 3. Filter Bar Card -->
+<div class="bg-surface-card border border-border-slate rounded-xl p-5 shadow-sm flex flex-col gap-4">
+<!-- Tabs Row -->
+<div class="flex items-center gap-6 border-b border-border-slate overflow-x-auto">
+<button class="border-b-2 border-primary-container text-primary-container font-semibold pb-3 px-1 text-sm tracking-normal whitespace-nowrap flex items-center gap-2" type="button">
+<span>Semua</span>
+<span class="bg-primary/10 text-primary px-2 py-0.5 rounded-full text-xs font-semibold">12</span>
+</button>
+<button class="text-text-body hover:text-text-primary font-medium pb-3 px-1 text-sm whitespace-nowrap flex items-center gap-2 transition-colors border-b-2 border-transparent" type="button">
+<span>Antar sendiri</span>
+<span class="bg-surface-soft text-text-body px-2 py-0.5 rounded-full text-xs font-medium">7</span>
+</button>
+<button class="text-text-body hover:text-text-primary font-medium pb-3 px-1 text-sm whitespace-nowrap flex items-center gap-2 transition-colors border-b-2 border-transparent" type="button">
+<span>Dijemput</span>
+<span class="bg-surface-soft text-text-body px-2 py-0.5 rounded-full text-xs font-medium">5</span>
+</button>
+</div>
+<!-- Controls Row -->
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-1">
+<div class="flex flex-wrap items-center gap-3">
+<!-- Search Field -->
+<div class="relative w-full sm:w-80">
+<div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-text-body/60">
+<span class="material-symbols-outlined text-[19px]">search</span>
+</div>
+<input class="w-full h-11 pl-10 pr-3.5 bg-surface-card border border-border-slate rounded-lg text-sm text-text-primary placeholder:text-text-body/60 focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary/15 transition-all" placeholder="Cari nomor atau titik pengumpulan" type="text"/>
+</div>
+<!-- Status Dropdown -->
+<div class="relative min-w-[160px]">
+<select class="w-full h-11 appearance-none pl-3.5 pr-9 bg-surface-card border border-border-slate rounded-lg text-sm text-text-body focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary/15 cursor-pointer transition-all">
+<option value="all">Status: Semua</option>
+<option value="success">Selesai</option>
+<option value="in_transit">Dalam perjalanan</option>
+<option value="waiting">Menunggu</option>
+<option value="cancelled">Dibatalkan</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-text-body/60">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</div>
+</div>
+<!-- Date Dropdown -->
+<div class="relative min-w-[200px]">
+<select class="w-full h-11 appearance-none pl-3.5 pr-9 bg-surface-card border border-border-slate rounded-lg text-sm text-text-body focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary/15 cursor-pointer transition-all">
+<option value="30d">Tanggal: 30 hari terakhir</option>
+<option value="60d">Tanggal: 60 hari terakhir</option>
+<option value="this_year">Tahun 2026</option>
+<option value="all_time">Semua rentang</option>
+</select>
+<div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-text-body/60">
+<span class="material-symbols-outlined text-[18px]">keyboard_arrow_down</span>
+</div>
+</div>
+</div>
+<!-- Reset Button -->
+<button class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary self-start lg:self-center inline-flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">restart_alt</span>
+          Atur ulang
+        </button>
+</div>
+</div>
+<!-- 4. List Table Card -->
+<div class="bg-surface-card border border-border-slate rounded-xl shadow-sm overflow-hidden flex flex-col">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[980px]">
+<thead>
+<tr class="bg-page-bg border-b border-border-slate text-xs font-semibold text-text-body uppercase tracking-wider">
+<th class="py-3.5 px-6" scope="col">Nomor</th>
+<th class="py-3.5 px-6" scope="col">Cara Menyetor</th>
+<th class="py-3.5 px-6" scope="col">Barang</th>
+<th class="py-3.5 px-6" scope="col">Berat</th>
+<th class="py-3.5 px-6" scope="col">Insentif</th>
+<th class="py-3.5 px-6" scope="col">Status</th>
+<th class="py-3.5 px-6" scope="col">Tanggal</th>
+<th class="py-3.5 px-6 text-right" scope="col">Aksi</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-border-slate">
+<!-- Row 1 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8821
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Dijemput</span>
+<span class="text-xs text-text-body">Pasar Minggu</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Kardus, Botol plastik
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="block text-[11px] text-text-body font-medium leading-none mb-1">Perkiraan</span>
+<span class="text-sm text-text-body tabular-nums">7,5 kg</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="block text-[11px] text-text-body font-medium leading-none mb-1">Perkiraan</span>
+<span class="text-sm text-text-body tabular-nums font-medium">Rp 45.000</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FFFBEB] text-[#B45309] border border-[#FCD34D]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B45309]"></span>
+                  Dalam perjalanan
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                26 Okt 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- Row 2 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8816
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-soft text-text-body flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">directions_walk</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Antar sendiri</span>
+<span class="text-xs text-text-body">Titik Pengumpulan Pasar Minggu</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Botol plastik
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="block text-[11px] text-text-body font-medium leading-none mb-1">Perkiraan</span>
+<span class="text-sm text-text-body tabular-nums">2,5 kg</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="block text-[11px] text-text-body font-medium leading-none mb-1">Perkiraan</span>
+<span class="text-sm text-text-body tabular-nums font-medium">Rp 20.000</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FFFBEB] text-[#B45309] border border-[#FCD34D]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B45309]"></span>
+                  Menunggu
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                25 Okt 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- Row 3 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8809
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-soft text-text-body flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">directions_walk</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Antar sendiri</span>
+<span class="text-xs text-text-body">Titik Pengumpulan Pasar Minggu</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Kardus
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">5,0 kg</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">Rp 25.000</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#ECFDF5] text-[#15803D] border border-[#86EFAC]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#15803D]"></span>
+                  Selesai
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                19 Okt 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8801
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Dijemput</span>
+<span class="text-xs text-text-body">Pasar Minggu</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Kertas
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">4,2 kg</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">Rp 12.600</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#ECFDF5] text-[#15803D] border border-[#86EFAC]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#15803D]"></span>
+                  Selesai
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                14 Okt 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- Row 5 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8794
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-soft text-text-body flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">directions_walk</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Antar sendiri</span>
+<span class="text-xs text-text-body">Titik Pengumpulan Tebet</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Logam
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">3,0 kg</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">Rp 21.000</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#ECFDF5] text-[#15803D] border border-[#86EFAC]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#15803D]"></span>
+                  Selesai
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                9 Okt 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- Row 6 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8788
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Dijemput</span>
+<span class="text-xs text-text-body">Pasar Minggu</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Kardus
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-body/70 tabular-nums font-medium">-</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-body/70 tabular-nums font-medium">-</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#FEF2F2] text-[#B91C1C] border border-[#FCA5A5]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#B91C1C]"></span>
+                  Dibatalkan
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                5 Okt 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- Row 7 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8776
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-soft text-text-body flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">directions_walk</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Antar sendiri</span>
+<span class="text-xs text-text-body">Titik Pengumpulan Lenteng Agung</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Kaca, Plastik
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">6,8 kg</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">Rp 40.000</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#ECFDF5] text-[#15803D] border border-[#86EFAC]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#15803D]"></span>
+                  Selesai
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                28 Sep 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+<!-- Row 8 -->
+<tr class="h-16 hover:bg-page-bg transition-colors group">
+<td class="px-6 py-3 font-semibold text-text-primary text-sm whitespace-nowrap">
+                #8769
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">local_shipping</span>
+</div>
+<div class="flex flex-col">
+<span class="font-medium text-text-primary text-sm">Dijemput</span>
+<span class="text-xs text-text-body">Pasar Minggu</span>
+</div>
+</div>
+</td>
+<td class="px-6 py-3 text-sm text-text-primary whitespace-nowrap font-normal">
+                Kardus, Kertas
+              </td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">9,1 kg</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="text-sm text-text-primary font-bold tabular-nums">Rp 36.300</span>
+</td>
+<td class="px-6 py-3 whitespace-nowrap">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-[#ECFDF5] text-[#15803D] border border-[#86EFAC]/60">
+<span class="w-1.5 h-1.5 rounded-full bg-[#15803D]"></span>
+                  Selesai
+                </span>
+</td>
+<td class="px-6 py-3 text-sm text-text-body whitespace-nowrap">
+                21 Sep 2026
+              </td>
+<td class="px-6 py-3 whitespace-nowrap text-right">
+<a class="font-label-md text-label-md font-medium text-primary-container hover:text-tertiary inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform" href="/waste/8816/">
+<span>Lihat detail</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- 5. Pagination Footer -->
+<div class="px-6 py-4 border-t border-border-slate flex flex-col sm:flex-row items-center justify-between gap-4 bg-surface-card">
+<p class="font-body-md text-body-md text-text-body">
+          Menampilkan <span class="font-semibold text-text-primary">1</span> sampai <span class="font-semibold text-text-primary">8</span> dari <span class="font-semibold text-text-primary">12</span> transaksi
+        </p>
+<div class="inline-flex items-center gap-2">
+<button class="text-sm text-text-body/50 px-3 py-1.5 rounded-lg border border-border-slate bg-surface-soft cursor-not-allowed flex items-center gap-1 font-medium" disabled="" type="button">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+            Sebelumnya
+          </button>
+<button class="w-8 h-8 rounded-lg bg-primary-container text-white font-medium text-sm flex items-center justify-center shadow-sm" type="button">
+            1
+          </button>
+<button class="w-8 h-8 rounded-lg border border-border-slate bg-white text-text-body hover:bg-surface-soft hover:text-text-primary font-medium text-sm flex items-center justify-center transition-colors" type="button">
+            2
+          </button>
+<button class="text-sm text-text-body hover:text-text-primary font-medium px-3 py-1.5 rounded-lg border border-border-slate bg-white hover:bg-surface-soft flex items-center gap-1 transition-colors" type="button">
+            Berikutnya
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div></main>
+{% include "components/footer.html" %}
+{% endblock %}

@@ -1,3 +1,5 @@
 from django.shortcuts import render
 
-# Create your views here.
+
+def location_list(request):
+    return render(request, "location/index.html", {"active_item": "location"})

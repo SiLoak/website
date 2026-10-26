@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}{{ page_title }} · SiLoak{% endblock %}
+{% block content %}
+{% include "components/navbar.html" with public=True %}
+<main id="main-content" class="mx-auto min-h-[60vh] w-full max-w-[1200px] px-4 py-12 sm:px-6">
+  <a class="text-sm font-medium text-primary-container hover:underline" href="/">← Kembali ke beranda</a>
+  <article class="mt-6 rounded-xl border border-border-slate bg-surface-card p-6 shadow-sm sm:p-8">
+    <h1 class="text-2xl font-bold tracking-tight text-text-primary">{{ page_title }}</h1>
+    <p class="mt-4 max-w-3xl leading-7 text-text-body">{{ summary }}</p>
+    <p class="mt-3 max-w-3xl leading-7 text-text-body">Untuk pertanyaan tentang akun atau layanan, hubungi <a class="font-medium text-primary-container hover:underline" href="mailto:support@siloak.id">support@siloak.id</a>.</p>
+  </article>
+</main>
+{% include "components/footer.html" %}
+{% endblock %}
