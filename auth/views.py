@@ -11,6 +11,7 @@ from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.utils.crypto import constant_time_compare
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.text import slugify
 from django.views.decorators.http import require_GET
 from google.auth.exceptions import GoogleAuthError
@@ -31,7 +32,12 @@ def _oauth_error(message, status):
 
 
 def auth_page(request):
-    return render(request, "auth/login.html")
+    next_url = request.GET.get("next", "")
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = ""
+    return render(request, "auth/login.html", {"next_url": next_url})
 
 
 def _oauth_configuration():
@@ -50,13 +56,19 @@ def google_login(request):
         return _oauth_error("Google OAuth is not configured.", 503)
 
     client_id, _, _ = configuration
+    next_url = request.GET.get("next", "")
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = ""
+
     state = secrets.token_urlsafe(32)
     nonce = secrets.token_urlsafe(32)
     verifier = secrets.token_urlsafe(64)
     challenge = base64.urlsafe_b64encode(hashlib.sha256(verifier.encode()).digest()).rstrip(b"=").decode()
 
     pending = request.session.get(OAUTH_SESSION_KEY, {})
-    pending[state] = {"nonce": nonce, "verifier": verifier}
+    pending[state] = {"nonce": nonce, "verifier": verifier, "next": next_url}
     request.session[OAUTH_SESSION_KEY] = dict(list(pending.items())[-MAX_PENDING_STATES:])
 
     parameters = {
@@ -180,6 +192,11 @@ def google_callback(request):
         return _oauth_error("This account is inactive.", 403)
 
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    next_url = flow.get("next", "")
+    if next_url and url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return HttpResponseRedirect(next_url)
     return JsonResponse({
         "authenticated": True,
         "user": {
