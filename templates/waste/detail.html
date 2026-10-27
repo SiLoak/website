@@ -1,314 +1,124 @@
 {% extends "base.html" %}
-{% block title %}Detail Setoran · SiLoak{% endblock %}
+{% block title %}Detail Setoran #{{ submission.pk }} · SiLoak{% endblock %}
 {% block content %}
 {% include "components/navbar.html" with active_item="history" %}
-<main id="main-content" class="w-full min-h-screen bg-page-bg"><div class="flex flex-col w-full">
-<div class="w-full max-w-[1200px] mx-auto px-margin-mobile lg:px-margin py-space-lg flex flex-col gap-space-lg">
-<!-- Breadcrumb & Header Section -->
-<header class="flex flex-col gap-space-xs">
-<nav aria-label="Breadcrumb" class="flex items-center gap-1.5 font-label-sm text-label-sm text-text-body/70">
-<a class="hover:text-primary transition-colors" href="/dashboard/">Beranda</a>
-<span class="text-text-body/40">/</span>
-<a class="text-primary font-medium hover:underline" href="/history/">Riwayat</a>
-<span class="text-text-body/40">/</span>
-<span class="text-text-primary font-medium">#8816</span>
-</nav>
-<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-space-sm pt-space-xs">
-<div class="flex flex-wrap items-center gap-space-sm">
-<h1 class="font-headline-lg text-headline-lg text-text-primary tracking-tight">Setoran #8816</h1>
-<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full font-label-sm text-label-sm font-medium bg-status-warning-bg text-status-warning-text shadow-sm">
-<span class="w-2 h-2 rounded-full bg-status-warning-text animate-pulse"></span>
-            Menunggu
-          </span>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-space-sm text-body-sm text-text-body/80 font-body-sm">
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px] text-text-body/60">schedule</span>
-          Diajukan pada 25 Okt 2026, 16.20
-        </span>
-<span class="text-text-body/30">•</span>
-<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-surface-soft text-text-primary font-label-sm text-label-sm">
-<span class="material-symbols-outlined text-[15px] text-primary">directions_walk</span>
-          Antar sendiri
-        </span>
-</div>
-</header>
-<!-- Main Two-Column Content Layout (60% / 40%) -->
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
-<!-- LEFT COLUMN (~60%) -->
-<div class="lg:col-span-7 flex flex-col gap-space-lg">
-<!-- CARD 1: Status Setoran -->
-<section class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col gap-space-lg">
-<div class="flex items-center justify-between">
-<h2 class="font-headline-sm text-headline-sm text-text-primary">Status setoran</h2>
-<span class="font-label-sm text-label-sm text-text-body/70">Tahap 2 dari 3</span>
-</div>
-<!-- Alert Banner -->
-<div class="bg-status-warning-bg rounded-lg p-space-md flex items-start gap-space-sm">
-<span class="material-symbols-outlined text-status-warning-text text-[22px] shrink-0 mt-0.5">info</span>
-<div class="flex flex-col gap-0.5">
-<span class="font-label-md text-label-md font-semibold text-status-warning-text">Bawa barangmu ke titik pengumpulan</span>
-<p class="font-body-sm text-body-sm text-text-body/90">Petugas akan menimbang barangmu di sana untuk penghitungan insentif akhir.</p>
-</div>
-</div>
-<!-- Vertical Timeline Steps -->
-<div class="relative flex flex-col pl-2">
-<!-- Step 1: Diajukan (Completed) -->
-<div class="relative flex items-start gap-space-md pb-8">
-<!-- Line to Step 2 -->
-<div class="absolute left-[17px] top-[32px] bottom-0 w-[2px] bg-status-success-text"></div>
-<div class="w-9 h-9 rounded-full bg-status-success-bg flex items-center justify-center shrink-0 z-10">
-<span class="material-symbols-outlined text-status-success-text text-[20px] font-bold">check</span>
-</div>
-<div class="flex flex-col pt-0.5 flex-1 min-w-0">
-<div class="flex items-center justify-between gap-space-xs">
-<span class="font-label-lg text-label-lg font-semibold text-text-primary">Diajukan</span>
-<span class="font-label-sm text-label-sm text-text-body/70 font-mono">25 Okt 2026, 16.20</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body/80 mt-0.5">Pengajuanmu sudah kami terima dan tercatat di sistem.</p>
-</div>
-</div>
-<!-- Step 2: Ditimbang (Active / Current) -->
-<div class="relative flex items-start gap-space-md pb-8">
-<!-- Line to Step 3 (Dashed) -->
-<div class="absolute left-[17px] top-[34px] bottom-0 w-[2px] border-l-2 border-dashed border-text-body/30"></div>
-<div class="relative w-9 h-9 rounded-full bg-primary-fixed flex items-center justify-center shrink-0 z-10">
-<span class="w-3.5 h-3.5 rounded-full bg-primary animate-pulse"></span>
-</div>
-<div class="flex flex-col pt-0.5 flex-1 min-w-0">
-<div class="flex items-center justify-between gap-space-xs">
-<span class="font-label-lg text-label-lg font-semibold text-primary">Ditimbang</span>
-<span class="inline-flex items-center px-2 py-0.5 rounded-full font-label-sm text-label-sm font-medium bg-status-warning-bg text-status-warning-text">
-                    Sedang berlangsung
-                  </span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body mt-0.5">Menunggu barangmu ditimbang oleh petugas di lokasi pengumpulan.</p>
-<div class="mt-2 text-xs font-medium text-status-warning-text flex items-center gap-1">
-<span class="material-symbols-outlined text-[15px]">storefront</span>
-                  Menunggu kedatanganmu di depo
+<main id="main-content" class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-5xl">
+    <nav class="mb-4 text-sm text-text-body" aria-label="Breadcrumb">
+      <a class="hover:text-primary" href="{% url 'dashboard' %}">Beranda</a><span class="px-2">/</span>
+      <a class="hover:text-primary" href="{% url 'waste:submissions' %}">Riwayat setoran</a><span class="px-2">/</span>
+      <span class="text-primary">#{{ submission.pk }}</span>
+    </nav>
+    {% if messages %}
+      <div class="mb-5 space-y-2" aria-live="polite">
+        {% for message in messages %}<div class="rounded-lg border border-border-slate bg-surface-card px-4 py-3 text-sm text-text-primary">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
+    <header class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      <div>
+        <p class="text-sm text-text-body">Pengajuan setoran #{{ submission.pk }}</p>
+        <h1 class="mt-1 text-3xl font-bold tracking-tight text-text-primary">Detail setoran</h1>
+        <p class="mt-2 text-sm text-text-body">Diajukan {{ submission.created_at|date:"j M Y, H:i" }}</p>
+      </div>
+      {% if submission.status == "verified" %}
+        <span class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-800">{{ submission.get_status_display }}</span>
+      {% elif submission.status == "canceled" %}
+        <span class="inline-flex w-fit rounded-full bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-800">{{ submission.get_status_display }}</span>
+      {% else %}
+        <span class="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1.5 text-sm font-semibold text-amber-800">{{ submission.get_status_display }}</span>
+      {% endif %}
+    </header>
+
+    {% if submission.status == "pending" %}
+      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Bawa sampahmu ke titik pengumpulan yang dipilih. Petugas akan menimbang setiap jenis sampah di lokasi.
+      </div>
+    {% elif submission.status == "verified" %}
+      <div class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-900">
+        Penimbangan selesai{% if submission.verified_at %} pada {{ submission.verified_at|date:"j M Y, H:i" }}{% endif %}. Berat aktual tercatat di bawah.
+      </div>
+    {% else %}
+      <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">Pengajuan ini telah dibatalkan.</div>
+    {% endif %}
+
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)]">
+      <div class="space-y-6">
+        <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+          <h2 class="text-xl font-semibold text-text-primary">Titik pengumpulan</h2>
+          <h3 class="mt-4 font-semibold text-text-primary">{{ submission.collection_point.name }}</h3>
+          <p class="mt-1 text-sm text-text-body">{{ submission.collection_point.address }}</p>
+          {% if submission.collection_point.operating_hours %}<p class="mt-2 text-sm text-text-body">Jam operasional: {{ submission.collection_point.operating_hours }}</p>{% endif %}
+        </section>
+
+        <section class="overflow-hidden rounded-xl border border-border-slate bg-surface-card shadow-sm">
+          <div class="border-b border-border-slate px-5 py-4"><h2 class="text-xl font-semibold text-text-primary">Rincian dan hasil penimbangan</h2></div>
+          <div class="divide-y divide-border-slate">
+            {% for item in submission.items.all %}
+              <div class="grid gap-3 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                <div>
+                  <p class="font-semibold text-text-primary">{{ item.waste_type.name }}</p>
+                  <p class="mt-1 text-sm text-text-body">Perkiraan: {{ item.estimated_weight|floatformat:2 }} kg</p>
+                  {% if item.unit_rate_snapshot != None %}<p class="mt-1 text-xs text-text-body">Tarif saat pengajuan: Rp {{ item.unit_rate_snapshot|floatformat:0 }} / kg</p>{% endif %}
                 </div>
-</div>
-</div>
-<!-- Step 3: Selesai (Upcoming) -->
-<div class="relative flex items-start gap-space-md">
-<div class="w-9 h-9 rounded-full bg-surface-soft flex items-center justify-center shrink-0 z-10">
-<span class="w-2.5 h-2.5 rounded-full bg-text-body/40"></span>
-</div>
-<div class="flex flex-col pt-0.5 flex-1 min-w-0 opacity-75">
-<div class="flex items-center justify-between gap-space-xs">
-<span class="font-label-lg text-label-lg font-medium text-text-body">Selesai</span>
-<span class="font-label-sm text-label-sm text-text-body/50">-</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body/70 mt-0.5">Insentif dihitung secara otomatis dan langsung ditransfer ke dompet saldo kamu.</p>
-</div>
-</div>
-</div>
-</section>
-<!-- CARD 2: Titik Pengumpulan -->
-<section class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
-<div class="flex items-center justify-between">
-<h2 class="font-headline-sm text-headline-sm text-text-primary">Titik pengumpulan</h2>
-<span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full bg-status-success-bg text-status-success-text">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-              Buka sekarang
-            </span>
-</div>
-<!-- Map Container -->
-<div class="relative w-full h-60 rounded-lg overflow-hidden shadow-inner bg-surface-soft" data-location="Jl. Raya Pasar Minggu, Jakarta Selatan">
-<!-- Simulated OpenStreetMap Canvas Graphic -->
-<svg class="absolute inset-0 w-full h-full object-cover" preserveaspectratio="none" viewbox="0 0 600 240" xmlns="http://www.w3.org/2000/svg">
-<!-- Background / Map Ground -->
-<rect fill="#f1f5f9" height="240" width="600"></rect>
-<!-- Green areas (Parks/Open spaces) -->
-<path d="M 0,0 L 140,0 L 120,70 L 30,90 Z" fill="#e2ebd8" opacity="0.9"></path>
-<path d="M 440,160 L 580,140 L 600,240 L 410,240 Z" fill="#e2ebd8" opacity="0.9"></path>
-<!-- Primary Waterway / River -->
-<path d="M 280,0 Q 310,80 290,160 T 320,240" fill="none" stroke="#cbd5e1" stroke-linecap="round" stroke-width="12"></path>
-<!-- Road network -->
-<path d="M 0,140 L 600,100" stroke="#ffffff" stroke-width="16"></path>
-<path d="M 0,140 L 600,100" stroke="#fcd34d" stroke-width="8"></path>
-<path d="M 180,0 L 220,240" stroke="#ffffff" stroke-width="12"></path>
-<path d="M 180,0 L 220,240" stroke="#e2e8f0" stroke-width="6"></path>
-<path d="M 380,0 L 350,240" stroke="#ffffff" stroke-width="14"></path>
-<path d="M 380,0 L 350,240" stroke="#e2e8f0" stroke-width="7"></path>
-<path d="M 100,50 L 520,220" stroke="#ffffff" stroke-width="10"></path>
-<!-- Neighborhood building blocks -->
-<rect fill="#e2e8f0" height="35" opacity="0.7" rx="3" width="40" x="230" y="30"></rect>
-<rect fill="#e2e8f0" height="40" opacity="0.7" rx="3" width="35" x="230" y="80"></rect>
-<rect fill="#e2e8f0" height="30" opacity="0.7" rx="3" width="45" x="330" y="110"></rect>
-<rect fill="#e2e8f0" height="45" opacity="0.7" rx="3" width="60" x="420" y="50"></rect>
-<rect fill="#e2e8f0" height="40" opacity="0.7" rx="3" width="70" x="80" y="170"></rect>
-<!-- Road labels -->
-<text fill="#64748b" font-family="Inter, sans-serif" font-size="10" font-weight="600" transform="rotate(-4 70 130)" x="70" y="130">JL. RAYA PASAR MINGGU</text>
-<text fill="#94a3b8" font-family="Inter, sans-serif" font-size="9" font-weight="500" transform="rotate(78 365 60)" x="365" y="60">Jl. Salihara</text>
-</svg>
-<!-- Map Controls -->
-<div class="absolute top-3 right-3 flex flex-col rounded-lg bg-surface-card shadow-md overflow-hidden z-10">
-<button aria-label="Zoom in" class="w-8 h-8 flex items-center justify-center text-text-body hover:bg-surface-soft transition-colors active:bg-surface-container" type="button">
-<span class="material-symbols-outlined text-[18px]">add</span>
-</button>
-<div class="h-px bg-surface-soft"></div>
-<button aria-label="Zoom out" class="w-8 h-8 flex items-center justify-center text-text-body hover:bg-surface-soft transition-colors active:bg-surface-container" type="button">
-<span class="material-symbols-outlined text-[18px]">remove</span>
-</button>
-</div>
-<!-- Current Station Pin Marker (Pasar Minggu) -->
-<div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-full flex flex-col items-center z-10 pointer-events-none">
-<div class="px-2.5 py-1 rounded-md bg-text-primary text-on-primary font-label-sm text-[11px] shadow-lg flex items-center gap-1 mb-1 whitespace-nowrap">
-<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
-                Depo SiLoak Pasar Minggu
+                <div class="text-left sm:text-right">
+                  {% if item.actual_weight != None %}
+                    <p class="text-xs text-text-body">Berat aktual</p>
+                    <p class="font-semibold text-text-primary">{{ item.actual_weight|floatformat:2 }} kg</p>
+                  {% else %}
+                    <p class="text-sm text-text-body">Belum ditimbang</p>
+                  {% endif %}
+                </div>
               </div>
-<div class="relative flex items-center justify-center">
-<span class="absolute w-8 h-8 rounded-full bg-primary/25 animate-ping"></span>
-<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-xl">
-<span class="material-symbols-outlined text-[24px]">recycling</span>
-</div>
-</div>
-<div class="w-2 h-2 rotate-45 bg-primary -mt-1 shadow-sm"></div>
-</div>
-<!-- Attribution -->
-<div class="absolute bottom-1 right-2 bg-surface-card/90 px-2 py-0.5 rounded text-[10px] text-text-body/70 backdrop-blur-sm z-10">
-              © OpenStreetMap contributors
+            {% empty %}
+              <p class="px-5 py-6 text-sm text-text-body">Belum ada rincian barang.</p>
+            {% endfor %}
+          </div>
+          <div class="flex flex-col gap-2 border-t border-border-slate bg-surface-soft px-5 py-4 text-sm sm:flex-row sm:justify-between">
+            <span class="text-text-body">Total perkiraan: <strong class="text-text-primary">{{ submission.estimated_weight|floatformat:2 }} kg</strong></span>
+            {% if submission.actual_weight != None %}<span class="text-text-body">Total aktual: <strong class="text-text-primary">{{ submission.actual_weight|floatformat:2 }} kg</strong></span>{% endif %}
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-4">
+        <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+          <h2 class="text-lg font-semibold text-text-primary">Ringkasan</h2>
+          <dl class="mt-4 space-y-3 text-sm">
+            <div class="flex justify-between gap-3"><dt class="text-text-body">Nomor pengajuan</dt><dd class="font-semibold text-text-primary">#{{ submission.pk }}</dd></div>
+            <div class="flex justify-between gap-3"><dt class="text-text-body">Status</dt><dd class="font-semibold text-text-primary">{{ submission.get_status_display }}</dd></div>
+            <div class="flex justify-between gap-3"><dt class="text-text-body">Jumlah jenis</dt><dd class="font-semibold text-text-primary">{{ submission.items.count }}</dd></div>
+          </dl>
+          {% if submission.status == "verified" %}
+            <div class="mt-5 border-t border-border-slate pt-4">
+              {% if submission.actual_reward != None %}
+                <p class="text-sm text-text-body">Estimasi insentif berdasarkan berat aktual</p>
+                <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.actual_reward|floatformat:0 }}</p>
+              {% else %}
+                <p class="text-sm text-text-body">Insentif belum tersedia karena tarif untuk satu atau lebih jenis sampah belum diatur.</p>
+              {% endif %}
             </div>
-</div>
-<!-- Station Metadata -->
-<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md pt-space-xs">
-<div class="flex flex-col gap-1 min-w-0">
-<h3 class="font-headline-sm text-headline-sm text-text-primary">Titik Pengumpulan Pasar Minggu</h3>
-<div class="flex items-center gap-1.5 text-body-sm text-text-body font-body-sm">
-<span class="material-symbols-outlined text-primary text-[18px] shrink-0">location_on</span>
-<span class="truncate">Jl. Raya Pasar Minggu No. 42, Jakarta Selatan</span>
-</div>
-<div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-text-body/70 pt-1">
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px] text-text-body/60">near_me</span>
-                  1,2 km dari posisimu
-                </span>
-<span>•</span>
-<span class="flex items-center gap-1">
-<span class="material-symbols-outlined text-[16px] text-text-body/60">schedule</span>
-                  Senin - Sabtu, 08.00 - 17.00 WIB
-                </span>
-</div>
-</div>
-<a class="inline-flex items-center justify-center gap-2 h-11 px-space-md rounded-lg bg-surface-card text-primary font-label-md text-label-md font-medium hover:bg-surface-soft shadow-sm transition-all shrink-0" href="https://maps.google.com" rel="noopener noreferrer" target="_blank">
-<span class="material-symbols-outlined text-[18px]">directions</span>
-              Lihat rute
-            </a>
-</div>
-</section>
-</div>
-<!-- RIGHT COLUMN (~40%) -->
-<aside class="lg:col-span-5 flex flex-col gap-space-lg">
-<!-- CARD 3: Detail Setoran -->
-<section class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
-<div class="flex items-center justify-between">
-<h2 class="font-headline-sm text-headline-sm text-text-primary">Detail setoran</h2>
-<span class="text-xs font-mono px-2 py-0.5 rounded bg-surface-soft text-text-body font-medium">Draft terverifikasi</span>
-</div>
-<!-- Metadata List -->
-<div class="flex flex-col gap-space-sm text-body-sm font-body-sm pt-space-xs">
-<div class="flex items-center justify-between py-1">
-<span class="text-text-body/70">Nomor pengajuan</span>
-<span class="font-label-md text-label-md text-text-primary font-semibold font-mono">#8816</span>
-</div>
-<div class="flex items-center justify-between py-1">
-<span class="text-text-body/70">Metode setoran</span>
-<span class="inline-flex items-center gap-1 font-label-md text-label-md text-text-primary">
-<span class="material-symbols-outlined text-primary text-[16px]">directions_walk</span>
-                Antar sendiri
-              </span>
-</div>
-<div class="flex items-center justify-between py-1">
-<span class="text-text-body/70">Penyaluran insentif</span>
-<span class="inline-flex items-center gap-1 font-label-md text-label-md text-text-primary">
-<span class="material-symbols-outlined text-status-success-text text-[16px]">account_balance_wallet</span>
-                Masuk ke Saldo Dompet
-              </span>
-</div>
-</div>
-<div class="h-px bg-surface-soft my-1"></div>
-<!-- Rincian Barang Itemized -->
-<div class="flex flex-col gap-2">
-<span class="font-label-sm text-label-sm text-text-body/60 uppercase tracking-wider font-semibold">Rincian Barang</span>
-<div class="flex items-start justify-between gap-space-sm p-space-sm rounded-lg bg-surface-soft/60">
-<div class="flex items-start gap-space-sm">
-<div class="w-9 h-9 rounded-lg bg-surface-card flex items-center justify-center text-primary shadow-xs shrink-0">
-<span class="material-symbols-outlined text-[20px]">local_drink</span>
-</div>
-<div class="flex flex-col">
-<span class="font-label-md text-label-md font-medium text-text-primary">Botol plastik (PET bening)</span>
-<span class="text-xs text-text-body/70 font-mono">Estimasi: 2,5 kg @ Rp 8.000/kg</span>
-</div>
-</div>
-<span class="font-label-md text-label-md font-semibold text-text-primary font-mono tabular-nums">Rp 20.000</span>
-</div>
-</div>
-<div class="h-px bg-surface-soft my-1"></div>
-<!-- Summary Metric Rows -->
-<div class="flex flex-col gap-2">
-<div class="flex items-center justify-between text-body-sm font-body-sm">
-<span class="text-text-body/70">Total perkiraan berat</span>
-<span class="font-label-md text-label-md text-text-primary font-bold font-mono">2,5 kg</span>
-</div>
-<div class="flex items-baseline justify-between pt-1">
-<div class="flex flex-col">
-<span class="font-label-sm text-label-sm font-medium text-text-body">Perkiraan insentif</span>
-<span class="text-[11px] text-text-body/60">Berdasarkan tarif standar</span>
-</div>
-<span class="font-metric-display text-metric-display text-text-primary font-bold font-mono tabular-nums">
-                Rp 20.000
-              </span>
-</div>
-</div>
-<!-- Informational Notice Box -->
-<div class="bg-surface-soft rounded-lg p-3 flex gap-2.5 items-start text-xs text-text-body">
-<span class="material-symbols-outlined text-[18px] text-text-body/60 shrink-0 mt-0.5">info</span>
-<p class="leading-relaxed">Jumlah akhir dihitung setelah barang ditimbang langsung oleh petugas di titik pengumpulan.</p>
-</div>
-</section>
-<!-- CARD 4: Hasil Penimbangan (Empty State) -->
-<section class="bg-surface-card rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
-<div class="flex items-center justify-between">
-<h2 class="font-headline-sm text-headline-sm text-text-primary">Hasil penimbangan</h2>
-<span class="material-symbols-outlined text-text-body/40 text-[20px]">scale</span>
-</div>
-<!-- Soft Empty State Box -->
-<div class="bg-surface-soft/50 rounded-lg p-6 flex flex-col items-center justify-center text-center gap-2 py-8">
-<div class="w-12 h-12 rounded-full bg-surface-card flex items-center justify-center shadow-xs text-text-body/40">
-<span class="material-symbols-outlined text-[26px]">monitor_weight</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body/70 max-w-xs mt-1">
-              Hasil penimbangan aktual akan muncul di sini setelah barangmu ditimbang oleh petugas.
-            </p>
-</div>
-</section>
-<!-- Action Panel -->
-<div class="flex flex-col gap-2 pt-space-xs">
-<!-- Button Ubah Pengajuan -->
-<button class="w-full h-11 px-4 rounded-lg bg-surface-card text-text-primary font-label-md text-label-md font-medium hover:bg-surface-soft shadow-sm transition-all flex items-center justify-center gap-2" type="button">
-<span class="material-symbols-outlined text-[18px] text-text-body/70">edit</span>
-            Ubah Pengajuan
-          </button>
-<!-- Button Batalkan Pengajuan -->
-<button class="w-full py-2.5 px-4 rounded-lg text-status-error-text font-label-md text-label-md font-medium hover:bg-status-error-bg/60 transition-colors flex items-center justify-center gap-1.5" type="button">
-<span class="material-symbols-outlined text-[18px]">close</span>
-            Batalkan Pengajuan
-          </button>
-<!-- Disclaimer Note -->
-<p class="text-center text-xs text-text-body/60 px-4 mt-0.5">
-            Pengajuan masih bisa diubah atau dibatalkan sebelum barang ditimbang.
-          </p>
-<!-- Back Link -->
-<a class="mt-2 text-center font-label-md text-label-md text-primary font-medium hover:underline flex items-center justify-center gap-1" href="/history/">
-<span class="material-symbols-outlined text-[16px]">arrow_back</span>
-            Kembali ke riwayat
+          {% elif submission.estimated_reward != None %}
+            <div class="mt-5 border-t border-border-slate pt-4">
+              <p class="text-sm text-text-body">Perkiraan insentif</p>
+              <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.estimated_reward|floatformat:0 }}</p>
+              <p class="mt-1 text-xs text-text-body">Nilai akhir mengikuti hasil penimbangan.</p>
+            </div>
+          {% endif %}
+        </section>
+
+        {% if submission.status == "pending" %}
+          <a class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-slate bg-surface-card px-4 py-3 font-semibold text-text-primary shadow-sm hover:bg-surface-soft" href="{% url 'waste:edit' submission_id=submission.pk %}">
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span>Ubah pengajuan
           </a>
-</div>
-</aside>
-</div>
-</div>
-</div></main>
+          <form method="post" action="{% url 'waste:cancel' submission_id=submission.pk %}" onsubmit="return confirm('Batalkan pengajuan setoran ini?')">
+            {% csrf_token %}
+            <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="submit">Batalkan pengajuan</button>
+          </form>
+        {% endif %}
+        <a class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline" href="{% url 'waste:submissions' %}">← Kembali ke riwayat</a>
+      </aside>
+    </div>
+  </div>
+</main>
 {% include "components/footer.html" %}
 {% endblock %}

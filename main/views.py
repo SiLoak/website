@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 
 def landing_page(request):
@@ -14,7 +14,7 @@ def wallet(request):
 
 
 def history(request):
-    return render(request, "history.html", {"active_item": "history"})
+    return redirect("waste:submissions")
 
 
 def profile(request):
