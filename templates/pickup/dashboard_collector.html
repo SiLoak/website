@@ -1,0 +1,189 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Beranda Collector · SiLoak{% endblock %}
+{% block content %}
+<div
+  id="pickup-config"
+  data-base-endpoint="{% url 'pickup:get_collector_pickup_json' %}"
+  data-new-base-endpoint="{% url 'pickup:get_collector_pickup_json' %}?scope=available"
+  data-is-superuser="{{ user.is_superuser|yesno:'true,false' }}"
+  data-detail-url-template="{% url 'pickup:show_pickup_detail' '00000000-0000-0000-0000-000000000000' %}"
+  data-accept-url-template="{% url 'pickup:accept_pickup_ajax' '00000000-0000-0000-0000-000000000000' %}"
+></div>
+{% include "components/navbar.html" with active_item="dashboard" %}
+<main id="main-content" class="w-full bg-page-bg min-h-[calc(100vh-64px)]">
+  <div class="max-w-[1200px] mx-auto px-margin py-space-xl">
+    <div class="flex flex-col w-full">
+      <!-- Content Container: 1200px responsive desktop flow -->
+      <div class="max-w-[1200px] w-full mx-auto flex flex-col">
+        <!-- 1. Greeting Section -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-space-sm mb-6">
+          <div>
+            <h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Halo, {{ user.name }}!</h1>
+            <p class="font-body-lg text-body-lg text-text-body mt-1">Ada 2 tugas jemput yang belum selesai hari ini.</p>
+          </div>
+          <div class="inline-flex items-center gap-space-xs bg-surface-card px-space-md py-2 rounded-full shadow-sm text-text-body font-label-md text-label-md">
+            <span class="w-2 h-2 rounded-full bg-status-success-text animate-pulse"></span>
+            <span>Wilayah tugas: <strong class="text-text-primary font-semibold">Pasar Minggu, Jakarta Selatan</strong>
+            </span>
+          </div>
+        </div>
+        <!-- 2. Key Numbers (4 Metric Cards) -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Card 1: Tugas Hari Ini -->
+          <div class="bg-surface-card rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+                <span class="material-symbols-outlined text-[22px]">assignment</span>
+              </div>
+              <span class="font-label-sm text-label-sm text-text-body/70 bg-surface-soft px-2 py-0.5 rounded-full">27 Okt 2026</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-text-body">Tugas hari ini</span>
+              <div id="todays-pickups-card" class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5"></div>
+            </div>
+            <div class="mt-4 pt-3 bg-surface-soft/40 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
+              <span class="font-label-sm text-label-sm text-text-body flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px] text-status-success-text">check_circle</span> 2 selesai • 1 aktif • 1 menunggu </span>
+            </div>
+          </div>
+          <!-- Card 2: Pick Up Aktif -->
+          <div class="bg-surface-card rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+                <span class="material-symbols-outlined text-[22px]">local_shipping</span>
+              </div>
+              <span class="w-2.5 h-2.5 rounded-full bg-status-warning-text animate-ping"></span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-text-body">Pick up aktif</span>
+              <div id="active-pickups-card" class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5"></div>
+            </div>
+            <div class="mt-4 pt-3 bg-status-warning-bg/50 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
+              <span class="font-label-sm text-label-sm text-status-warning-text font-medium flex items-center gap-1.5">
+                <span class="w-1.5 h-1.5 rounded-full bg-status-warning-text"></span> Sedang dalam perjalanan </span>
+            </div>
+          </div>
+          <!-- Card 3: Berat Terkumpul Hari Ini -->
+          <div class="bg-surface-card rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+                <span class="material-symbols-outlined text-[22px]">scale</span>
+              </div>
+              <span class="font-label-sm text-label-sm text-text-body/70 bg-surface-soft px-2 py-0.5 rounded-full">Hari ini</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-text-body">Berat terkumpul</span>
+              <div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">14,3 kg</div>
+            </div>
+            <div class="mt-4 pt-3 bg-surface-soft/40 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
+              <span class="font-label-sm text-label-sm text-text-body flex items-center gap-1">
+                <span class="material-symbols-outlined text-[15px] text-status-success-text">check_circle</span> Dari 2 pick up selesai </span>
+            </div>
+          </div>
+          <!-- Card 4: Pick Up Selesai Bulan Ini -->
+          <div class="bg-surface-card rounded-xl p-space-lg shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+            <div class="flex items-center justify-between">
+              <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
+                <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+              </div>
+              <span class="font-label-sm text-label-sm text-text-body/70 bg-surface-soft px-2 py-0.5 rounded-full">Oktober 2026</span>
+            </div>
+            <div class="mt-4">
+              <span class="font-label-md text-label-md text-text-body">Pick up selesai</span>
+              <div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">38</div>
+            </div>
+            <div class="mt-4 pt-3 bg-surface-soft/40 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
+              <a class="font-label-md text-label-md text-primary-container font-semibold inline-flex items-center gap-1 group" href="/history/"> Lihat riwayat tugas <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <!-- 3. Antrean Pick Up and Pending Requests Section -->
+        <div class="mt-10 mb-12 flex flex-col gap-6">
+          <!-- Card: Antrean Pick Up (full width) -->
+          <div class="bg-surface-card rounded-xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <!-- Header Row -->
+              <div class="flex items-center justify-between pb-4">
+                <div>
+                  <h3 class="font-headline-md text-headline-md text-text-primary font-semibold">Antrean pick up</h3>
+                  <p class="font-label-sm text-label-sm text-text-body mt-0.5">Tugas yang sudah ditugaskan kepadamu</p>
+                </div>
+                <span class="font-label-sm text-label-sm text-text-body bg-surface-soft px-2.5 py-1 rounded-full font-medium">4 tugas</span>
+              </div>
+              <!-- List of rows -->
+
+              <!-- Loading State -->
+              <div id="loading" class="empty-state hidden">
+                  <p>Memuat pickup...</p>
+              </div>
+
+              <!-- Error State -->
+              <div id="error" class="empty-state hidden">
+                  <p>Gagal memuat data pickup. Coba lagi.</p>
+              </div>
+
+              <!-- Empty State -->
+              <div id="empty" class="empty-state hidden">
+                  <p>Belum ada pickup.</p>
+              </div>
+
+              <!-- Grid -->
+              <div id="pickup-grid" class="flex flex-col"></div>
+            </div>
+            <!-- Bottom Footer Link -->
+            <div class="mt-4 pt-3 flex items-center justify-between">
+              <span class="font-label-sm text-label-sm text-text-body/70">Urut berdasarkan jadwal terdekat</span>
+              <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="/history/"> Lihat semua tugas <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+          <!-- Card: Permintaan Pick Up Pending (belum ada collector) -->
+          <div class="bg-surface-card rounded-xl p-6 shadow-sm flex flex-col justify-between">
+            <div>
+              <!-- Header Row -->
+              <div class="flex items-center justify-between pb-4">
+                <div>
+                  <h3 class="font-headline-md text-headline-md text-text-primary font-semibold">Permintaan pick up baru</h3>
+                  <p class="font-label-sm text-label-sm text-text-body mt-0.5">Belum ada collector — terima untuk menambahkannya ke antreanmu</p>
+                </div>
+                <span class="font-label-sm text-label-sm text-text-body bg-surface-soft px-2.5 py-1 rounded-full font-medium">4 permintaan</span>
+              </div>
+              <!-- List of pending rows -->
+
+              <!-- Loading State -->
+              <div id="new-loading" class="empty-state hidden">
+                  <p>Memuat pickup...</p>
+              </div>
+
+              <!-- Error State -->
+              <div id="new-error" class="empty-state hidden">
+                  <p>Gagal memuat data pickup. Coba lagi.</p>
+              </div>
+
+              <!-- Empty State -->
+              <div id="new-empty" class="empty-state hidden">
+                  <p>Belum ada pickup.</p>
+              </div>
+
+              <!-- Grid -->
+              <div id="new-pickup-grid" class="flex flex-col"></div>
+            </div>
+            <!-- Bottom Footer Link -->
+            <div class="mt-4 pt-3 flex items-center justify-between">
+              <span class="font-label-sm text-label-sm text-text-body/70">Menampilkan permintaan di wilayah tugasmu</span>
+              <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="/pickup/pending/"> Lihat semua permintaan <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+{% include "components/footer.html" %}
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/dashboard_collector.js' %}" defer></script>
+{% endblock %}

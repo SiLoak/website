@@ -1,0 +1,238 @@
+const configElement = document.getElementById("pickup-config");
+const BASE_ENDPOINT = configElement.dataset.baseEndpoint;
+const NEW_BASE_ENDPOINT = configElement.dataset.newBaseEndpoint;
+const IS_SUPERUSER = configElement.dataset.isSuperuser === "true";
+const DETAIL_URL_TEMPLATE = configElement.dataset.detailUrlTemplate;
+const ACCEPT_URL_TEMPLATE = configElement.dataset.acceptUrlTemplate;
+
+let pickupAbortController;
+let newPickupAbortController;
+
+// Elemen DOM
+const loadingState = document.getElementById("loading");
+const errorState = document.getElementById("error");
+const emptyState = document.getElementById("empty");
+const pickupGridContainer = document.getElementById("pickup-grid");
+
+const newLoadingState = document.getElementById("new-loading");
+const newErrorState = document.getElementById("new-error");
+const newEmptyState = document.getElementById("new-empty");
+const newPickupGridContainer = document.getElementById("new-pickup-grid");
+
+const todaysPickupsCard = document.getElementById("todays-pickups-card");
+const activePickupsCard = document.getElementById("active-pickups-card");
+
+// Menyembunyikan/Menampilkan section halaman
+function displayPickupSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+  loadingState.classList.toggle('hidden', !showLoading);
+  errorState.classList.toggle('hidden', !showError);
+  emptyState.classList.toggle('hidden', !showEmpty);
+  pickupGridContainer.classList.toggle('hidden', !showGrid);
+}
+
+function displayNewPickupSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
+  newLoadingState.classList.toggle('hidden', !showLoading);
+  newErrorState.classList.toggle('hidden', !showError);
+  newEmptyState.classList.toggle('hidden', !showEmpty);
+  newPickupGridContainer.classList.toggle('hidden', !showGrid);
+}
+
+// Formatting tanggal
+function formatDate(date) {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(date));
+}
+
+function formatTime(time) {
+  return new Intl.DateTimeFormat("id-ID", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23",
+    timeZone: "Asia/Jakarta",
+  }).format(new Date(time));
+}
+
+const today = new Date().toLocaleDateString("id-ID", {
+  timeZone: "Asia/Jakarta",
+});
+
+function getTodaysPickups(pickupData) {
+  return pickupData.filter((pickup) => {
+    const scheduledDate = new Date(pickup.fields.scheduled_at);
+
+    const pickupDate = scheduledDate.toLocaleDateString("id-ID", {
+      timeZone: "Asia/Jakarta",
+    });
+
+    return pickupDate === today;
+  });
+}
+
+function getActivePickups(pickupData) {
+  return pickupData.filter((pickup) => {
+    return (pickup.fields.status_display == "ON_THE_WAY" || pickup.fields.status_display == "ARRIVED" || pickup.fields.status_display == "WEIGHING");
+  })
+}
+
+// Membuat elemen row untuk pickup list
+function buildPickupRowElement(item) {
+  const pickup = item.fields;
+  const pickupId = item.pk;
+
+  const articleElement = document.createElement("article");
+  articleElement.className = "h-16 flex items-center justify-between py-2 transition-colors hover:bg-surface-soft/40 px-2 rounded-lg -mx-2"
+
+  const detailUrl = DETAIL_URL_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', pickupId);
+
+  // Komponen row
+  const completeRowHtml = `
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-9 h-9 rounded-full bg-status-warning-bg text-status-warning-text flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[19px]">local_shipping</span>
+      </div>
+      <div class="min-w-0">
+        <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${pickupId} • ${pickup.pickup_address}</p>
+        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(pickup.scheduled_at)} ${formatTime(pickup.scheduled_at)} WIB - 6,2 kg & Plastik Kaca</p>
+      </div>
+    </div>
+    <div class="shrink-0 pl-3 flex items-center gap-3">
+      <span class="bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">Ditugaskan</span>
+      <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}">
+        Detail
+        <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+      </a>
+    </div>
+  `;
+
+  articleElement.innerHTML = completeRowHtml;
+  return articleElement;
+}
+
+// Membuat elemen row untuk new pickup list
+function buildNewPickupRowElement(item) {
+  const newPickup = item.fields;
+  const newPickupId = item.pk;
+
+  const articleElement = document.createElement("article");
+  articleElement.className = "h-16 flex items-center justify-between py-2 transition-colors hover:bg-surface-soft/40 px-2 rounded-lg -mx-2"
+
+  const detailUrl = DETAIL_URL_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', newPickupId);
+  const acceptUrl = ACCEPT_URL_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', newPickupId);
+
+  // Komponen row
+  const completeRowHtml = `
+    <div class="flex items-center gap-3 min-w-0">
+      <div class="w-9 h-9 rounded-full bg-surface-soft text-text-body flex items-center justify-center shrink-0">
+        <span class="material-symbols-outlined text-[19px]">hourglass_top</span>
+      </div>
+      <div class="min-w-0">
+        <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${newPickupId} • ${newPickup.pickup_address}</p>
+        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(newPickup.scheduled_at)} • ${formatTime(newPickup.scheduled_at)} WIB • 5,5 kg Kardus</p>
+      </div>
+    </div>
+    <div class="shrink-0 pl-3 flex items-center gap-3">
+      <span class="bg-surface-soft text-text-body font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">Pending</span>
+      <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}"> Detail <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+      </a>
+      <form method="post" action="${acceptUrl}"> {% csrf_token %} <button class="h-9 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold inline-flex items-center gap-1.5 hover:bg-tertiary transition-colors shadow-sm" type="submit">
+          <span class="material-symbols-outlined text-[18px]">check</span> Terima </button>
+      </form>
+    </div>
+  `;
+
+  articleElement.innerHTML = completeRowHtml;
+  return articleElement;
+}
+
+// fetch pickup list
+async function fetchPickupList() {
+  if (pickupAbortController) pickupAbortController.abort();
+  pickupAbortController = new AbortController();
+
+  try {
+    displayPickupSection({ showLoading: true });
+
+    const url = BASE_ENDPOINT;
+
+    const response = await fetch(url, {
+      headers: { 'Accept': 'application/json' },
+      signal: pickupAbortController.signal,
+    });
+
+    if (!response.ok) throw new Error("Gagal mengambil data.");
+
+    const pickupData = await response.json();
+
+    if (pickupData.length === 0) {
+      displayPickupSection({ showEmpty: true });
+      todaysPickupsCard.textContent = "0";
+      activePickupsCard.textContent = "0";
+    } else {
+      pickupGridContainer.innerHTML = "";
+      pickupData.forEach(item => {
+        pickupGridContainer.appendChild(buildPickupRowElement(item));
+      })
+
+      const todaysPickups = getTodaysPickups(pickupData);
+      todaysPickupsCard.textContent = todaysPickups.length();
+
+      const activePickups = getActivePickups(pickupData);
+      activePickupsCard.textContent = activePickups.length();
+
+      displayPickupSection({ showGrid: true });
+    }
+  } catch (error) {
+    if (error.name === 'AbortError') return;
+    console.error('Error loading pickup:', error);
+    displayPickupSection({ showError: true });
+  }
+}
+
+// fetch new pickup list
+async function fetchNewPickupList() {
+  if (newPickupAbortController) newPickupAbortController.abort();
+  newPickupAbortController = new AbortController();
+
+  try {
+    displayNewPickupSection({ showLoading: true });
+
+    const url = NEW_BASE_ENDPOINT;
+
+    const response = await fetch(url, {
+      headers: { 'Accept': 'application/json' },
+      signal: newPickupAbortController.signal,
+    });
+
+    if (!response.ok) throw new Error("Gagal mengambil data.");
+
+    const newPickupData = await response.json();
+
+    if (newPickupData.length === 0) {
+      displayNewPickupSection({ showEmpty: true });
+    } else {
+      newPickupGridContainer.innerHTML = "";
+      newPickupData.forEach(item => {
+        newPickupGridContainer.appendChild(buildNewPickupRowElement(item));
+      })
+      displayNewPickupSection({ showGrid: true });
+    }
+  } catch (error) {
+    if (error.name === 'AbortError') return;
+    console.error('Error loading new pickup:', error);
+    displayNewPickupSection({ showError: true });
+  }
+}
+
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", () => {
+    fetchPickupList();
+    fetchNewPickupList();
+  });
+} else {
+  fetchPickupList();
+  fetchNewPickupList();
+}
