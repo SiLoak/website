@@ -13,18 +13,8 @@ def get_wallet(user):
     return Wallet.objects.get_or_create(user=user)[0]
 
 
+@login_required(login_url="auth_page")
 def wallet_index(request):
-    # MODE PREVIEW: halaman Wallet bisa dibuka tanpa login.
-    if not request.user.is_authenticated:
-        return render(request, "wallet/wallet.html", {
-            "active_item": "wallet",
-            "wallet": None,
-            "transactions": [],
-            "last_withdrawal": None,
-            "preference_form": IncentivePreferenceForm(),
-            "preview_mode": True,
-        })
-
     wallet = get_wallet(request.user)
 
     if request.method == "POST" and request.POST.get("action") == "preference":
@@ -50,18 +40,8 @@ def wallet_index(request):
     })
 
 
-#@login_required
-
+@login_required(login_url="auth_page")
 def withdraw_view(request):
-    # MODE PREVIEW: halaman Withdraw bisa dibuka tanpa login.
-    if not request.user.is_authenticated:
-        return render(request, "wallet/withdraw.html", {
-            "active_item": "wallet",
-            "wallet": None,
-            "form": WithdrawalForm(),
-            "preview_mode": True,
-        })
-
     wallet = get_wallet(request.user)
 
     form = WithdrawalForm(
@@ -125,17 +105,8 @@ def withdraw_view(request):
         "preview_mode": False,
     })
 
-#@login_required
+@login_required(login_url="auth_page")
 def donation_view(request):
-    # MODE PREVIEW: halaman Donasi bisa dibuka tanpa login.
-    if not request.user.is_authenticated:
-        return render(request, "wallet/donate.html", {
-            "active_item": "wallet",
-            "wallet": None,
-            "form": DonationForm(),
-            "preview_mode": True,
-        })
-
     wallet = get_wallet(request.user)
 
     form = DonationForm(

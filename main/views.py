@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import redirect, render
 
 
@@ -5,6 +6,7 @@ def landing_page(request):
     return render(request, "landing.html")
 
 
+@login_required(login_url="auth_page")
 def dashboard(request):
     return render(request, "dashboard.html", {"active_item": "dashboard"})
 
@@ -16,10 +18,12 @@ def withdraw(request):
     return render(request, "wallet/withdraw.html", {"active_item": "wallet"})
 
 
+@login_required(login_url="auth_page")
 def history(request):
     return redirect("waste:submissions")
 
 
+@login_required(login_url="auth_page")
 def profile(request):
     return render(request, "profile.html", {"active_item": "profile"})
 

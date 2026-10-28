@@ -43,6 +43,9 @@ def _oauth_error(request, message, next_url=""):
 
 
 def auth_page(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
     next_url = request.GET.get("next", "")
     if not url_has_allowed_host_and_scheme(
         next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
@@ -62,6 +65,9 @@ def _oauth_configuration():
 
 @require_GET
 def google_login(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
     next_url = request.GET.get("next", "")
     if not url_has_allowed_host_and_scheme(
         next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
@@ -146,6 +152,9 @@ def _get_or_create_user(claims):
 
 @require_GET
 def google_callback(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
     configuration = _oauth_configuration()
     if configuration is None:
         return _oauth_error(
