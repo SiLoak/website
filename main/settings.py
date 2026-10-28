@@ -65,6 +65,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+# OSM's public tile service requires web tile requests to identify their origin.
+SECURE_REFERRER_POLICY = "strict-origin-when-cross-origin"
+
 ROOT_URLCONF = 'main.urls'
 
 TEMPLATES = [

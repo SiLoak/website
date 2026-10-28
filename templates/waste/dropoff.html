@@ -5,7 +5,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/leaflet-maps.js' %}"></script>
 {% endblock %}
 
 {% block content %}
@@ -197,22 +200,8 @@
                 {% if form.collection_point.errors %}<p class="waste-selection-error">{{ form.collection_point.errors|join:", " }}</p>{% endif %}
               </div>
               <div class="waste-map" aria-label="Peta titik pengumpulan">
-                <div class="waste-map-visual" data-map-visual>
-                  <img class="waste-map-background" src="{% static 'images/waste/self-map-background.png' %}" alt="" width="359" height="378">
-                  <div class="waste-user-marker" title="Lokasi kamu"></div>
-                  {% for point in form.collection_point.field.queryset %}
-                    <button type="button" class="waste-map-marker" data-point-marker data-point-id="{{ point.pk }}" aria-label="Pilih {{ point.name }}">
-                      {% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}
-                    </button>
-                  {% endfor %}
-                  <div class="waste-map-label" data-map-label>Titik pengumpulan</div>
-                </div>
-                <div class="waste-map-controls" aria-label="Kontrol peta">
-                  <button type="button" data-map-zoom="in" aria-label="Perbesar peta">+</button>
-                  <button type="button" data-map-zoom="out" aria-label="Perkecil peta">−</button>
-                </div>
+                <div id="waste-point-map" class="leaflet-map" role="region" aria-label="Pilih titik pengumpulan di peta"></div>
                 <button class="waste-map-recenter" type="button" data-map-recenter>{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Pusatkan</button>
-                <span class="waste-map-credit">© OpenStreetMap contributors</span>
               </div>
             </div>
           </section>
@@ -234,10 +223,7 @@
                 <button class="waste-nearest" type="button" disabled>{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Pakai lokasi saya</button>
               </div>
               <div class="waste-pickup-map" aria-label="Pratinjau peta penjemputan">
-                <img src="{% static 'images/waste/pickup-map-background.png' %}" alt="" width="748" height="254">
-                <span class="waste-pickup-pin">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}</span>
-                <span class="waste-map-label">Alamat penjemputan</span>
-                <span class="waste-map-credit">© OpenStreetMap contributors</span>
+                <div id="pickup-preview-map" class="leaflet-map" role="region" aria-label="Peta pratinjau lokasi penjemputan" data-latitude="{{ pickup_latitude|default_if_none:'' }}" data-longitude="{{ pickup_longitude|default_if_none:'' }}"></div>
               </div>
               <div class="waste-address-grid">
                 <div><label>Detail alamat & patokan</label><input class="waste-address-control" type="text" value="Alamat akan diisi pada alur penjemputan." disabled></div>
@@ -373,7 +359,7 @@
     const maxForms = Number(maxFormsInput && maxFormsInput.value) || 6;
     const collectionSelect = document.getElementById("id_collection_point");
     const pointCards = Array.from(document.querySelectorAll("[data-point-card]"));
-    const pointMarkers = Array.from(document.querySelectorAll("[data-point-marker]"));
+    const pointMarkers = new Map();
     const radiusButtons = Array.from(document.querySelectorAll("[data-radius]"));
     const pointSearch = document.getElementById("point-search");
     const radiusNote = document.getElementById("radius-note");
@@ -384,11 +370,36 @@
     const submitLabel = submitButton.querySelector("[data-submit-label]");
     const submitArrow = submitButton.querySelector("[data-submit-arrow]");
     const selectedPointId = form.dataset.selectedPoint;
-    const mapMarkerPositions = [
-      { left: "left-[52%]", top: "top-[58%]" }, { left: "left-[72%]", top: "top-[32%]" },
-      { left: "left-[38%]", top: "top-[76%]" }, { left: "left-[82%]", top: "top-[69%]" },
-      { left: "left-[28%]", top: "top-[42%]" }, { left: "left-[63%]", top: "top-[83%]" }
-    ];
+    const mapElement = document.getElementById("waste-point-map");
+    const mapPoints = pointCards.map((card) => ({
+      id: card.dataset.pointId,
+      name: card.dataset.pointName,
+      address: card.dataset.pointAddress,
+      operating_hours: card.dataset.pointHours,
+      latitude: card.dataset.lat,
+      longitude: card.dataset.lng,
+    }));
+    const mapState = window.SiloakMaps && SiloakMaps.createMap(mapElement, mapPoints);
+    const collectionMap = mapState && mapState.map;
+    if (mapState) {
+      mapState.markers.forEach((marker, id) => {
+        pointMarkers.set(id, marker);
+        marker.on("click", () => selectPoint(id));
+      });
+    }
+    const pickupPreview = document.getElementById("pickup-preview-map");
+    if (pickupPreview && window.L) {
+      const latitude = Number(pickupPreview.dataset.latitude);
+      const longitude = Number(pickupPreview.dataset.longitude);
+      const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude) && pickupPreview.dataset.latitude && pickupPreview.dataset.longitude;
+      const pickupMapState = SiloakMaps.createMap(pickupPreview, [], {
+        center: hasCoordinates ? [latitude, longitude] : [-6.4025, 106.7942],
+        zoom: hasCoordinates ? 15 : 11,
+      });
+      if (hasCoordinates && pickupMapState) {
+        L.marker([latitude, longitude]).addTo(pickupMapState.map).bindPopup("Alamat penjemputan tersimpan");
+      }
+    }
     let currentRadius = 5;
     let userPosition = null;
 
@@ -586,9 +597,10 @@
         const distanceLabel = card.querySelector("[data-distance-label]");
         if (distanceLabel) distanceLabel.textContent = distance === null ? "Jarak belum tersedia" : distance.toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " km dari kamu";
       });
-      pointMarkers.forEach((marker) => {
-        const card = pointCards.find((item) => item.dataset.pointId === marker.dataset.pointId);
-        marker.hidden = Boolean(!card || card.hidden);
+      pointMarkers.forEach((marker, id) => {
+        const card = pointCards.find((item) => item.dataset.pointId === id);
+        if (!card || card.hidden) marker.removeFrom(collectionMap);
+        else if (collectionMap && !collectionMap.hasLayer(marker)) marker.addTo(collectionMap);
       });
       document.getElementById("point-no-results").hidden = visible > 0;
       if (unknownDistances && userPosition) {
@@ -615,37 +627,21 @@
         item.classList.toggle("is-selected", item === card);
         item.setAttribute("aria-pressed", String(item === card));
       });
-      pointMarkers.forEach((marker) => {
-        const selected = marker.dataset.pointId === id;
-        marker.classList.toggle("is-selected", selected);
-        marker.setAttribute("aria-pressed", String(selected));
-      });
+      const marker = pointMarkers.get(id);
+      if (marker && collectionMap) {
+        if (mapState) mapState.selectPoint(id, { center: true });
+      }
       document.querySelector("[data-summary-point]").textContent = card.dataset.pointName;
       const distance = distanceFor(card);
       const distanceText = distance === null ? "" : " · " + distance.toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " km dari kamu";
       const hours = card.dataset.pointHours || "Jam layanan belum tersedia";
       document.querySelector("[data-summary-point-meta]").textContent = card.dataset.pointAddress + " (" + hours + ")" + distanceText;
-      const mapLabel = document.querySelector("[data-map-label]");
-      mapLabel.textContent = card.dataset.pointName;
-      const mapPosition = mapMarkerPositions[pointCards.indexOf(card) % mapMarkerPositions.length];
-      mapMarkerPositions.forEach((position) => {
-        mapLabel.classList.remove(position.left, position.top);
-      });
-      mapLabel.classList.remove("left-[50%]", "top-[52%]");
-      mapLabel.classList.add(mapPosition.left, mapPosition.top);
       if (document.activeElement !== card) card.setAttribute("aria-pressed", "true");
     }
 
-    pointCards.forEach((card, index) => {
-      const marker = pointMarkers.find((item) => item.dataset.pointId === card.dataset.pointId);
-      if (marker) {
-        const position = mapMarkerPositions[index % mapMarkerPositions.length];
-        marker.classList.add(position.left, position.top);
-        marker.title = card.dataset.pointName;
-      }
+    pointCards.forEach((card) => {
       card.addEventListener("click", () => selectPoint(card.dataset.pointId));
     });
-    pointMarkers.forEach((marker) => marker.addEventListener("click", () => selectPoint(marker.dataset.pointId)));
     if (collectionSelect && collectionSelect.value) selectPoint(collectionSelect.value || selectedPointId);
     pointSearch.addEventListener("input", applyPointFilters);
     radiusButtons.forEach((button) => button.addEventListener("click", () => {
@@ -676,22 +672,9 @@
       }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 });
     });
 
-    const mapVisual = document.querySelector("[data-map-visual]");
-    const mapScaleClasses = ["scale-[0.9]", "scale-100", "scale-[1.1]", "scale-[1.2]", "scale-[1.3]", "scale-[1.4]"];
-    let zoomStep = 10;
-    function applyMapZoom() {
-      mapScaleClasses.forEach((className) => mapVisual.classList.remove(className));
-      mapVisual.classList.add(mapScaleClasses[zoomStep - 9]);
-    }
-    applyMapZoom();
-    document.querySelectorAll("[data-map-zoom]").forEach((button) => button.addEventListener("click", () => {
-      zoomStep = Math.min(14, Math.max(9, zoomStep + (button.dataset.mapZoom === "in" ? 1 : -1)));
-      applyMapZoom();
-    }));
     document.querySelector("[data-map-recenter]").addEventListener("click", () => {
-      zoomStep = 10;
-      applyMapZoom();
       if (collectionSelect && collectionSelect.value) selectPoint(collectionSelect.value);
+      else if (collectionMap && pointMarkers.size) collectionMap.fitBounds(Array.from(pointMarkers.values()).map((marker) => marker.getLatLng()), { padding: [24, 24] });
     });
 
     const incentiveInputs = Array.from(document.querySelectorAll("[data-incentive-choice]"));

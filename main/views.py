@@ -8,11 +8,17 @@ from django.urls import reverse
 from auth.forms import ProfileForm
 from auth.models import UserProfile
 from wallet.models import WalletTransaction
-from waste.models import Submission
+from waste.models import CollectionPoint, Submission
 
 
 def landing_page(request):
-    return render(request, "landing.html")
+    points = list(
+        CollectionPoint.objects.filter(is_active=True)
+        .exclude(latitude__isnull=True)
+        .exclude(longitude__isnull=True)
+        .values("id", "name", "address", "latitude", "longitude", "operating_hours")
+    )
+    return render(request, "landing.html", {"map_points": points})
 
 
 @login_required(login_url="auth_page")

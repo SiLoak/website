@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from pickup.models import PickupRequest
 from .forms import SubmissionForm, SubmissionItemFormSet
 from .models import Submission
 
@@ -51,6 +52,11 @@ def _submission_form_view(request, submission=None):
         )
         return redirect("waste:detail", submission_id=saved_submission.pk)
 
+    saved_pickup = PickupRequest.objects.filter(
+        giver=request.user,
+        latitude__isnull=False,
+        longitude__isnull=False,
+    ).first()
     return render(
         request,
         "waste/dropoff.html",
@@ -60,6 +66,8 @@ def _submission_form_view(request, submission=None):
             "formset": formset,
             "editing": editing,
             "submission": submission,
+            "pickup_latitude": saved_pickup.latitude if saved_pickup else None,
+            "pickup_longitude": saved_pickup.longitude if saved_pickup else None,
         },
     )
 
