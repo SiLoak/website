@@ -87,6 +87,7 @@ class SubmissionAdmin(admin.ModelAdmin):
         "verified_at",
         "verified_by",
         "canceled_at",
+        "incentive_allocation",
     )
     inlines = (SubmissionItemInline,)
     actions = (verify_submissions,)
@@ -107,4 +108,5 @@ class SubmissionAdmin(admin.ModelAdmin):
             "verified_at",
             "verified_by",
             "canceled_at",
+            "incentive_allocation",
         )

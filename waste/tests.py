@@ -77,6 +77,13 @@ class WasteSubmissionFlowTests(TestCase):
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, "Kardus — Rp 5.000/kg")
         self.assertContains(page, "Depo Pasar Minggu — Jl. Raya Pasar Minggu No. 14")
+        selected_point_id = page.context["form"]["collection_point"].value()
+        selected_point = CollectionPoint.objects.get(pk=selected_point_id)
+        self.assertIn("Pasar Minggu", selected_point.name)
+        self.assertEqual(
+            page.context["form"]["incentive_allocation"].value(),
+            Submission.IncentiveAllocation.WALLET,
+        )
         self.assertEqual(self.client.get(reverse("waste:dropoff")).status_code, 200)
 
         response = self.client.post(
@@ -93,6 +100,26 @@ class WasteSubmissionFlowTests(TestCase):
         self.assertEqual(submission.status, Submission.Status.PENDING)
         self.assertEqual(item.estimated_weight, Decimal("2.50"))
         self.assertEqual(item.unit_rate_snapshot, Decimal("5000.00"))
+
+    def test_donation_choice_is_saved_and_pickup_is_not_submitted_by_waste_flow(self):
+        self.client.force_login(self.user)
+        payload = self.submission_payload()
+        payload["incentive_allocation"] = Submission.IncentiveAllocation.DONATION
+
+        response = self.client.post(reverse("waste:new"), payload)
+
+        self.assertEqual(response.status_code, 302)
+        submission = Submission.objects.get(user=self.user)
+        self.assertEqual(
+            submission.incentive_allocation,
+            Submission.IncentiveAllocation.DONATION,
+        )
+
+        pickup_payload = self.submission_payload()
+        pickup_payload["delivery_method"] = "minta_dijemput"
+        rejected_pickup = self.client.post(reverse("waste:new"), pickup_payload)
+        self.assertEqual(rejected_pickup.status_code, 200)
+        self.assertEqual(Submission.objects.filter(user=self.user).count(), 1)
 
     def test_form_rejects_nonpositive_weights_duplicate_types_and_more_than_six_items(self):
         self.client.force_login(self.user)

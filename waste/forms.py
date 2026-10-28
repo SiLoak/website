@@ -25,10 +25,25 @@ class WasteTypeChoiceField(forms.ModelChoiceField):
 
 
 class SubmissionForm(forms.ModelForm):
+    delivery_method = forms.ChoiceField(
+        choices=(("antar_sendiri", "Antar sendiri"),),
+        required=False,
+        label="Cara menyetor",
+    )
+    incentive_allocation = forms.ChoiceField(
+        choices=Submission.IncentiveAllocation.choices,
+        required=False,
+        initial=Submission.IncentiveAllocation.WALLET,
+        label="Insentifmu",
+    )
+
     class Meta:
         model = Submission
-        fields = ["collection_point"]
-        labels = {"collection_point": "Titik pengumpulan"}
+        fields = ["collection_point", "incentive_allocation"]
+        labels = {
+            "collection_point": "Titik pengumpulan",
+            "incentive_allocation": "Insentifmu",
+        }
         widgets = {
             "collection_point": forms.Select(
                 attrs={
@@ -54,6 +69,22 @@ class SubmissionForm(forms.ModelForm):
                 Q(is_active=True) | Q(pk=self.instance.collection_point_id)
             )
         self.fields["collection_point"].queryset = points.distinct()
+        if not self.is_bound and not (self.instance and self.instance.pk):
+            points = self.fields["collection_point"].queryset
+            default_point = points.filter(name__icontains="Pasar Minggu").first()
+            if default_point is None:
+                default_point = points.first()
+            if default_point:
+                self.initial.setdefault("collection_point", default_point.pk)
+
+    def clean_delivery_method(self):
+        return self.cleaned_data.get("delivery_method") or "antar_sendiri"
+
+    def clean_incentive_allocation(self):
+        return (
+            self.cleaned_data.get("incentive_allocation")
+            or Submission.IncentiveAllocation.WALLET
+        )
 
 
 class SubmissionItemForm(forms.ModelForm):
