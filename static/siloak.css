@@ -20,6 +20,22 @@ body * {
     font-family: "Outfit", sans-serif !important;
 }
 
+/* Keep Material Symbols glyphs on their icon font instead of the global text font. */
+.material-symbols-outlined {
+    font-family: "Material Symbols Outlined" !important;
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    font-feature-settings: "liga";
+    -webkit-font-feature-settings: "liga";
+    -webkit-font-smoothing: antialiased;
+}
+
 html,
 body {
     margin: 0;

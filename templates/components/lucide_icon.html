@@ -1,0 +1,25 @@
+<svg class="{{ icon_class }} shrink-0" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+  {% if name == "arrow-right" %}
+    <path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>
+  {% elif name == "map-pin" %}
+    <path d="M20 10c0 5-8 11-8 11s-8-6-8-11a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="3"/>
+  {% elif name == "check" %}
+    <path d="m20 6-11 11-5-5"/>
+  {% elif name == "building-2" %}
+    <path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/><path d="M10 6h4"/><path d="M10 10h4"/><path d="M10 14h4"/><path d="M10 18h4"/>
+  {% elif name == "bike" %}
+    <circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>
+  {% elif name == "search" %}
+    <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+  {% elif name == "navigation" %}
+    <path d="m3.5 3.5 17 6.5-7 3.5-3.5 7-6.5-17Z"/>
+  {% elif name == "clock" %}
+    <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+  {% elif name == "scale" %}
+    <path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 4-.5 7-2 3 1.5 5 2 7 2h2"/>
+  {% elif name == "heart" %}
+    <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z"/>
+  {% elif name == "info" %}
+    <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+  {% endif %}
+</svg>

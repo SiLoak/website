@@ -1,528 +1,234 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}SiLoak · Kelola Barang Bekas{% endblock %}
+{% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+{% endblock %}
 {% block content %}
 <a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white" href="#main-content">Lewati ke konten utama</a>
 {% include "components/navbar.html" with public=True %}
-<main id="main-content" class="w-full bg-page-bg min-h-screen"><div class="flex flex-col w-full">
-<!-- SECTION 1: HERO SECTION -->
-<section class="w-full bg-page-bg py-16">
-<div class="max-w-[1200px] mx-auto px-margin">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-<!-- Left Content Column -->
-<div class="lg:col-span-6 flex flex-col items-start">
-<!-- Pill Badge -->
-<div class="bg-status-error-bg text-primary-container px-3.5 py-1 rounded-full text-label-sm font-label-sm inline-flex items-center gap-2 shadow-xs">
-<span>🌱</span>
-<span>Kelola barang bekas dengan mudah</span>
-</div>
-<!-- Headline -->
-<h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight mt-4">
-            Ubah barang bekasmu jadi insentif
-          </h1>
-<!-- Subtext -->
-<p class="font-body-lg text-body-lg text-text-body mt-4 max-w-xl">
-            SiLoak menghubungkan kamu dengan titik pengumpulan terdekat dan layanan pick up. Setor barang bekasmu, dapatkan insentif sesuai berat, atau donasikan untuk kebaikan.
-          </p>
-<!-- CTAs -->
-<div class="flex flex-wrap items-center gap-space-md mt-8 w-full sm:w-auto">
-<a class="inline-flex items-center justify-center gap-2 bg-secondary-container text-text-primary font-label-lg text-label-lg px-6 py-3.5 rounded-lg hover:bg-primary-container hover:text-on-primary transition-all shadow-sm" href="/waste/new/">
-<span>Mulai Setor Loak</span>
-<span class="material-symbols-outlined text-lg leading-none">arrow_forward</span>
-</a>
-<a class="inline-flex items-center justify-center gap-2 bg-surface-card text-primary-container font-label-lg text-label-lg px-5 py-3.5 rounded-lg hover:bg-surface-soft transition-all shadow-xs" href="#titik-pengumpulan">
-<span class="material-symbols-outlined text-lg leading-none">location_on</span>
-<span>Cari Titik Terdekat</span>
-</a>
-</div>
-<!-- Micro-trust checklist -->
-<div class="flex flex-wrap items-center gap-6 mt-8 pt-6 w-full text-label-md font-label-md text-text-body">
-<div class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-status-success-text text-base leading-none">check_circle</span>
-<span>Ditimbang petugas</span>
-</div>
-<div class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-status-success-text text-base leading-none">check_circle</span>
-<span>Insentif sesuai berat</span>
-</div>
-<div class="flex items-center gap-1.5">
-<span class="material-symbols-outlined text-status-success-text text-base leading-none">check_circle</span>
-<span>Bisa didonasikan</span>
-</div>
-</div>
-</div>
-<!-- Right Visual Column -->
-<div class="lg:col-span-6 relative flex justify-center">
-<div class="relative w-full rounded-xl overflow-hidden shadow-md bg-surface-card">
-<img alt="Warga tersenyum memilah barang bekas kardus dan botol plastik di rumah" class="object-cover w-full h-[400px]" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAEdNNomqo2_d3h8ZijcTn4_S6kK5E7ObbHMHOqU-2xfao7JnB-gYeQHJ8jvjymh4HFCY49M0HG58GWpjqUE5UNh-8hiKhUuGywQKQNDlprH75qMwGj7lWRvVr9CIvH-hECcWCyHaFWwT-hhbURUVwGiORYDklulVVPWDOojmPRCTBKoLFVAGkAchT2nC4DQig0BQ4fbskXWqGbpg4YuFPOEc4cxqGPZ6pGKJnUImY">
-<div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-<!-- Floating White Card -->
-<div class="absolute bottom-4 left-4 right-4 sm:right-auto sm:max-w-xs bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-xl flex items-center justify-between gap-4">
-<div class="flex flex-col">
-<span class="font-label-sm text-label-sm text-text-body">Insentif masuk</span>
-<span class="font-headline-sm text-headline-sm text-text-primary tabular-nums mt-0.5">Rp 45.000</span>
-</div>
-<div class="bg-status-success-bg text-status-success-text px-2.5 py-1 rounded-full text-label-sm font-label-sm flex items-center gap-1 shrink-0">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-<span>Sudah ditimbang</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 2: NUMBERS STRIP -->
-<section class="w-full py-10 bg-surface-card shadow-xs">
-<div class="max-w-[1200px] mx-auto px-margin">
-<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-<!-- Metric 1 -->
-<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
-<span class="font-label-sm text-label-sm text-text-body">Titik pengumpulan</span>
-<span class="font-metric-display text-metric-display text-primary-container tabular-nums mt-1">128</span>
-<span class="font-body-sm text-body-sm text-text-body mt-1">Tersebar di Jabodetabek</span>
-</div>
-<!-- Metric 2 -->
-<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
-<span class="font-label-sm text-label-sm text-text-body">Barang terkumpul (kg)</span>
-<span class="font-metric-display text-metric-display text-text-primary tabular-nums mt-1">45.280 kg</span>
-<span class="font-body-sm text-body-sm text-text-body mt-1">Kardus, plastik, logam</span>
-</div>
-<!-- Metric 3 -->
-<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
-<span class="font-label-sm text-label-sm text-text-body">Pengguna aktif</span>
-<span class="font-metric-display text-metric-display text-text-primary tabular-nums mt-1">14.850+</span>
-<span class="font-body-sm text-body-sm text-text-body mt-1">Masyarakat &amp; kurir</span>
-</div>
-<!-- Metric 4 -->
-<div class="flex flex-col bg-surface-container-low p-5 rounded-xl shadow-xs">
-<span class="font-label-sm text-label-sm text-text-body">Insentif dibagikan (Rp)</span>
-<span class="font-metric-display text-metric-display text-status-success-text tabular-nums mt-1">Rp 320 Jt+</span>
-<span class="font-body-sm text-body-sm text-text-body mt-1">Tersalurkan langsung</span>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 3: TWO WAYS TO USE SILOAK -->
-<section class="w-full py-16 bg-page-bg">
-<div class="max-w-[1200px] mx-auto px-margin">
-<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
-<h2 class="font-headline-lg text-headline-lg text-text-primary">Dua cara mudah untuk mulai</h2>
-<p class="font-body-lg text-body-lg text-text-body mt-2">Pilih metode yang paling nyaman dengan jadwal dan rutinitas harianmu.</p>
-</div>
-<div class="max-w-4xl mx-auto mt-12 grid grid-cols-1 md:grid-cols-2 gap-8">
-<!-- Card 1 (Setor Loak) -->
-<div class="bg-surface-card rounded-xl p-8 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
-<div>
-<div class="w-12 h-12 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-xl mb-4">
-              🏬
+
+<main id="main-content" class="bg-[#f8fafc] pt-16 text-[#0f172a] max-[760px]:pt-8">
+  <section aria-labelledby="landing-title" class="bg-[#f8fafc] px-[72px] py-16 max-lg:px-10 max-[760px]:px-6 max-[760px]:pb-14 max-[760px]:pt-10 max-[420px]:px-5">
+    <div class="mx-auto grid w-full max-w-[1200px] grid-cols-2 items-center gap-12 max-lg:gap-8 max-[760px]:grid-cols-1 max-[760px]:gap-8">
+      <div class="min-w-0">
+        <h1 id="landing-title" class="pt-4 text-[36px] font-bold leading-[44px] tracking-[-0.9px] max-lg:text-[32px] max-lg:leading-10 max-[420px]:text-[29px] max-[420px]:leading-9">
+          <span class="block">Ubah barang bekasmu jadi</span>
+          <span class="block"><u class="decoration-[1px] underline-offset-2">insentif</u>.</span>
+        </h1>
+        <p class="!font-['Roboto_Mono',monospace] w-full max-w-[545px] pt-4 text-base leading-6 text-[#334155]">
+          SiLoak menghubungkan kamu dengan titik pengumpulan terdekat dan layanan <em>pick-up</em>. <strong>Setor</strong> barang bekasmu, dapatkan <strong>insentif</strong> sesuai berat, atau <strong>donasikan</strong> untuk kebaikan.
+        </p>
+        <div class="flex flex-wrap items-center gap-4 pt-8">
+          <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-6 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-[background-color,color,box-shadow] duration-150 hover:bg-[#2f436f] hover:text-white" href="/waste/new/">
+            <span>Mulai Setor Loak</span>
+            {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-3 w-3" only %}
+          </a>
+          <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-center text-sm font-medium leading-5 text-[#0f172a] transition-colors duration-150 hover:bg-[#eff4ff]" href="#titik-pengumpulan">
+            {% include "components/lucide_icon.html" with name="map-pin" icon_class="h-4 w-4" only %}
+            <span>Cari Titik Terdekat</span>
+          </a>
+        </div>
+        <ul aria-label="Keunggulan layanan" class="mt-8 flex w-full list-none flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#e2e8f0] pt-6 text-[13px] font-medium leading-[18px] text-[#0f172a] max-lg:gap-x-[18px]">
+          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">{% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span>Ditimbang petugas</span></li>
+          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">{% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span>Insentif sesuai berat</span></li>
+          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">{% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span>Bisa didonasikan</span></li>
+        </ul>
+      </div>
+
+      <figure class="relative h-[400px] min-w-0 overflow-hidden rounded-xl bg-white shadow-md max-[760px]:h-[min(400px,72vw)]">
+        <img class="h-full w-full max-w-none rotate-180 scale-y-[-1] object-cover" src="{% static 'images/landing/hero-pickup.png' %}" alt="Tangan membawa kantong barang bekas menuju tempat sampah daur ulang">
+        <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+        <figcaption class="absolute bottom-[19px] left-5 flex max-w-[320px] items-center gap-4 rounded-xl bg-[#f5f4f0]/95 p-4 shadow-xl backdrop-blur-sm max-[760px]:bottom-3 max-[760px]:left-3 max-[760px]:gap-2 max-[760px]:p-3 max-[420px]:right-2 max-[420px]:max-w-none">
+          <div class="flex flex-col">
+            <span class="text-xs font-medium leading-4 text-[#3b507d]">Insentif masuk</span>
+            <strong class="mt-0.5 whitespace-nowrap text-lg font-semibold leading-[26px]">Rp 72.000</strong>
+          </div>
+          <span class="!font-['Roboto_Mono',monospace] inline-flex shrink-0 items-center gap-1 rounded-full bg-[#ecfdf5] px-2.5 py-1 text-xs font-medium leading-4 text-green-700 whitespace-nowrap max-[420px]:px-[7px] max-[420px]:text-[10px]">
+            <i aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-green-700"></i>Sudah ditimbang
+          </span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section id="cara-kerja" aria-labelledby="ways-title" class="bg-gradient-to-b from-[#f8fafc] to-[#3b507d] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12">
+    <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-12 px-8 max-[760px]:gap-8 max-[760px]:px-0">
+      <header class="flex max-w-2xl flex-col items-center text-center">
+        <h2 id="ways-title" class="text-[28px] font-semibold leading-9 tracking-[-0.42px] max-[760px]:text-2xl max-[760px]:leading-8"><u class="decoration-[1px] underline-offset-2">Dua</u> cara mudah untuk mulai</h2>
+        <p class="!font-['Roboto_Mono',monospace] pt-2 text-base leading-6 text-[#334155] max-[760px]:text-sm max-[760px]:leading-[22px]">Pilih metode yang paling nyaman dengan <strong class="font-bold">jadwal</strong> dan <strong class="font-bold">rutinitas</strong> harianmu.</p>
+      </header>
+      <div class="grid w-full max-w-[896px] grid-cols-2 gap-8 max-[760px]:max-w-[480px] max-[760px]:grid-cols-1 max-[760px]:gap-5">
+        <article class="flex flex-col justify-between bg-white p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_2px_rgba(0,0,0,0.25)]">
+          <div>
+            <div aria-hidden="true" class="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7e2ce] text-[#3b507d]">
+              {% include "components/lucide_icon.html" with name="building-2" icon_class="h-5 w-5" only %}
             </div>
-<h3 class="font-headline-md text-headline-md text-text-primary">Setor Loak</h3>
-<p class="font-body-md text-body-md text-text-body mt-2 leading-relaxed">
-              Bawa barang bekasmu ke titik pengumpulan terdekat. Petugas akan menimbangnya dan insentifmu langsung dihitung.
-            </p>
-<div class="mt-4 inline-flex items-center gap-1.5 text-label-sm font-label-sm text-text-body bg-surface-container-low px-3 py-1 rounded-full">
-<span>Bebas biaya admin • Buka setiap hari</span>
-</div>
-</div>
-<a class="mt-8 bg-status-error-bg text-primary-container hover:bg-primary-container hover:text-on-primary font-label-lg text-label-lg py-3 px-5 rounded-lg transition-all text-center inline-flex items-center justify-center gap-2" href="/waste/dropoff/">
-<span>Setor Loak</span>
-<span class="material-symbols-outlined text-base">arrow_forward</span>
-</a>
-</div>
-<!-- Card 2 (Pick up Loak) -->
-<div class="bg-surface-card rounded-xl p-8 shadow-sm flex flex-col justify-between hover:shadow-md transition-all">
-<div>
-<div class="w-12 h-12 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-xl mb-4">
-              🛵
+            <h3 class="pt-4 text-xl font-semibold leading-7 tracking-[-0.2px]">Setor Loak</h3>
+            <p class="!font-['Roboto_Mono',monospace] pt-[7px] pb-[9px] text-sm leading-[22.75px] text-[#334155]">Bawa barang bekasmu ke titik pengumpulan terdekat. Petugas akan menimbangnya dan insentifmu langsung dihitung.</p>
+            <span class="!font-['Roboto_Mono',monospace] mt-[7px] inline-flex whitespace-nowrap bg-[#e7e2ce] px-3 py-1 text-xs font-medium leading-4 text-[#334155]">Bebas biaya admin <b class="px-1">•</b> Buka setiap hari</span>
+          </div>
+          <a class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="/waste/dropoff/">
+            <span>Setor Loak</span>
+            {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[11px] w-[11px]" only %}
+          </a>
+        </article>
+        <article class="flex flex-col justify-between bg-white p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_2px_rgba(0,0,0,0.25)]">
+          <div>
+            <div aria-hidden="true" class="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7e2ce] text-[#3b507d]">
+              {% include "components/lucide_icon.html" with name="bike" icon_class="h-5 w-5" only %}
             </div>
-<h3 class="font-headline-md text-headline-md text-text-primary">Pick up Loak</h3>
-<p class="font-body-md text-body-md text-text-body mt-2 leading-relaxed">
-              Tidak sempat datang? Minta petugas menjemput dari rumahmu dan pantau statusnya sampai barang ditimbang.
-            </p>
-<div class="mt-4 inline-flex items-center gap-1.5 text-label-sm font-label-sm text-text-body bg-surface-container-low px-3 py-1 rounded-full">
-<span>Jadwal fleksibel • Tracking kurir real-time</span>
-</div>
-</div>
-<a class="mt-8 bg-secondary-container text-text-primary hover:bg-primary-container hover:text-on-primary font-label-lg text-label-lg py-3 px-5 rounded-lg transition-all text-center inline-flex items-center justify-center gap-2" href="/pickup/new/">
-<span>Minta Pick up</span>
-<span class="material-symbols-outlined text-base">arrow_forward</span>
-</a>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 4: HOW IT WORKS -->
-<section class="w-full py-16 bg-surface-card" id="cara-kerja">
-<div class="max-w-[1200px] mx-auto px-margin">
-<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
-<h2 class="font-headline-lg text-headline-lg text-text-primary">Cara kerja SiLoak</h2>
-<p class="font-body-lg text-body-lg text-text-body mt-2">Proses transparan dari awal hingga insentif sampai di tanganmu.</p>
-</div>
-<div class="mt-12 grid grid-cols-1 md:grid-cols-4 gap-6 relative">
-<!-- Step 1 -->
-<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
-<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
-            1
+            <h3 class="pt-4 text-xl font-semibold leading-7 tracking-[-0.2px]">Pick up Loak</h3>
+            <p class="!font-['Roboto_Mono',monospace] pt-[7px] pb-[9px] text-sm leading-[22.75px] text-[#334155]">Tidak sempat datang? Minta petugas menjemput dari rumahmu dan pantau statusnya sampai barang ditimbang.</p>
+            <span class="!font-['Roboto_Mono',monospace] mt-[7px] inline-flex whitespace-nowrap bg-[#e7e2ce] px-3 py-1 text-xs font-medium leading-4 text-[#334155]">Jadwal fleksibel <b class="px-1">•</b> Tracking kurir real-time</span>
           </div>
-<h3 class="font-headline-sm text-headline-sm text-text-primary">Pilih barang</h3>
-<p class="font-body-md text-body-md text-text-body mt-2">
-            Pilih jenis dan perkiraan berat barang bekasmu di aplikasi.
-          </p>
-</div>
-<!-- Step 2 -->
-<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
-<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
-            2
+          <a class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="/pickup/new/">
+            <span>Minta Pick up</span>
+            {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[11px] w-[11px]" only %}
+          </a>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="titik-pengumpulan" aria-labelledby="locations-title" class="bg-[#3b507d] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12">
+    <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 px-8 max-[760px]:gap-8 max-[760px]:px-0">
+      <header class="flex max-w-2xl flex-col items-center text-center text-white">
+        <h2 id="locations-title" class="text-[28px] font-semibold leading-9 tracking-[-0.42px] max-[760px]:text-2xl max-[760px]:leading-8">Temukan <u class="decoration-[1px] underline-offset-2">titik pengumpulan</u> terdekat</h2>
+        <p class="!font-['Roboto_Mono',monospace] pt-2 text-base leading-6 text-white max-[760px]:text-sm max-[760px]:leading-[22px]">Cari berdasarkan <strong class="font-bold">lokasi</strong>, lihat <strong class="font-bold">jam buka</strong> dan <strong class="font-bold">layanan</strong> yang tersedia.</p>
+      </header>
+
+      <div class="box-border w-full rounded-xl bg-white p-8 shadow-sm max-[760px]:p-4">
+        <form action="#titik-pengumpulan" method="get" class="flex items-center gap-4 max-[1000px]:flex-wrap max-[760px]:items-stretch max-[760px]:gap-2.5">
+          <label class="relative flex min-w-0 flex-1 items-center max-[1000px]:basis-full">
+            {% include "components/lucide_icon.html" with name="search" icon_class="absolute left-[14px] z-10 h-[18px] w-[18px] text-[#64748b]" only %}
+            <input type="text" value="Tebet Timur, Jakarta Selatan" aria-label="Cari lokasi atau titik pengumpulan" class="!m-0 !h-11 !min-w-0 !w-full !rounded-lg !border-0 !bg-[#eff4ff] !py-0 !pl-11 !pr-4 !text-sm !leading-5 !text-[#0f172a] placeholder:text-[#64748b] focus:!outline focus:!outline-2 focus:!outline-[#3b507d]/20">
+          </label>
+          <div aria-label="Jarak pencarian" class="inline-flex shrink-0 items-center gap-2 max-[760px]:flex-1 max-[760px]:justify-between">
+            <button type="button" class="min-h-[34px] rounded-[7px] bg-[#3b507d] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-white max-[760px]:flex-1 max-[760px]:px-2">2 km</button>
+            <button type="button" class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2">5 km</button>
+            <button type="button" class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2">10 km</button>
           </div>
-<h3 class="font-headline-sm text-headline-sm text-text-primary">Setor atau pick up</h3>
-<p class="font-body-md text-body-md text-text-body mt-2">
-            Datang ke titik pengumpulan atau minta petugas menjemput langsung ke rumah.
-          </p>
-</div>
-<!-- Step 3 -->
-<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
-<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
-            3
+          <button type="submit" class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white max-[760px]:flex-1">
+            {% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}<span>Cari yang terdekat</span>
+          </button>
+        </form>
+
+        <div class="mt-6 grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] items-start gap-6 max-[760px]:grid-cols-1">
+          <div role="list" aria-label="Titik pengumpulan terdekat" class="relative h-[480px] max-h-[480px] overflow-y-auto pr-1 max-[760px]:flex max-[760px]:h-[420px] max-[760px]:max-h-[420px] max-[760px]:flex-col max-[760px]:gap-2">
+            <article role="listitem" class="absolute inset-x-0 top-0 flex flex-col gap-2 rounded-xl bg-[#e7e2ce] p-4 max-[760px]:static max-[760px]:shrink-0">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-lg font-semibold leading-[26px] max-[420px]:text-base">TPST SiLoak Tebet Timur</h3><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700">Buka</span>
+              </div>
+              <p class="text-[13px] leading-[18px] text-[#334155]">Jl. Tebet Timur Dalam Raya No. 42, Jakarta Selatan</p>
+              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]">
+                <span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}1,2 km dari kamu</span><b class="!font-['Inter',sans-serif]">•</b><span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.00 - 17.00 WIB</span>
+              </div>
+              <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
+                <span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">Kardus</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">Plastik</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">Logam</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">E-Waste</span>
+              </div>
+              <div class="flex items-center justify-end gap-1 pt-4 text-[13px] font-semibold leading-[18px] text-[#112250]">Pilih Titik Ini {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[9px] w-[9px]" only %}</div>
+            </article>
+            <article role="listitem" class="absolute inset-x-0 top-[204px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-lg font-semibold leading-[26px] max-[420px]:text-base">Bank Sampah Melati Indah</h3><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700">Buka</span>
+              </div>
+              <p class="text-[13px] leading-[18px] text-[#334155]">Jl. Pancoran Barat III No. 15, Jakarta Selatan</p>
+              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]">
+                <span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}2,4 km dari kamu</span><b class="!font-['Inter',sans-serif]">•</b><span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.30 - 16.00 WIB</span>
+              </div>
+              <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
+                <span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Kardus</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Kertas</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Plastik</span>
+              </div>
+            </article>
+            <article role="listitem" class="absolute inset-x-0 top-[364px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0">
+              <div class="flex items-center justify-between gap-2">
+                <h3 class="text-lg font-semibold leading-[26px] max-[420px]:text-base">Pusat Daur Ulang Manggarai</h3><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700">Buka</span>
+              </div>
+              <p class="text-[13px] leading-[18px] text-[#334155]">Jl. Manggarai Utara No. 8, Jakarta Selatan</p>
+              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]">
+                <span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}3,8 km dari kamu</span><b class="!font-['Inter',sans-serif]">•</b><span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}09.00 - 18.00 WIB</span>
+              </div>
+              <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
+                <span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Semua Kategori</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Layanan Timbang Cepat</span>
+              </div>
+            </article>
           </div>
-<h3 class="font-headline-sm text-headline-sm text-text-primary">Ditimbang petugas</h3>
-<p class="font-body-md text-body-md text-text-body mt-2">
-            Berat barang dicatat dan diverifikasi petugas dengan timbangan digital transparan.
-          </p>
-</div>
-<!-- Step 4 -->
-<div class="flex flex-col bg-surface-container-low p-6 rounded-xl shadow-xs">
-<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary font-headline-sm text-headline-sm flex items-center justify-center mb-4 shadow-sm">
-            4
-          </div>
-<h3 class="font-headline-sm text-headline-sm text-text-primary">Terima atau donasikan</h3>
-<p class="font-body-md text-body-md text-text-body mt-2">
-            Insentif masuk ke saldomu, atau salurkan sebagai donasi ke mitra sosial pilihanmu.
-          </p>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 5: COLLECTION POINT FINDER -->
-<section class="w-full py-16 bg-page-bg" id="titik-pengumpulan">
-<div class="max-w-[1200px] mx-auto px-margin">
-<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
-<h2 class="font-headline-lg text-headline-lg text-text-primary">Temukan titik pengumpulan terdekat</h2>
-<p class="font-body-lg text-body-lg text-text-body mt-2">Cari berdasarkan lokasi, lihat jam buka dan layanan yang tersedia.</p>
-</div>
-<!-- Master Container -->
-<div class="bg-surface-card rounded-xl p-6 lg:p-8 mt-10 shadow-sm">
-<!-- Search bar & filters row -->
-<div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
-<div class="relative flex-1">
-<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-text-body">search</span>
-<input class="w-full pl-11 pr-4 py-3 bg-surface-container-low rounded-lg font-body-md text-body-md text-text-primary outline-none focus:bg-white shadow-xs" placeholder="Masukkan kelurahan, kecamatan, atau nama tempat..." type="text" value="Tebet Timur, Jakarta Selatan">
-</div>
-<div class="flex items-center gap-2 shrink-0">
-<button class="bg-primary-container text-on-primary px-3.5 py-2 rounded-lg font-label-md text-label-md">2 km</button>
-<button class="bg-surface-container-low text-text-body hover:text-text-primary px-3.5 py-2 rounded-lg font-label-md text-label-md transition-colors">5 km</button>
-<button class="bg-surface-container-low text-text-body hover:text-text-primary px-3.5 py-2 rounded-lg font-label-md text-label-md transition-colors">10 km</button>
-</div>
-<button class="bg-primary-container text-on-primary px-5 py-3 rounded-lg font-label-lg text-label-lg flex items-center justify-center gap-2 hover:bg-primary transition-all shrink-0">
-<span class="material-symbols-outlined text-base">near_me</span>
-<span>Cari yang terdekat</span>
-</button>
-</div>
-<!-- Two-column split below -->
-<div class="mt-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-<!-- Left List -->
-<div class="lg:col-span-5 flex flex-col gap-4 max-h-[480px] overflow-y-auto pr-1">
-<!-- Point 1 (Selected) -->
-<div class="bg-status-error-bg p-4 rounded-xl shadow-xs flex flex-col gap-2 cursor-pointer transition-all">
-<div class="flex items-center justify-between">
-<span class="font-headline-sm text-headline-sm text-text-primary">TPST SiLoak Tebet Timur</span>
-<span class="bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full text-label-sm font-label-sm">Buka</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body">Jl. Tebet Timur Dalam Raya No. 42, Jakarta Selatan</p>
-<div class="flex items-center gap-3 text-label-sm font-label-sm text-text-body mt-1">
-<span>📍 1,2 km dari kamu</span>
-<span>•</span>
-<span>⏰ 08.00 - 17.00 WIB</span>
-</div>
-<div class="flex flex-wrap gap-1.5 mt-1">
-<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Kardus</span>
-<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Plastik</span>
-<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Logam</span>
-<span class="bg-white/80 text-primary-container px-2 py-0.5 rounded text-label-sm font-label-sm">Minyak Jelantah</span>
-</div>
-<div class="mt-2 pt-2 flex items-center justify-end">
-<span class="font-label-md text-label-md text-primary-container flex items-center gap-1 font-semibold">
-                  Pilih Titik Ini <span class="material-symbols-outlined text-sm">arrow_forward</span>
-</span>
-</div>
-</div>
-<!-- Point 2 -->
-<div class="bg-surface-card hover:bg-surface-container-low p-4 rounded-xl shadow-xs flex flex-col gap-2 cursor-pointer transition-all">
-<div class="flex items-center justify-between">
-<span class="font-headline-sm text-headline-sm text-text-primary">Bank Sampah Melati Indah</span>
-<span class="bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full text-label-sm font-label-sm">Buka</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body">Jl. Pancoran Barat III No. 15, Jakarta Selatan</p>
-<div class="flex items-center gap-3 text-label-sm font-label-sm text-text-body mt-1">
-<span>📍 2,4 km dari kamu</span>
-<span>•</span>
-<span>⏰ 08.30 - 16.00 WIB</span>
-</div>
-<div class="flex flex-wrap gap-1.5 mt-1">
-<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Kardus</span>
-<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Kertas</span>
-<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Plastik</span>
-</div>
-</div>
-<!-- Point 3 -->
-<div class="bg-surface-card hover:bg-surface-container-low p-4 rounded-xl shadow-xs flex flex-col gap-2 cursor-pointer transition-all">
-<div class="flex items-center justify-between">
-<span class="font-headline-sm text-headline-sm text-text-primary">Pusat Daur Ulang Manggarai</span>
-<span class="bg-status-success-bg text-status-success-text px-2 py-0.5 rounded-full text-label-sm font-label-sm">Buka</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body">Jl. Manggarai Utara No. 8, Jakarta Selatan</p>
-<div class="flex items-center gap-3 text-label-sm font-label-sm text-text-body mt-1">
-<span>📍 3,8 km dari kamu</span>
-<span>•</span>
-<span>⏰ 09.00 - 18.00 WIB</span>
-</div>
-<div class="flex flex-wrap gap-1.5 mt-1">
-<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Semua Kategori</span>
-<span class="bg-surface-container text-text-body px-2 py-0.5 rounded text-label-sm font-label-sm">Layanan Timbang Cepat</span>
-</div>
-</div>
-</div>
-<!-- Right Map Visual Container -->
-<div class="lg:col-span-7 h-[480px] bg-surface-container-low rounded-xl overflow-hidden relative shadow-inner flex flex-col">
-<!-- Simulated OpenStreetMap graphic UI -->
-<svg class="w-full h-full object-cover" fill="none" viewBox="0 0 700 480" xmlns="http://www.w3.org/2000/svg">
-<!-- Ground base -->
-<rect fill="#F1F5F9" height="480" width="700"></rect>
-<!-- Green areas / parks -->
-<path d="M40 30 C 120 40, 180 120, 150 200 C 100 230, 40 180, 40 30 Z" fill="#DCFCE7"></path>
-<path d="M480 300 C 580 290, 660 340, 640 440 C 520 460, 470 410, 480 300 Z" fill="#DCFCE7"></path>
-<!-- Water body / River -->
-<path d="M-20 380 Q 200 320, 360 410 T 720 350" fill="none" stroke="#BAE6FD" stroke-linecap="round" stroke-width="28"></path>
-<!-- Primary / Secondary Roads -->
-<path d="M0 160 L 700 130" stroke="#FFFFFF" stroke-width="14"></path>
-<path d="M0 160 L 700 130" stroke="#E2E8F0" stroke-width="10"></path>
-<path d="M320 0 L 350 480" stroke="#FFFFFF" stroke-width="16"></path>
-<path d="M320 0 L 350 480" stroke="#CBD5E1" stroke-width="12"></path>
-<path d="M120 0 L 160 480" stroke="#FFFFFF" stroke-width="10"></path>
-<path d="M480 0 L 520 480" stroke="#FFFFFF" stroke-width="10"></path>
-<path d="M0 290 Q 260 270, 520 310 T 700 280" stroke="#FFFFFF" stroke-width="12"></path>
-<path d="M0 290 Q 260 270, 520 310 T 700 280" stroke="#E2E8F0" stroke-width="8"></path>
-<!-- Road Labels -->
-<text fill="#64748B" font-family="Inter" font-size="10" font-weight="600" x="365" y="80">Jl. Prof. DR. Soepomo</text>
-<text fill="#64748B" font-family="Inter" font-size="10" font-weight="600" x="210" y="145">Jl. Tebet Barat Dalam</text>
-<!-- User Current Location Marker -->
-<circle cx="260" cy="220" fill="#0F172A" fill-opacity="0.15" r="18"></circle>
-<circle cx="260" cy="220" fill="#0F172A" r="8"></circle>
-<circle cx="260" cy="220" fill="#FFFFFF" r="3.5"></circle>
-<!-- Point 2 Marker (Pancoran) -->
-<g transform="translate(180, 310)">
-<path d="M14 0 C 6 0, 0 6, 0 14 C 0 24, 14 36, 14 36 C 14 36, 28 24, 28 14 C 28 6, 22 0, 14 0 Z" fill="#A52A2A"></path>
-<circle cx="14" cy="14" fill="#FFFFFF" r="5"></circle>
-</g>
-<!-- Point 3 Marker (Manggarai) -->
-<g transform="translate(490, 110)">
-<path d="M14 0 C 6 0, 0 6, 0 14 C 0 24, 14 36, 14 36 C 14 36, 28 24, 28 14 C 28 6, 22 0, 14 0 Z" fill="#A52A2A"></path>
-<circle cx="14" cy="14" fill="#FFFFFF" r="5"></circle>
-</g>
-<!-- Point 1 (Selected - Tebet Timur) Marker + Tooltip -->
-<g transform="translate(330, 190)">
-<path d="M16 0 C 7 0, 0 7, 0 16 C 0 28, 16 42, 16 42 C 16 42, 32 28, 32 16 C 32 7, 25 0, 16 0 Z" fill="#840F16"></path>
-<circle cx="16" cy="16" fill="#FFFFFF" r="6"></circle>
-</g>
-</svg>
-<!-- Popup Callout Overlay -->
-<div class="absolute top-36 left-1/2 -translate-x-12 bg-white/95 backdrop-blur-sm p-3 rounded-lg shadow-lg flex items-center gap-2 pointer-events-none">
-<span class="w-2.5 h-2.5 rounded-full bg-primary shrink-0"></span>
-<div class="flex flex-col">
-<span class="font-label-md text-label-md text-text-primary font-semibold">TPST SiLoak Tebet Timur</span>
-<span class="font-label-sm text-label-sm text-text-body">1,2 km dari posisimu</span>
-</div>
-</div>
-<!-- Map Controls Top-Left -->
-<div class="absolute top-4 left-4 flex flex-col bg-white rounded-lg shadow-md overflow-hidden">
-<button class="w-8 h-8 flex items-center justify-center text-text-primary hover:bg-surface-soft font-bold">+</button>
-<button class="w-8 h-8 flex items-center justify-center text-text-primary hover:bg-surface-soft font-bold">-</button>
-</div>
-<!-- Attribution Bottom-Right -->
-<div class="absolute bottom-2 right-2 bg-white/85 px-2 py-0.5 rounded text-[11px] font-label-sm text-text-body">
-              © OpenStreetMap contributors
+          <div role="img" aria-label="Map placeholder" class="h-[480px] min-w-0 overflow-hidden rounded-xl bg-white max-[760px]:h-[360px]"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="manfaat" aria-labelledby="incentives-title" class="bg-gradient-to-b from-[#3b507d] to-[#e7e2ce] px-[72px] py-16 max-lg:px-10 max-[760px]:px-6 max-[760px]:py-12">
+    <div class="mx-auto grid min-h-[428px] w-full max-w-[1200px] grid-cols-[minmax(0,7fr)_minmax(0,5fr)] items-center gap-12 max-[760px]:grid-cols-1">
+      <div>
+        <h2 id="incentives-title" class="text-[28px] font-semibold leading-9 tracking-[-0.42px] text-white max-[760px]:text-2xl max-[760px]:leading-8">Dapat insentif, atau donasikan.</h2>
+        <p class="!font-['Roboto_Mono',monospace] w-full max-w-[658px] pt-4 text-base leading-[26px] text-white max-[760px]:text-sm max-[760px]:leading-[23px]">
+          Setiap kilogram barang bekas yang kamu serahkan memiliki nilai nyata. Kamu dapat menerima insentif tunai ke dompet digital, atau menyalurkan nilainya sebagai donasi bagi program penghijauan dan pendidikan anak pemulung.
+        </p>
+        <div class="mt-8 flex flex-col gap-4">
+          <article class="flex items-start gap-4 bg-[#eff4ff] p-4">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#beb7a7] text-[#3b507d]">
+              {% include "components/lucide_icon.html" with name="scale" icon_class="h-5 w-5" only %}
+            </span>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-lg font-semibold leading-[26px]">Transparansi Timbangan</h3>
+              <p class="!font-['Roboto_Mono',monospace] pt-1 text-sm leading-5 text-[#334155]">Menggunakan timbangan digital resmi langsung atau diverifikasi <em>realtime</em> oleh kurir.</p>
             </div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 6: INCENTIVE AND DONATION -->
-<section class="w-full py-16 bg-surface-card">
-<div class="max-w-[1200px] mx-auto px-margin">
-<div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-<!-- Left Editorial -->
-<div class="lg:col-span-7 flex flex-col items-start">
-<h2 class="font-headline-lg text-headline-lg text-text-primary">Dapat insentif, atau donasikan</h2>
-<p class="font-body-lg text-body-lg text-text-body mt-4 leading-relaxed">
-            Setiap gram barang bekas yang kamu serahkan memiliki nilai nyata. Kamu dapat menerima insentif tunai ke dompet digital (GoPay, OVO, DANA, transfer bank), atau menyalurkan nilainya sebagai donasi bagi program penghijauan dan pendidikan anak pemulung.
-          </p>
-<div class="flex flex-col gap-4 mt-8 w-full">
-<div class="flex items-start gap-4 p-4 rounded-xl bg-surface-container-low shadow-xs">
-<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined">scale</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary">Transparansi Timbangan</h4>
-<p class="font-body-md text-body-md text-text-body mt-1">
-                  Menggunakan timbangan digital tera resmi langsung di hadapanmu atau diverifikasi realtime oleh kurir.
-                </p>
-</div>
-</div>
-<div class="flex items-start gap-4 p-4 rounded-xl bg-surface-container-low shadow-xs">
-<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center shrink-0">
-<span class="material-symbols-outlined">volunteer_activism</span>
-</div>
-<div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary">Penyaluran Donasi Amanah</h4>
-<p class="font-body-md text-body-md text-text-body mt-1">
-                  Laporan penyaluran donasi sosial dan lingkungan tercatat transparan dengan rekam jejak digital di aplikasi.
-                </p>
-</div>
-</div>
-</div>
-</div>
-<!-- Right Simulation Card -->
-<div class="lg:col-span-5">
-<div class="bg-surface-card rounded-xl p-6 shadow-md flex flex-col">
-<div class="flex items-center justify-between pb-3">
-<span class="font-label-md text-label-md text-text-body font-semibold uppercase tracking-wider">Ringkasan Setoran Simulasi</span>
-<span class="bg-surface-container px-2 py-0.5 rounded text-label-sm font-label-sm text-text-body">Live Estimate</span>
-</div>
-<!-- Itemized List -->
-<div class="flex flex-col gap-3 my-4 bg-surface-container-low p-4 rounded-lg">
-<div class="flex items-center justify-between text-body-md font-body-md">
-<div class="flex flex-col">
-<span class="text-text-primary font-medium">Kardus bekas (gelombang)</span>
-<span class="font-label-sm text-label-sm text-text-body">5,0 kg @ Rp 2.500/kg</span>
-</div>
-<span class="text-text-primary font-semibold tabular-nums">Rp 12.500</span>
-</div>
-<div class="flex items-center justify-between text-body-md font-body-md">
-<div class="flex flex-col">
-<span class="text-text-primary font-medium">Botol plastik PET bening</span>
-<span class="font-label-sm text-label-sm text-text-body">2,5 kg @ Rp 4.200/kg</span>
-</div>
-<span class="text-text-primary font-semibold tabular-nums">Rp 10.500</span>
-</div>
-<div class="flex items-center justify-between text-body-md font-body-md">
-<div class="flex flex-col">
-<span class="text-text-primary font-medium">Minyak jelantah bersih</span>
-<span class="font-label-sm text-label-sm text-text-body">3,0 kg @ Rp 7.500/kg</span>
-</div>
-<span class="text-text-primary font-semibold tabular-nums">Rp 22.000</span>
-</div>
-</div>
-<!-- Estimated Total -->
-<div class="flex items-baseline justify-between pt-2">
-<span class="font-body-md text-body-md text-text-body font-medium">Perkiraan insentif</span>
-<span class="font-headline-xl text-headline-xl text-primary-container font-bold tabular-nums">Rp 45.000</span>
-</div>
-<!-- Two-option selector control -->
-<div class="grid grid-cols-2 gap-3 mt-6">
-<button class="bg-primary-container text-on-primary font-label-lg text-label-lg py-2.5 px-4 rounded-lg text-center shadow-xs">
-                Terima insentif
-              </button>
-<button class="bg-surface-container-low text-text-body hover:bg-surface-soft hover:text-text-primary font-label-lg text-label-lg py-2.5 px-4 rounded-lg text-center transition-all">
-                Donasikan
-              </button>
-</div>
-<div class="flex items-center gap-1.5 mt-5 text-label-sm font-label-sm text-text-body">
-<span class="material-symbols-outlined text-sm leading-none">info</span>
-<span>Jumlah akhir dihitung setelah barang ditimbang petugas.</span>
-</div>
-</div>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 7: BENEFITS (KENAPA SILOAK?) -->
-<section class="w-full py-16 bg-page-bg" id="manfaat">
-<div class="max-w-[1200px] mx-auto px-margin">
-<div class="text-center max-w-2xl mx-auto flex flex-col items-center">
-<h2 class="font-headline-lg text-headline-lg text-text-primary">Kenapa SiLoak?</h2>
-<p class="font-body-lg text-body-lg text-text-body mt-2">Dibuat untuk memudahkan warga menjaga lingkungan sembari mendapatkan manfaat nyata.</p>
-</div>
-<div class="mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-<!-- Benefit 1 -->
-<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
-            📍
+          </article>
+          <article class="flex items-start gap-4 bg-[#eff4ff] p-4">
+            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#beb7a7] text-[#3b507d]">
+              {% include "components/lucide_icon.html" with name="heart" icon_class="h-5 w-5" only %}
+            </span>
+            <div class="min-w-0 flex-1">
+              <h3 class="text-lg font-semibold leading-[26px]">Penyaluran Donasi Amanah</h3>
+              <p class="!font-['Roboto_Mono',monospace] pt-1 text-sm leading-5 text-[#334155]">Laporan penyaluran donasi sosial dan lingkungan tercatat transparan dengan rekam jejak digital di aplikasi.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <aside aria-label="Ringkasan setoran simulasi" class="flex min-w-0 flex-col rounded-xl bg-white p-6 shadow-md max-[760px]:p-[18px]">
+        <div class="flex items-center justify-between gap-2 border-b border-[#e2e8f0] pb-3 text-[13px] font-semibold leading-[18px] tracking-[0.65px] text-[#334155] uppercase">
+          <strong>Ringkasan Setoran Simulasi</strong><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 tracking-[0.12px] text-white normal-case">Live Estimate</span>
+        </div>
+        <div class="my-4 flex flex-col gap-3 rounded-lg bg-[#eff4ff] p-4">
+          <div class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]">
+            <div class="flex min-w-0 flex-col"><strong class="!font-['Roboto_Mono',monospace] font-medium">Kardus bekas (gelombang)</strong><span class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]">5,5 kg @ Rp 1.000/kg</span></div><b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold">Rp 5.500</b>
           </div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary">Mudah menemukan lokasi</h4>
-<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
-            Titik kumpul resmi dekat dengan tempat tinggalmu.
-          </p>
-</div>
-<!-- Benefit 2 -->
-<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
-            ⚖️
+          <div class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]">
+            <div class="flex min-w-0 flex-col"><strong class="!font-['Roboto_Mono',monospace] font-medium">Botol plastik PET bening</strong><span class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]">2,5 kg @ Rp 3.000/kg</span></div><b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold">Rp 7.500</b>
           </div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary">Insentif sesuai berat</h4>
-<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
-            Harga per kilogram transparan mengikuti standar pasar.
-          </p>
-</div>
-<!-- Benefit 3 -->
-<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
-            🛵
+          <div class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]">
+            <div class="flex min-w-0 flex-col"><strong class="!font-['Roboto_Mono',monospace] font-medium">Besi bersih</strong><span class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]">3,0 kg @ Rp 20.000/kg</span></div><b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold">Rp 60.000</b>
           </div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary">Ada layanan pick up</h4>
-<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
-            Kurir siap menjemput tanpa repot bawa barang berat.
-          </p>
-</div>
-<!-- Benefit 4 -->
-<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
-            📦
-          </div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary">Pemilahan lebih teratur</h4>
-<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
-            Panduan jenis barang praktis mudah dipahami keluarga.
-          </p>
-</div>
-<!-- Benefit 5 -->
-<div class="bg-surface-card p-5 rounded-xl shadow-xs flex flex-col items-start hover:shadow-md transition-all">
-<div class="w-10 h-10 rounded-full bg-status-error-bg text-primary-container flex items-center justify-center text-lg mb-3">
-            🤝
-          </div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary">Bisa didonasikan</h4>
-<p class="font-body-sm text-body-sm text-text-body mt-2 leading-relaxed">
-            Bantu sesama lewat konversi barang daur ulang.
-          </p>
-</div>
-</div>
-</div>
-</section>
-<!-- SECTION 8: FINAL CALL TO ACTION -->
-<section class="w-full bg-primary-container text-on-primary py-16 px-margin text-center">
-<div class="max-w-[1200px] mx-auto flex flex-col items-center">
-<h2 class="font-headline-xl text-headline-xl text-on-primary font-bold">Siap mulai Setor Loak?</h2>
-<p class="font-body-lg text-body-lg text-on-primary/90 max-w-xl mx-auto mt-3">
-        Daftar sekarang dan ubah barang bekasmu jadi manfaat nyata untuk kantong dan lingkungan.
-      </p>
-<div class="flex flex-wrap justify-center items-center gap-space-md mt-8">
-<a class="bg-secondary-container text-text-primary font-label-lg text-label-lg px-8 py-3.5 rounded-lg hover:bg-white transition-all shadow-md" href="/waste/new/">
-          Daftar Sekarang
-        </a>
-<a class="bg-white/10 text-on-primary hover:bg-white/20 font-label-lg text-label-lg px-6 py-3.5 rounded-lg transition-all" href="/location/">
-          Masuk ke Akun
-        </a>
-</div>
-</div>
-</section>
-</div></main>
+        </div>
+        <div class="flex items-baseline justify-between gap-2 pt-2 text-sm font-medium leading-5 text-[#334155] max-[420px]:items-start"><span>Perkiraan insentif</span><strong class="whitespace-nowrap text-4xl font-bold leading-[44px] tracking-[-0.72px] text-[#34a853] max-[760px]:text-[28px] max-[760px]:leading-9 max-[420px]:text-2xl">Rp 72.000</strong></div>
+        <div class="grid grid-cols-2 gap-3 pt-6">
+          <button type="button" class="flex min-h-10 items-center justify-center rounded-[7px] bg-[#beb7a7] px-3.5 py-2.5 text-sm font-bold leading-5 text-white">Terima insentif</button>
+          <button type="button" class="flex min-h-10 items-center justify-center rounded-[7px] bg-[#eff4ff] px-3.5 py-2.5 text-sm font-medium leading-5 text-[#334155]">Donasikan</button>
+        </div>
+        <p class="!font-['Roboto_Mono',monospace] flex items-center gap-1.5 pt-5 text-xs font-medium leading-4 text-[#334155]">
+          {% include "components/lucide_icon.html" with name="info" icon_class="h-[12px] w-[12px] shrink-0" only %}<span>Jumlah akhir dihitung setelah barang ditimbang petugas.</span>
+        </p>
+      </aside>
+    </div>
+  </section>
+
+  <section aria-labelledby="final-cta-title" class="bg-[#e7e2ce] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12">
+    <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center text-center">
+      <h2 id="final-cta-title" class="text-4xl font-bold leading-[44px] tracking-[-0.72px] text-[#334155] max-[760px]:text-[28px] max-[760px]:leading-9">Siap mulai Setor Loak?</h2>
+      <p class="!font-['Roboto_Mono',monospace] pt-3 text-base leading-6 text-[#334155] max-[760px]:text-sm max-[760px]:leading-[22px]">Daftar sekarang dan ubah barang bekasmu jadi manfaat nyata untuk<br class="max-[420px]:hidden"> kantong dan lingkungan.</p>
+      <div class="flex flex-wrap justify-center gap-4 pt-8">
+        <a class="inline-flex min-h-12 items-center justify-center rounded-lg bg-[#3b507d] px-8 py-3.5 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="{% url 'auth_page' %}">Daftar Sekarang</a>
+        <a class="inline-flex min-h-12 items-center justify-center rounded-lg border border-[#334155] bg-white/10 px-6 py-3.5 text-center text-sm font-medium leading-5 text-[#334155] transition-colors duration-150 hover:bg-white/35" href="{% url 'auth_page' %}">Masuk ke Akun</a>
+      </div>
+    </div>
+  </section>
+</main>
+
 {% include "components/footer.html" %}
 {% endblock %}
