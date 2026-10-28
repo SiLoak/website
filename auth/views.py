@@ -6,10 +6,12 @@ from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
-from django.contrib.auth import get_user_model, login
+from django.contrib import messages
+from django.contrib.auth import get_user_model, login, logout
 from django.db import IntegrityError, transaction
-from django.http import HttpResponseRedirect, JsonResponse
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
+from django.shortcuts import redirect, render
+from django.urls import reverse
 from django.utils.crypto import constant_time_compare
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.text import slugify
@@ -18,7 +20,8 @@ from google.auth.exceptions import GoogleAuthError
 from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2 import id_token
 
-from .models import GoogleIdentity
+from .forms import PhoneOnboardingForm
+from .models import GoogleIdentity, UserProfile
 
 
 GOOGLE_AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -27,11 +30,60 @@ OAUTH_SESSION_KEY = "google_oauth_states"
 MAX_PENDING_STATES = 5
 
 
-def _oauth_error(message, status):
-    return JsonResponse({"authenticated": False, "error": message}, status=status)
+def _oauth_error(request, message, next_url=""):
+    messages.error(request, message)
+    if not url_has_allowed_host_and_scheme(
+        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        next_url = ""
+
+    login_url = reverse("auth_page")
+    if next_url:
+        login_url = f"{login_url}?{urlencode({'next': next_url})}"
+    return redirect(login_url)
+
+
+def _safe_destination(request, destination):
+    if url_has_allowed_host_and_scheme(
+        destination, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return destination
+    return reverse("dashboard")
+
+
+def complete_profile(request):
+    if not request.user.is_authenticated:
+        return redirect("auth_page")
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if profile.phone_number:
+        return redirect("dashboard")
+
+    next_url = request.GET.get("next", "")
+    if request.method == "POST":
+        next_url = request.POST.get("next", "")
+        form = PhoneOnboardingForm(request.POST)
+        if form.is_valid():
+            profile.phone_number = form.cleaned_data["phone_number"]
+            profile.save(update_fields=["phone_number"])
+            return redirect(_safe_destination(request, next_url))
+    else:
+        form = PhoneOnboardingForm()
+    return render(request, "auth/complete_profile.html", {"form": form, "next_url": next_url})
+
+
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+    return redirect("landing_page")
 
 
 def auth_page(request):
+    if request.user.is_authenticated:
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if not profile.phone_number:
+            return redirect("complete_profile")
+        return redirect("dashboard")
+
     next_url = request.GET.get("next", "")
     if not url_has_allowed_host_and_scheme(
         next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
@@ -51,16 +103,27 @@ def _oauth_configuration():
 
 @require_GET
 def google_login(request):
-    configuration = _oauth_configuration()
-    if configuration is None:
-        return _oauth_error("Google OAuth is not configured.", 503)
+    if request.user.is_authenticated:
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if not profile.phone_number:
+            return redirect("complete_profile")
+        return redirect("dashboard")
 
-    client_id, _, _ = configuration
     next_url = request.GET.get("next", "")
     if not url_has_allowed_host_and_scheme(
         next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
     ):
         next_url = ""
+
+    configuration = _oauth_configuration()
+    if configuration is None:
+        return _oauth_error(
+            request,
+            "Login Google sedang tidak tersedia. Silakan coba lagi nanti.",
+            next_url,
+        )
+
+    client_id, _, _ = configuration
 
     state = secrets.token_urlsafe(32)
     nonce = secrets.token_urlsafe(32)
@@ -130,23 +193,44 @@ def _get_or_create_user(claims):
 
 @require_GET
 def google_callback(request):
+    if request.user.is_authenticated:
+        return redirect("dashboard")
+
     configuration = _oauth_configuration()
     if configuration is None:
-        return _oauth_error("Google OAuth is not configured.", 503)
+        return _oauth_error(
+            request,
+            "Login Google sedang tidak tersedia. Silakan coba lagi nanti.",
+        )
     client_id, client_secret, redirect_uri = configuration
 
     state = request.GET.get("state", "")
     pending = request.session.get(OAUTH_SESSION_KEY, {})
     flow = pending.pop(state, None) if state else None
-    if not flow:
-        return _oauth_error("Invalid or expired OAuth state.", 400)
     request.session[OAUTH_SESSION_KEY] = pending
+    if (
+        not isinstance(flow, dict)
+        or not flow.get("nonce")
+        or not flow.get("verifier")
+    ):
+        return _oauth_error(
+            request,
+            "Sesi masuk sudah kedaluwarsa. Silakan coba masuk lagi.",
+        )
 
     if request.GET.get("error"):
-        return _oauth_error("Google sign-in was not completed.", 400)
+        return _oauth_error(
+            request,
+            "Proses masuk Google dibatalkan. Silakan coba lagi.",
+            flow.get("next", ""),
+        )
     code = request.GET.get("code")
     if not code:
-        return _oauth_error("Google did not return an authorization code.", 400)
+        return _oauth_error(
+            request,
+            "Google tidak mengirim kode masuk. Silakan coba lagi.",
+            flow.get("next", ""),
+        )
 
     try:
         token_response = requests.post(
@@ -167,41 +251,60 @@ def google_callback(request):
             token_data["id_token"], GoogleRequest(), audience=client_id
         )
     except (requests.RequestException, ValueError, KeyError, TypeError, GoogleAuthError):
-        return _oauth_error("Google could not be verified. Please try again.", 502)
+        return _oauth_error(
+            request,
+            "Google tidak dapat memverifikasi akunmu. Silakan coba lagi.",
+            flow.get("next", ""),
+        )
 
     if not constant_time_compare(str(claims.get("nonce", "")), flow["nonce"]):
-        return _oauth_error("Invalid Google sign-in nonce.", 400)
+        return _oauth_error(
+            request,
+            "Verifikasi Google gagal. Silakan coba masuk lagi.",
+            flow.get("next", ""),
+        )
     if (
         not claims.get("sub")
         or not claims.get("email")
         or claims.get("email_verified") not in (True, "true")
     ):
-        return _oauth_error("Google must provide a verified email address.", 400)
+        return _oauth_error(
+            request,
+            "Gunakan akun Google dengan alamat email terverifikasi.",
+            flow.get("next", ""),
+        )
 
     try:
         user = _get_or_create_user(claims)
-    except ValueError as error:
-        return _oauth_error(str(error), 409)
+    except ValueError:
+        return _oauth_error(
+            request,
+            "Akun ini tidak dapat ditautkan. Silakan hubungi dukungan untuk bantuan.",
+            flow.get("next", ""),
+        )
     except IntegrityError:
         identity = GoogleIdentity.objects.select_related("user").filter(subject=claims["sub"]).first()
         if identity is None:
-            return _oauth_error("Could not link this Google account.", 409)
+            return _oauth_error(
+                request,
+                "Akun Google tidak dapat ditautkan. Silakan coba lagi.",
+                flow.get("next", ""),
+            )
         user = identity.user
 
     if not user.is_active:
-        return _oauth_error("This account is inactive.", 403)
+        return _oauth_error(
+            request,
+            "Akun ini tidak aktif. Silakan hubungi dukungan untuk bantuan.",
+            flow.get("next", ""),
+        )
 
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-    next_url = flow.get("next", "")
-    if next_url and url_has_allowed_host_and_scheme(
-        next_url, allowed_hosts={request.get_host()}, require_https=request.is_secure()
-    ):
-        return HttpResponseRedirect(next_url)
-    return JsonResponse({
-        "authenticated": True,
-        "user": {
-            "id": user.pk,
-            "email": user.email,
-            "name": user.get_full_name() or user.username,
-        },
-    })
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    if not profile.phone_number:
+        onboarding_url = reverse("complete_profile")
+        next_url = flow.get("next", "")
+        if next_url:
+            onboarding_url = f"{onboarding_url}?{urlencode({'next': next_url})}"
+        return redirect(onboarding_url)
+    return redirect(_safe_destination(request, flow.get("next", "")))

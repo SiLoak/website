@@ -131,6 +131,7 @@ def request_pickup(request):
   return render(request, "waste/request.html", {"active_item": "waste"})
 
 
+@login_required(login_url="auth_page")
 def show_pickup_detail(request, pickup_id):
   pickup, is_owner, is_assigned = _get_accessible_pickup(request.user, pickup_id)
 
@@ -294,6 +295,9 @@ def accept_pickup_ajax(request, pickup_id):
 
 @require_POST
 def update_pickup_status_ajax(request, pickup_id):
+  if not request.user.is_authenticated:
+    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
+
   new_status = request.POST.get("status", "").strip()
   if new_status not in PROGRESS_STATUSES:
     return JsonResponse({"error": "Status tujuan tidak valid."}, status=400)
