@@ -127,23 +127,23 @@
               </div>
             </div>
             <div class="waste-methods" role="radiogroup" aria-labelledby="waste-method-heading">
-              <label class="waste-method-option is-selected" data-method-card>
+              <label class="waste-method-option group is-selected" data-method-card>
                 <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="antar_sendiri" data-delivery-mode {% if request.POST.delivery_method != 'minta_dijemput' %}checked{% endif %}>
                 <div class="waste-method-top">
                   <span class="waste-icon-box">{% include "components/lucide_icon.html" with name="bike" icon_class="h-5 w-5" only %}</span>
-                  <span class="waste-selected-tag">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
-                  <span class="waste-radio-mark" aria-hidden="true"></span>
+                  <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
+                  <span class="waste-radio-mark group-[.is-selected]:hidden" aria-hidden="true"></span>
                 </div>
                 <h3>Antar sendiri</h3>
                 <p>Bawa barangmu ke titik pengumpulan terdekat tanpa biaya kurir.</p>
                 <div class="waste-method-foot">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Kamu akan memilih titik pengumpulan.</div>
               </label>
-              <label class="waste-method-option is-inactive" data-method-card>
+              <label class="waste-method-option group is-inactive" data-method-card>
                 <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="minta_dijemput" data-delivery-mode {% if request.POST.delivery_method == 'minta_dijemput' %}checked{% endif %}>
                 <div class="waste-method-top">
                   <span class="waste-icon-box"><span class="font-symbols text-[20px] leading-none" aria-hidden="true">local_shipping</span></span>
-                  <span class="waste-selected-tag">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
-                  <span class="waste-radio-mark" aria-hidden="true"></span>
+                  <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
+                  <span class="waste-radio-mark group-[.is-selected]:hidden" aria-hidden="true"></span>
                 </div>
                 <h3>Minta dijemput</h3>
                 <p>Petugas datang mengambil barang di rumahmu sesuai waktu luangmu.</p>
