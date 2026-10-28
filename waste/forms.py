@@ -18,10 +18,11 @@ class CollectionPointChoiceField(forms.ModelChoiceField):
 
 class WasteTypeChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
+        name = f"{obj.category} · {obj.name}" if obj.category else obj.name
         if obj.rate_per_kg is None:
-            return f"{obj.name} — tarif menunggu konfirmasi"
+            return f"{name} — tarif menunggu konfirmasi"
         rate = f"{obj.rate_per_kg:,.0f}".replace(",", ".")
-        return f"{obj.name} — Rp {rate}/kg"
+        return f"{name} — Rp {rate}/kg"
 
 
 class SubmissionForm(forms.ModelForm):
