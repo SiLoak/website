@@ -58,7 +58,7 @@
                 <div>
                   <p class="font-semibold text-text-primary">{{ item.waste_type.name }}</p>
                   <p class="mt-1 text-sm text-text-body">Perkiraan: {{ item.estimated_weight|floatformat:2 }} kg</p>
-                  {% if item.unit_rate_snapshot != None %}<p class="mt-1 text-xs text-text-body">Tarif saat pengajuan: Rp {{ item.unit_rate_snapshot|floatformat:0 }} / kg</p>{% endif %}
+                  {% if item.unit_rate_snapshot != None %}<p class="mt-1 text-xs text-text-body">Tarif saat pengajuan: Rp {{ item.unit_rate_snapshot|floatformat:2 }} / kg</p>{% endif %}
                 </div>
                 <div class="text-left sm:text-right">
                   {% if item.actual_weight != None %}
@@ -92,7 +92,7 @@
             <div class="mt-5 border-t border-border-slate pt-4">
               {% if submission.actual_reward != None %}
                 <p class="text-sm text-text-body">Estimasi insentif berdasarkan berat aktual</p>
-                <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.actual_reward|floatformat:0 }}</p>
+                <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.actual_reward|floatformat:2 }}</p>
               {% else %}
                 <p class="text-sm text-text-body">Insentif belum tersedia karena tarif untuk satu atau lebih jenis sampah belum diatur.</p>
               {% endif %}
@@ -100,7 +100,7 @@
           {% elif submission.estimated_reward != None %}
             <div class="mt-5 border-t border-border-slate pt-4">
               <p class="text-sm text-text-body">Perkiraan insentif</p>
-              <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.estimated_reward|floatformat:0 }}</p>
+              <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.estimated_reward|floatformat:2 }}</p>
               <p class="mt-1 text-xs text-text-body">Nilai akhir mengikuti hasil penimbangan.</p>
             </div>
           {% endif %}

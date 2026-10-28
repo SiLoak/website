@@ -79,7 +79,7 @@ class WithdrawalForm(forms.Form):
         widget=forms.NumberInput(attrs={
             "min": "10000",
             "step": "1000",
-            "placeholder": "Minimal Rp10.000",
+            "placeholder": "Minimal Rp10.000,00",
             "class": f"{WITHDRAWAL_FIELD_CLASSES} pl-10 text-m font-semibold",
         }),
     )
@@ -112,7 +112,7 @@ class WithdrawalForm(forms.Form):
 
         if amount < Decimal("10000"):
             raise forms.ValidationError(
-                "Minimum penarikan adalah Rp10.000."
+                "Minimum penarikan adalah Rp10.000,00."
             )
 
         if amount > self.available_balance:
@@ -131,7 +131,7 @@ class DonationForm(forms.Form):
         widget=forms.NumberInput(attrs={
             "min": "1000",
             "step": "1000",
-            "placeholder": "Minimal Rp1.000",
+            "placeholder": "Minimal Rp1.000,00",
             "class": f"{DONATION_FIELD_CLASSES} pl-10 text-m font-semibold",
         }),
     )

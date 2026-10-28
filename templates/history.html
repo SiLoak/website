@@ -36,7 +36,7 @@
           <p class="mt-2 text-2xl font-bold text-text-primary">Belum tersedia</p>
           <p class="mt-1 text-xs text-text-body">Tarif {{ unpriced_verified_count }} pengajuan belum diatur.</p>
         {% else %}
-          <p class="mt-2 text-3xl font-bold text-text-primary">Rp {{ total_actual_reward|floatformat:0 }}</p>
+          <p class="mt-2 text-3xl font-bold text-text-primary">Rp {{ total_actual_reward|floatformat:2 }}</p>
         {% endif %}
         <p class="mt-1 text-xs text-text-body">{{ verified_count }} pengajuan selesai ditimbang</p>
       </div>

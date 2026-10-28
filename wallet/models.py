@@ -17,6 +17,7 @@ class WalletTransaction(models.Model):
         EARNING = "earning", "Insentif masuk"
         WITHDRAWAL = "withdrawal", "Penarikan"
         DONATION = "donation", "Donasi"
+        REFUND = "refund", "Pengembalian Dana"
     class Status(models.TextChoices):
         PENDING = "pending", "Diproses"
         SUCCESS = "success", "Berhasil"
