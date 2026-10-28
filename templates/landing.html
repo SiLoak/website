@@ -5,6 +5,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'js/leaflet-maps.js' %}"></script>
 {% endblock %}
 {% block content %}
 <a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white" href="#main-content">Lewati ke konten utama</a>
@@ -111,9 +115,10 @@
             <button type="button" class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2">5 km</button>
             <button type="button" class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2">10 km</button>
           </div>
-          <button type="submit" class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white max-[760px]:flex-1">
+          <button id="landing-find-nearest" data-find-nearest="landing-map" data-find-nearest-status="landing-nearest-status" type="button" class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white max-[760px]:flex-1">
             {% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}<span>Cari yang terdekat</span>
           </button>
+          <span id="landing-nearest-status" class="text-xs leading-5 text-[#334155]" role="status" aria-live="polite"></span>
         </form>
 
         <div class="mt-6 grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] items-start gap-6 max-[760px]:grid-cols-1">
@@ -156,7 +161,8 @@
               </div>
             </article>
           </div>
-          <div role="img" aria-label="Map placeholder" class="h-[480px] min-w-0 overflow-hidden rounded-xl bg-white max-[760px]:h-[360px]"></div>
+          {{ map_points|json_script:"landing-map-points" }}
+          <div id="landing-map" data-leaflet-map data-points="landing-map-points" role="region" aria-label="Peta titik pengumpulan" class="leaflet-map h-[480px] min-w-0 overflow-hidden rounded-xl bg-white max-[760px]:h-[360px]"></div>
         </div>
       </div>
     </div>
