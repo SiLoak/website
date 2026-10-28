@@ -11,7 +11,7 @@ from .views import OAUTH_SESSION_KEY
     GOOGLE_OAUTH_CLIENT_SECRET="test-client-secret",
     GOOGLE_OAUTH_REDIRECT_URI="http://testserver/auth/google/callback/",
 )
-class GoogleOAuthReturnPathTests(TestCase):
+class GoogleOAuthRedirectTests(TestCase):
     def callback(self, *, next_url=""):
         state = "test-state"
         nonce = "test-nonce"
@@ -55,21 +55,16 @@ class GoogleOAuthReturnPathTests(TestCase):
         pending = self.client.session[OAUTH_SESSION_KEY]
         self.assertEqual(list(pending.values())[-1]["next"], "")
 
-    def test_callback_redirects_to_safe_submission_return_path(self):
+    def test_callback_redirects_to_dashboard_after_successful_login(self):
         response = self.callback(next_url="/waste/new/")
 
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response.url, "/waste/new/")
+        self.assertEqual(response.url, reverse("dashboard"))
         self.assertTrue(self.client.session.get("_auth_user_id"))
 
-    def test_callback_keeps_json_response_without_return_path(self):
-        response = self.callback()
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["authenticated"], True)
-
-    def test_callback_rejects_external_return_path_and_keeps_json_response(self):
+    def test_callback_redirects_to_dashboard_for_external_return_path(self):
         response = self.callback(next_url="https://attacker.example/")
 
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.json()["authenticated"], True)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, reverse("dashboard"))
+        self.assertTrue(self.client.session.get("_auth_user_id"))

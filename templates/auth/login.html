@@ -167,6 +167,20 @@
       <!-- Card Container: max 440px wide, 32px padding, 12px radius, thin border -->
       <div class="w-full max-w-[440px] bg-white rounded-xl border border-[#E6E5E0] shadow-sm p-8 transition-all hover:shadow-md">
 
+        {% if messages %}
+          <div class="mb-6 space-y-2" aria-live="polite">
+            {% for message in messages %}
+              <div role="alert" class="flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 px-3.5 py-3 text-sm text-red-800">
+                <svg class="mt-0.5 h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path stroke-linecap="round" d="M12 8v4m0 4h.01"></path>
+                </svg>
+                <p class="min-w-0 flex-1">{{ message }}</p>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+
         <!-- 1. SiLoak Logo Centered -->
         <div class="flex flex-col items-center text-center">
           <div class="w-12 h-12 rounded-xl bg-[#F7F6F3] border border-[#E7E2CE] flex items-center justify-center text-[#112250] shadow-sm mb-3">
