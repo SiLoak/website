@@ -34,25 +34,15 @@
             <section class="space-y-5 lg:col-span-7">
 
                 <!-- SALDO -->
-                <div class="rounded-xl bg-white p-5 shadow-sm">
+                <div class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-5 shadow-sm">
                     <div class="mb-2 flex items-center justify-between gap-3">
-                        <p class="text-xs font-semibold uppercase tracking-wide text-slate-500">SALDO DOMPET SAAT INI</p>
-                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-[#2457D6]">SiLoak Wallet</span>
+                        <p class="text-sm text-white">SALDO TERSEDIA</p>
+                        <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white">SiLoak Wallet</span>
                     </div>
 
-                    <p class="text-3xl font-bold text-[#142653]">
-                        {% if wallet %}
-                            Rp {{ wallet.balance|floatformat:0 }}
-                        {% else %}
-                            Rp 0
-                        {% endif %}
-                    </p>
+                    <p class="mt-1 text-4xl text-white font-bold">Rp {{ wallet.balance|floatformat:0 }}</p>
 
-                    <p class="mt-1 text-sm text-slate-600">
-                        Saldo yang tersedia untuk penarikan
-                    </p>
-
-                    <div class="mt-4 border-t border-slate-200 pt-3 text-xs text-slate-500">
+                    <div class="mt-4 border-t border-white/15 pt-3 text-xs text-white/60">
                         Minimum penarikan Rp10.000
                     </div>
                 </div>
