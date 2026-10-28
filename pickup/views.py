@@ -7,11 +7,13 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.views.decorators.http import require_POST
+from django.utils import timezone
 
 from pickup import services
 from pickup.models import PickupRequest
 from pickup.forms import PickupForm
 from pickup.permissions import is_giver, is_collector, is_admin
+
 
 # Create your views here.
 
@@ -93,12 +95,33 @@ def _transition_response(request, pickup_id, new_status, note="", collector=None
   )
 
 
+def _get_today_string():
+  today = timezone.localdate()
+
+  months = [
+    "Jan", "Feb", "Mar", "Apr", "Mei", "Jun",
+    "Jul", "Agu", "Sep", "Okt", "Nov", "Des"
+  ]
+
+  return f"{today.day} {months[today.month - 1]} {today.year}"
+
+
+def _get_current_month_string():
+  today = timezone.localdate()
+
+  months = [
+    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+  ]
+
+  return f"{months[today.month - 1]} {today.year}"
+
+
 # --------------- Page ---------------
 
 
+@login_required(login_url="auth_page")
 def show_pickup_list(request):
-  if not request.user.is_authenticated:
-    return redirect_to_login(request.get_full_path())
   if not is_giver(request.user):
     raise PermissionDenied
   
@@ -112,9 +135,8 @@ def show_pickup_list(request):
   return render(request, "pickup.html", context)
 
 
+@login_required(login_url="auth_page")
 def show_collector_pickup_list(request):
-  if not request.user.is_authenticated:
-    return redirect_to_login(request.get_full_path())
   if not is_collector(request.user):
     raise PermissionDenied
   
@@ -122,6 +144,9 @@ def show_collector_pickup_list(request):
 
   context = {
     "id_query": id_query,
+    "collector_name": request.user.first_name,
+    "today_date": _get_today_string(),
+    "current_month": _get_current_month_string(),
   }
 
   return render(request, "pickup/dashboard_collector.html", context)

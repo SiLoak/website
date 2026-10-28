@@ -19,8 +19,14 @@ const newErrorState = document.getElementById("new-error");
 const newEmptyState = document.getElementById("new-empty");
 const newPickupGridContainer = document.getElementById("new-pickup-grid");
 
+const helloSubmsg = document.getElementById("hello-submsg");
 const todaysPickupsCard = document.getElementById("todays-pickups-card");
 const activePickupsCard = document.getElementById("active-pickups-card");
+const completedPickupsCard = document.getElementById("completed-pickups-card");
+const todaysPickupsStatCard = document.getElementById("todays-pickups-stat-card");
+const todaysWeightCard = document.getElementById("todays-weight-card");
+const pickupsCount = document.getElementById("pickups-count");
+const newPickupsCount = document.getElementById("new-pickups-count");
 
 // Menyembunyikan/Menampilkan section halaman
 function displayPickupSection({ showLoading = false, showError = false, showEmpty = false, showGrid = false }) {
@@ -76,6 +82,35 @@ function getActivePickups(pickupData) {
   return pickupData.filter((pickup) => {
     return (pickup.fields.status_display == "ON_THE_WAY" || pickup.fields.status_display == "ARRIVED" || pickup.fields.status_display == "WEIGHING");
   })
+}
+
+function getCompletedPickups(pickupData) {
+  return pickupData.filter((pickup) => {
+    const completedAt = pickup.fields.completed_at ? new Date(pickup.fields.completed_at) : "";
+    return (
+      completedAt.getMonth() === now.getMonth() &&
+      completedAt.getFullYear() === now.getFullYear() &&
+      pickup.fields.status_display === "COMPLETED"
+    )
+  })
+}
+
+function getTodaysStat(pickupData) {
+  let todaysCompletedPickups = 0;
+  let todaysActivePickups = 0;
+  let todaysWaitingPickups = 0;
+
+  pickupData.forEach((pickup) => {
+    if (pickup.fields.status_display === "COMPLETED") {
+      todaysCompletedPickups++;
+    } else if (pickup.fields.status_display === "WEIGHING" || pickup.fields.status_display === "ARRIVED" || pickup.fields.status_display === "ON_THE_WAY") {
+      todaysActivePickups++;
+    } else if (pickup.fields.status_display === "ASSIGNED") {
+      todaysWaitingPickups++;
+    }
+  })
+
+  return [todaysCompletedPickups, todaysActivePickups, todaysWaitingPickups];
 }
 
 // Membuat elemen row untuk pickup list
@@ -169,22 +204,30 @@ async function fetchPickupList() {
 
     if (pickupData.length === 0) {
       displayPickupSection({ showEmpty: true });
-      todaysPickupsCard.textContent = "0";
-      activePickupsCard.textContent = "0";
     } else {
       pickupGridContainer.innerHTML = "";
       pickupData.forEach(item => {
         pickupGridContainer.appendChild(buildPickupRowElement(item));
       })
 
-      const todaysPickups = getTodaysPickups(pickupData);
-      todaysPickupsCard.textContent = todaysPickups.length();
-
-      const activePickups = getActivePickups(pickupData);
-      activePickupsCard.textContent = activePickups.length();
-
       displayPickupSection({ showGrid: true });
     }
+
+    const todaysPickups = getTodaysPickups(pickupData);
+    todaysPickupsCard.textContent = todaysPickups.length;
+
+    const activePickups = getActivePickups(pickupData);
+    activePickupsCard.textContent = activePickups.length;
+
+    const completedPickups = getCompletedPickups(pickupData);
+    completedPickupsCard.textContent = completedPickups.length;
+
+    const [todaysCompletedPickups, todaysActivePickups, todaysWaitingPickups] = getTodaysStat(pickupData);
+    todaysPickupsStatCard.textContent = `${todaysCompletedPickups} selesai • ${todaysActivePickups} aktif • ${todaysWaitingPickups} menunggu`;
+    todaysWeightCard.textContent = `Dari ${todaysCompletedPickups} pick up selesai`;
+
+    pickupsCount.textContent = `${pickupData.length} tugas`;
+    helloSubmsg.textContent = `Ada ${todaysPickups.length - todaysCompletedPickups} tugas jemput yang belum selesai hari ini.`
   } catch (error) {
     if (error.name === 'AbortError') return;
     console.error('Error loading pickup:', error);
@@ -220,6 +263,8 @@ async function fetchNewPickupList() {
       })
       displayNewPickupSection({ showGrid: true });
     }
+
+    newPickupsCount.textContent = `${newPickupData.length} permintaan`;
   } catch (error) {
     if (error.name === 'AbortError') return;
     console.error('Error loading new pickup:', error);
