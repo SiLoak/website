@@ -21,17 +21,17 @@
             <!-- Main Content Area -->
             <div class="flex flex-col gap-5 lg:col-span-8">
                 <!-- Saldo Card -->
-                <section class="wallet-hero rounded-xl p-6 shadow-md sm:p-8">
-                    <p class="text-sm text-white/75">SALDO INSENTIF</p>
+                <section class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-6 text-white shadow-md sm:p-8">
+                    <p class="text-sm text-white">SALDO INSENTIF</p>
                     <p class="mt-1 text-4xl font-bold">Rp {{ wallet.balance|floatformat:0 }}</p>
-                    <p class="mt-2 text-sm text-white/75">Bisa ditarik atau didonasikan</p>
+                    <p class="mt-2 text-sm text-white">Bisa ditarik atau didonasikan</p>
                     
                     <div class="mt-6 flex flex-wrap gap-3">
                         <a href="{% url 'wallet:withdraw' %}" class="rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-siloak-navy">↗ Tarik Saldo</a>
                         <a href="{% url 'wallet:donate' %}" class="rounded-lg border border-white/50 px-4 py-2.5 text-sm font-semibold text-white">♡ Donasikan</a>
                     </div>
                     
-                    <p class="mt-4 text-xs text-white/70">Penarikan minimal Rp10.000.</p>
+                    <p class="mt-4 text-xs text-white">Penarikan minimal Rp10.000.</p>
                 </section>
 
                 <!-- Stats Overview -->

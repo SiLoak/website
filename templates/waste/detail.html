@@ -108,7 +108,7 @@
 
         {% if submission.status == "pending" %}
           <a class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-slate bg-surface-card px-4 py-3 font-semibold text-text-primary shadow-sm hover:bg-surface-soft" href="{% url 'waste:edit' submission_id=submission.pk %}">
-            <span class="material-symbols-outlined" aria-hidden="true">edit</span>Ubah pengajuan
+            <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga']" aria-hidden="true">edit</span>Ubah pengajuan
           </a>
           <form method="post" action="{% url 'waste:cancel' submission_id=submission.pk %}" onsubmit="return confirm('Batalkan pengajuan setoran ini?')">
             {% csrf_token %}

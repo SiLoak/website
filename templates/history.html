@@ -11,7 +11,7 @@
         <p class="mt-1 text-text-body">Pantau status dan hasil penimbangan semua pengajuanmu.</p>
       </div>
       <a class="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-4 py-3 font-semibold text-white shadow-sm hover:bg-tertiary" href="{% url 'waste:new' %}">
-        <span class="material-symbols-outlined" aria-hidden="true">add</span>Setor baru
+        <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga']" aria-hidden="true">add</span>Setor baru
       </a>
     </header>
 
@@ -96,7 +96,7 @@
         </div>
       {% else %}
         <div class="px-6 py-14 text-center">
-          <span class="material-symbols-outlined text-5xl text-text-body/50" aria-hidden="true">recycling</span>
+          <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-5xl text-text-body/50" aria-hidden="true">recycling</span>
           <h3 class="mt-3 font-semibold text-text-primary">Belum ada pengajuan setoran</h3>
           <p class="mt-1 text-sm text-text-body">Pengajuan yang kamu buat akan muncul di halaman ini.</p>
           <a class="mt-5 inline-flex rounded-lg bg-primary px-4 py-2.5 font-semibold text-white hover:bg-tertiary" href="{% url 'waste:new' %}">Buat pengajuan pertama</a>

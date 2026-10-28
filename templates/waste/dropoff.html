@@ -43,7 +43,7 @@
         {{ formset.management_form }}
         <div id="item-forms" class="space-y-4">
           {% for item_form in formset %}
-            <div class="item-form rounded-lg bg-surface-soft p-4" data-item-form>
+            <div class="rounded-lg bg-surface-soft p-4" data-item-form>
               {{ item_form.id }}<span class="hidden">{{ item_form.DELETE }}</span>
               {% if item_form.non_field_errors %}<div class="mb-2 text-sm text-red-700">{{ item_form.non_field_errors }}</div>{% endif %}
               <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end">
@@ -58,13 +58,13 @@
                   {{ item_form.estimated_weight }}
                   {% if item_form.estimated_weight.errors %}<p class="mt-1 text-sm text-red-700">{{ item_form.estimated_weight.errors|join:", " }}</p>{% endif %}
                 </div>
-                <button class="remove-item rounded-lg border border-border-slate bg-surface-card px-3 py-3 text-sm font-medium text-red-700 hover:bg-red-50" type="button">Hapus</button>
+                <button data-remove-item class="rounded-lg border border-border-slate bg-surface-card px-3 py-3 text-sm font-medium text-red-700 hover:bg-red-50" type="button">Hapus</button>
               </div>
             </div>
           {% endfor %}
         </div>
         <template id="empty-item-form">
-          <div class="item-form rounded-lg bg-surface-soft p-4" data-item-form>
+          <div class="rounded-lg bg-surface-soft p-4" data-item-form>
             {{ formset.empty_form.id }}<span class="hidden">{{ formset.empty_form.DELETE }}</span>
             <div class="grid gap-4 sm:grid-cols-[minmax(0,1fr)_12rem_auto] sm:items-end">
               <div>
@@ -75,12 +75,12 @@
                 <label class="mb-1 block text-sm font-medium text-text-primary" for="{{ formset.empty_form.estimated_weight.id_for_label }}">{{ formset.empty_form.estimated_weight.label }}</label>
                 {{ formset.empty_form.estimated_weight }}
               </div>
-              <button class="remove-item rounded-lg border border-border-slate bg-surface-card px-3 py-3 text-sm font-medium text-red-700 hover:bg-red-50" type="button">Hapus</button>
+              <button data-remove-item class="rounded-lg border border-border-slate bg-surface-card px-3 py-3 text-sm font-medium text-red-700 hover:bg-red-50" type="button">Hapus</button>
             </div>
           </div>
         </template>
         <button id="add-item" class="mt-4 inline-flex items-center gap-2 rounded-lg px-3 py-2 font-semibold text-primary hover:bg-surface-soft" type="button">
-          <span class="material-symbols-outlined text-xl" aria-hidden="true">add_circle</span>Tambah jenis sampah
+          <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-xl" aria-hidden="true">add_circle</span>Tambah jenis sampah
         </button>
       </section>
 
@@ -118,7 +118,7 @@
       addButton.classList.toggle("opacity-50", addButton.disabled);
       addButton.setAttribute("aria-disabled", String(addButton.disabled));
       container.querySelectorAll("[data-item-form]").forEach((row) => {
-        row.querySelector(".remove-item").classList.toggle("hidden", count <= 1 && row.dataset.deleted !== "true");
+        row.querySelector("[data-remove-item]").classList.toggle("hidden", count <= 1 && row.dataset.deleted !== "true");
       });
     };
 
@@ -131,7 +131,7 @@
     });
 
     container.addEventListener("click", (event) => {
-      const button = event.target.closest(".remove-item");
+      const button = event.target.closest("[data-remove-item]");
       if (!button) return;
       const row = button.closest("[data-item-form]");
       const deleteField = row.querySelector('input[name$="-DELETE"]');

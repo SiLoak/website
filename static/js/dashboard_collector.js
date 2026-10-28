@@ -92,7 +92,7 @@ function buildPickupRowElement(item) {
   const completeRowHtml = `
     <div class="flex items-center gap-3 min-w-0">
       <div class="w-9 h-9 rounded-full bg-status-warning-bg text-status-warning-text flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-[19px]">local_shipping</span>
+        <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[19px]">local_shipping</span>
       </div>
       <div class="min-w-0">
         <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${pickupId} • ${pickup.pickup_address}</p>
@@ -103,7 +103,7 @@ function buildPickupRowElement(item) {
       <span class="bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">Ditugaskan</span>
       <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}">
         Detail
-        <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+        <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
       </a>
     </div>
   `;
@@ -127,7 +127,7 @@ function buildNewPickupRowElement(item) {
   const completeRowHtml = `
     <div class="flex items-center gap-3 min-w-0">
       <div class="w-9 h-9 rounded-full bg-surface-soft text-text-body flex items-center justify-center shrink-0">
-        <span class="material-symbols-outlined text-[19px]">hourglass_top</span>
+        <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[19px]">hourglass_top</span>
       </div>
       <div class="min-w-0">
         <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${newPickupId} • ${newPickup.pickup_address}</p>
@@ -136,10 +136,10 @@ function buildNewPickupRowElement(item) {
     </div>
     <div class="shrink-0 pl-3 flex items-center gap-3">
       <span class="bg-surface-soft text-text-body font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">Pending</span>
-      <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}"> Detail <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+      <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}"> Detail <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
       </a>
       <form method="post" action="${acceptUrl}"> {% csrf_token %} <button class="h-9 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold inline-flex items-center gap-1.5 hover:bg-tertiary transition-colors shadow-sm" type="submit">
-          <span class="material-symbols-outlined text-[18px]">check</span> Terima </button>
+          <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[18px]">check</span> Terima </button>
       </form>
     </div>
   `;
