@@ -10,7 +10,10 @@ def dashboard(request):
 
 
 def wallet(request):
-    return render(request, "wallet.html", {"active_item": "wallet"})
+    return render(request, "wallet/wallet.html", {"active_item": "wallet"})
+
+def withdraw(request):
+    return render(request, "wallet/withdraw.html", {"active_item": "wallet"})
 
 
 def history(request):

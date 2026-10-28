@@ -22,7 +22,6 @@ from main.views import (
     landing_page,
     legal_page,
     profile,
-    wallet,
 )
 
 
@@ -30,7 +29,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", landing_page, name="landing_page"),
     path("dashboard/", dashboard, name="dashboard"),
-    path("wallet/", wallet, name="wallet"),
     path("history/", history, name="history"),
     path("profile/", profile, name="profile"),
     path("terms/", legal_page, {"page": "terms"}, name="terms"),
@@ -39,4 +37,5 @@ urlpatterns = [
     path('location/', include('location.urls')),
     path('pickup/', include('pickup.urls')),
     path('waste/', include('waste.urls')),
+    path('wallet/', include('wallet.urls')),
 ]

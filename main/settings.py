@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'location',
     'pickup',
     'waste',
+    'wallet',
 ]
 
 MIDDLEWARE = [
@@ -142,3 +143,7 @@ MAILERS = {
         'BACKEND': 'django.core.mail.backends.console.EmailBackend',
     },
 }
+
+LOGIN_URL = 'auth_page'
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGOUT_REDIRECT_URL = 'landing_page'

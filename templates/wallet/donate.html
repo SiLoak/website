@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Donasikan Insentif · SiLoak{% endblock %}
+
+{% block content %}
+{% include "components/navbar.html" with active_item="wallet" %}
+
+<main class="min-h-screen bg-[#f7f8fc]">
+    <div class="mx-auto max-w-3xl px-4 py-8">
+        <a href="{% url 'wallet:index' %}" class="text-sm font-semibold text-[#2457D6]">← Kembali ke Dompet</a>
+        
+        <section class="mt-4 rounded-xl bg-white p-6 shadow-sm sm:p-8">
+            <div class="mb-4 text-3xl text-rose-500">♡</div>
+            <h1 class="text-3xl font-bold">Donasikan Insentif</h1>
+            <p class="mt-2 text-sm leading-relaxed text-slate-500">Donasi yang dikonfirmasi akan mengurangi saldo dompet sesuai nominalnya.</p>
+            
+            <div class="mt-5 rounded-xl bg-[#142653] p-5 text-white">
+                <p class="text-xs text-white/75">SALDO TERSEDIA</p>
+                <p class="mt-1 text-3xl font-bold">Rp {{ wallet.balance|floatformat:0 }}</p>
+            </div>
+
+            <form method="post" class="mt-6 space-y-4">
+                {% csrf_token %}
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
+                        {{ field }}
+                        {% for error in field.errors %}
+                            <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endfor %}
+
+                <button class="w-full rounded-lg bg-[#2457D6] px-4 py-3 text-sm font-semibold text-white">Konfirmasi Donasi</button>
+                <p class="text-center text-xs text-slate-500">Transaksi donasi ini simulasi internal untuk tugas kuliah.</p>
+            </form>
+        </section>
+    </div>
+</main>
+
+{% include "components/footer.html" %}
+
+<style>
+    input, textarea {
+        width: 100%;
+        border: 1px solid #dbe2ee;
+        border-radius: .6rem;
+        padding: .65rem .8rem;
+        background: #fff;
+        font: inherit;
+    }
+    input:focus, textarea:focus {
+        outline: 2px solid #2457d633;
+        border-color: #2457d6;
+    }
+</style>
+{% endblock %}
