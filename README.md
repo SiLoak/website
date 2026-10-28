@@ -182,6 +182,16 @@ The endpoints are `GET /auth/google/login/` to begin sign-in and `GET /auth/goog
 
 API akan digunakan sebagai sumber data eksternal untuk fitur lokasi, sementara data utama seperti pengguna, transaksi sampah, titik pengumpulan, pickup, dan insentif akan dikelola melalui database aplikasi.
 
+## Seed Data Waste
+
+Migration waste mengisi katalog jenis sampah dari `waste.json` dan titik pengumpulan dari `dropoff.json` saat `python manage.py migrate` dijalankan. Untuk menyinkronkan ulang database setelah salah satu file JSON diperbarui, jalankan:
+
+```bash
+python manage.py seed_waste_catalog
+```
+
+Data titik yang belum menyediakan alamat atau jam operasional akan menggunakan teks `Alamat belum tersedia` dan jam operasional kosong.
+
 ---
 
 # Jenis Pengguna

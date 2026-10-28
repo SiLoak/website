@@ -6,6 +6,7 @@ from django.core.validators import MinValueValidator
 
 
 class WasteType(models.Model):
+    category = models.CharField(max_length=80, blank=True)
     name = models.CharField(max_length=120, unique=True)
     rate_per_kg = models.DecimalField(
         max_digits=10,

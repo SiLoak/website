@@ -6,9 +6,9 @@ from .models import CollectionPoint, Submission, SubmissionItem, WasteType
 
 @admin.register(WasteType)
 class WasteTypeAdmin(admin.ModelAdmin):
-    list_display = ("name", "rate_per_kg", "is_active")
-    list_filter = ("is_active",)
-    search_fields = ("name",)
+    list_display = ("name", "category", "rate_per_kg", "is_active")
+    list_filter = ("category", "is_active")
+    search_fields = ("name", "category")
 
 
 @admin.register(CollectionPoint)
