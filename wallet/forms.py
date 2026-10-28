@@ -3,17 +3,104 @@ from django import forms
 from .models import Wallet
 
 class WithdrawalForm(forms.Form):
-    destination_type = forms.ChoiceField(label="Jenis tujuan", choices=[("bank","Rekening bank"),("ewallet","E-wallet")])
-    destination_name = forms.CharField(label="Nama bank / e-wallet", max_length=80)
-    account_number = forms.CharField(label="Nomor rekening / akun", max_length=40)
-    account_holder = forms.CharField(label="Nama pemilik akun", max_length=100)
-    amount = forms.DecimalField(label="Nominal penarikan", min_value=Decimal("10000"), max_digits=14, decimal_places=2,
-        widget=forms.NumberInput(attrs={"min":"10000","step":"1000","placeholder":"Minimal Rp10.000"}))
-    def __init__(self,*args,available_balance=Decimal("0"),**kwargs):
-        super().__init__(*args,**kwargs); self.available_balance=available_balance
+    BANK_CHOICES = [
+        ("BCA", "BCA"),
+        ("BNI", "BNI"),
+        ("BRI", "BRI"),
+        ("Mandiri", "Bank Mandiri"),
+        ("BSI", "BSI"),
+        ("CIMB Niaga", "CIMB Niaga"),
+        ("BTN", "BTN"),
+        ("Permata", "Bank Permata"),
+        ("Danamon", "Bank Danamon"),
+    ]
+
+    EWALLET_CHOICES = [
+        ("GoPay", "GoPay"),
+        ("OVO", "OVO"),
+        ("DANA", "DANA"),
+        ("ShopeePay", "ShopeePay"),
+        ("LinkAja", "LinkAja"),
+    ]
+
+    destination_type = forms.ChoiceField(
+        label="Jenis Tujuan",
+        choices=[
+            ("bank", "Rekening Bank"),
+            ("ewallet", "E-Wallet"),
+        ],
+    )
+
+    destination_name = forms.ChoiceField(
+        label="Bank / E-Wallet",
+        choices=BANK_CHOICES,
+    )
+
+    account_number = forms.CharField(
+        label="Nomor Rekening / Nomor HP",
+        max_length=40,
+        widget=forms.TextInput(attrs={
+            "placeholder": "Masukkan nomor rekening atau HP",
+            "autocomplete": "off",
+        }),
+    )
+
+    account_holder = forms.CharField(
+        label="Nama Pemilik Akun",
+        max_length=100,
+        widget=forms.TextInput(attrs={
+            "placeholder": "Masukkan nama pemilik akun",
+        }),
+    )
+
+    amount = forms.DecimalField(
+        label="Nominal Penarikan",
+        min_value=Decimal("10000"),
+        max_digits=14,
+        decimal_places=2,
+        widget=forms.NumberInput(attrs={
+            "min": "10000",
+            "step": "1000",
+            "placeholder": "Minimal Rp10.000",
+        }),
+    )
+
+    def __init__(
+        self, *args,
+        available_balance=Decimal("0"),
+        **kwargs
+    ):
+        super().__init__(*args, **kwargs)
+        self.available_balance = available_balance
+
+        # Sesuaikan pilihan dropdown sebelum validasi form.
+        selected_type = self.data.get(
+            "destination_type",
+            self.initial.get("destination_type", "bank")
+        )
+
+        if selected_type == "ewallet":
+            self.fields["destination_name"].choices = (
+                self.EWALLET_CHOICES
+            )
+        else:
+            self.fields["destination_name"].choices = (
+                self.BANK_CHOICES
+            )
+
     def clean_amount(self):
-        amount=self.cleaned_data["amount"]
-        if amount>self.available_balance: raise forms.ValidationError("Nominal melebihi saldo tersedia.")
+        amount = self.cleaned_data["amount"]
+
+        if amount < Decimal("10000"):
+            raise forms.ValidationError(
+                "Minimum penarikan adalah Rp10.000."
+            )
+
+        if amount > self.available_balance:
+            raise forms.ValidationError(
+                "Nominal melebihi saldo tersedia."
+            )
+
         return amount
 
 class DonationForm(forms.Form):

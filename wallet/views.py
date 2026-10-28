@@ -50,8 +50,18 @@ def wallet_index(request):
     })
 
 
-@login_required
+#@login_required
+
 def withdraw_view(request):
+    # MODE PREVIEW: halaman Withdraw bisa dibuka tanpa login.
+    if not request.user.is_authenticated:
+        return render(request, "wallet/withdraw.html", {
+            "active_item": "wallet",
+            "wallet": None,
+            "form": WithdrawalForm(),
+            "preview_mode": True,
+        })
+
     wallet = get_wallet(request.user)
 
     form = WithdrawalForm(
@@ -112,11 +122,20 @@ def withdraw_view(request):
         "active_item": "wallet",
         "wallet": wallet,
         "form": form,
+        "preview_mode": False,
     })
 
-
-@login_required
+#@login_required
 def donation_view(request):
+    # MODE PREVIEW: halaman Donasi bisa dibuka tanpa login.
+    if not request.user.is_authenticated:
+        return render(request, "wallet/donate.html", {
+            "active_item": "wallet",
+            "wallet": None,
+            "form": DonationForm(),
+            "preview_mode": True,
+        })
+
     wallet = get_wallet(request.user)
 
     form = DonationForm(
@@ -170,4 +189,5 @@ def donation_view(request):
         "active_item": "wallet",
         "wallet": wallet,
         "form": form,
+        "preview_mode": False,
     })

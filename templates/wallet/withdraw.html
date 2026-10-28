@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% block title %}Tarik Saldo · SiLoak{% endblock %}
 
@@ -6,69 +7,359 @@
 
 <main class="min-h-screen bg-[#f7f8fc]">
     <div class="mx-auto max-w-6xl px-4 py-8">
-        <a href="{% url 'wallet:index' %}" class="text-sm font-semibold text-[#2457D6]">← Kembali ke Dompet</a>
-        
+        <a href="{% url 'wallet:index' %}"
+           class="text-sm font-semibold text-[#2457D6]">
+            ← Kembali ke Dompet
+        </a>
+
         <header class="mb-6 mt-4">
-            <h1 class="text-3xl font-bold">Tarik Saldo</h1>
-            <p class="mt-1 text-sm text-slate-500">Transfer saldo insentif ke rekening bank atau e-wallet milikmu.</p>
+            <h1 class="text-3xl font-bold text-[#142653]">
+                Tarik Saldo
+            </h1>
+            <p class="mt-1 text-sm text-slate-500">
+                Transfer saldo insentif SiLoak ke rekening bank atau e-wallet milikmu.
+            </p>
         </header>
 
+        {% if preview_mode %}
+        <div class="mb-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
+            <b>Mode Preview</b>
+            <p class="mt-1">Kamu sedang melihat pratinjau halaman penarikan. Login untuk menggunakan fitur ini.</p>
+        </div>
+        {% endif %}
+
         <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
-            <!-- Form Penarikan -->
-            <section class="rounded-xl bg-white p-5 shadow-sm lg:col-span-7">
-                <div class="rounded-xl bg-gradient-to-r from-[#142653] to-[#2457D6] p-5 text-white">
-                    <p class="text-xs text-white/75">SALDO TERSEDIA</p>
-                    <p class="mt-1 text-3xl font-bold">Rp {{ wallet.balance|floatformat:0 }}</p>
-                    <p class="mt-1 text-xs text-white/75">Minimum penarikan Rp10.000</p>
+
+            <!-- FORM UTAMA -->
+            <section class="space-y-5 lg:col-span-7">
+
+                <!-- SALDO -->
+                <div class="wallet-balance-card">
+                    <div class="wallet-balance-header">
+                        <p>SALDO DOMPET SAAT INI</p>
+                        <span>SiLoak Wallet</span>
+                    </div>
+
+                    <p class="wallet-balance-amount">
+                        {% if wallet %}
+                            Rp {{ wallet.balance|floatformat:0 }}
+                        {% else %}
+                            Rp 0
+                        {% endif %}
+                    </p>
+
+                    <p class="wallet-balance-caption">
+                        Saldo yang tersedia untuk penarikan
+                    </p>
+
+                    <div class="wallet-balance-footer">
+                        Minimum penarikan Rp10.000
+                    </div>
                 </div>
 
-                <form method="post" class="mt-6 space-y-4">
+                <form method="post" id="withdrawForm" class="space-y-5">
                     {% csrf_token %}
-                    {% for field in form %}
-                        <div>
-                            <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
-                            {{ field }}
-                            {% for error in field.errors %}
-                                <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+
+                    <!-- 1. TUJUAN PENARIKAN -->
+                    <section class="rounded-xl bg-white p-5 shadow-sm">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">1</span>
+                            <div>
+                                <h2 class="font-semibold text-[#142653]">
+                                    Pilih Tujuan Penarikan
+                                </h2>
+                                <p class="text-xs text-slate-500">
+                                    Pilih bank atau e-wallet penerima.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            {% for field in form %}
+                                {% if field.name == "destination_type" or field.name == "destination_name" %}
+                                <div>
+                                    <label for="{{ field.id_for_label }}"
+                                           class="mb-1 block text-sm font-medium text-slate-700">
+                                        {% if field.name == "destination_type" %}
+                                            Jenis Tujuan
+                                        {% else %}
+                                            Nama Bank / E-Wallet
+                                        {% endif %}
+                                    </label>
+
+                                    {{ field }}
+
+                                    {% for error in field.errors %}
+                                    <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+                                    {% endfor %}
+                                </div>
+                                {% endif %}
                             {% endfor %}
                         </div>
-                    {% endfor %}
 
-                    <div class="rounded-lg bg-slate-50 p-4 text-sm">
+                        <p class="mt-3 text-xs text-slate-500">
+                            Pastikan pilihan tujuan sesuai dengan akun penerima.
+                        </p>
+                    </section>
+
+                    <!-- 2. NOMOR AKUN -->
+                    <section class="rounded-xl bg-white p-5 shadow-sm">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">2</span>
+                            <div>
+                                <h2 class="font-semibold text-[#142653]">
+                                    Masukkan Nomor Akun
+                                </h2>
+                                <p class="text-xs text-slate-500">
+                                    Gunakan nomor rekening atau nomor HP e-wallet.
+                                </p>
+                            </div>
+                        </div>
+
+                        {% for field in form %}
+                            {% if field.name == "account_number" or field.name == "account_holder" %}
+                            <div class="mb-4 last:mb-0">
+                                <label for="{{ field.id_for_label }}"
+                                       class="mb-1 block text-sm font-medium text-slate-700">
+                                    {{ field.label }}
+                                </label>
+                                {{ field }}
+                                {% for error in field.errors %}
+                                <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                        {% endfor %}
+
+                        <p class="mt-3 text-xs text-slate-500">
+                            Periksa kembali nomor dan nama pemilik akun sebelum melanjutkan.
+                        </p>
+                    </section>
+
+                    <!-- 3. NOMINAL -->
+                    <section class="rounded-xl bg-white p-5 shadow-sm">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">3</span>
+                            <div>
+                                <h2 class="font-semibold text-[#142653]">
+                                    Masukkan Jumlah Penarikan
+                                </h2>
+                                <p class="text-xs text-slate-500">
+                                    Minimum Rp10.000 per transaksi.
+                                </p>
+                            </div>
+                        </div>
+
+                        {% for field in form %}
+                            {% if field.name == "amount" %}
+                            <label for="{{ field.id_for_label }}"
+                                   class="mb-1 block text-sm font-medium text-slate-700">
+                                Nominal Penarikan
+                            </label>
+
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-sm font-semibold text-slate-500">Rp</span>
+                                <div class="amount-input">
+                                    {{ field }}
+                                </div>
+                            </div>
+
+                            {% for error in field.errors %}
+                            <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+                            {% endfor %}
+                            {% endif %}
+                        {% endfor %}
+
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button type="button" data-amount="10000"
+                                    class="amount-preset">Rp10.000</button>
+                            <button type="button" data-amount="50000"
+                                    class="amount-preset">Rp50.000</button>
+                            <button type="button" data-amount="100000"
+                                    class="amount-preset">Rp100.000</button>
+                            <button type="button" id="withdrawAll"
+                                    class="amount-preset all-button">
+                                Tarik Semua Saldo
+                            </button>
+                        </div>
+
+                        <div class="mt-4 flex justify-between text-xs">
+                            <span class="text-slate-500">Saldo tersedia</span>
+                            <b id="availableBalance">
+                                Rp {% if wallet %}{{ wallet.balance|floatformat:0 }}{% else %}0{% endif %}
+                            </b>
+                        </div>
+
+                        <p id="amountWarning" class="mt-2 hidden text-xs text-red-600"></p>
+                    </section>
+
+                    <!-- 4. FEE -->
+                    <section class="rounded-xl bg-white p-5 shadow-sm">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">4</span>
+                            <div>
+                                <h2 class="font-semibold text-[#142653]">
+                                    Fee &amp; Settlement Details
+                                </h2>
+                                <p class="text-xs text-slate-500">
+                                    Rincian pemotongan saldo.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 rounded-lg bg-slate-50 p-4 text-sm">
+                            <div class="flex justify-between gap-3">
+                                <span class="text-slate-500">Jumlah penarikan</span>
+                                <b id="feeAmount">Rp0</b>
+                            </div>
+                            <div class="flex justify-between gap-3">
+                                <span class="text-slate-500">Biaya admin</span>
+                                <b>Rp0</b>
+                            </div>
+                            <div class="border-t border-slate-200 pt-3">
+                                <div class="flex justify-between gap-3">
+                                    <span class="font-semibold text-[#142653]">
+                                        Total saldo dipotong
+                                    </span>
+                                    <b id="totalDeduction" class="text-[#2457D6]">Rp0</b>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="mt-3 text-xs leading-relaxed text-slate-500">
+                            Biaya admin Rp0 merupakan asumsi simulasi. Transfer belum terhubung ke penyedia pembayaran.
+                        </p>
+                    </section>
+
+                    <!-- 5. KONFIRMASI -->
+                    <section class="rounded-xl bg-white p-5 shadow-sm">
+                        <div class="mb-4 flex items-center gap-3">
+                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">5</span>
+                            <div>
+                                <h2 class="font-semibold text-[#142653]">
+                                    Withdrawal Confirmation
+                                </h2>
+                                <p class="text-xs text-slate-500">
+                                    Periksa ringkasan sebelum mengajukan.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 rounded-lg border border-slate-200 p-4 text-sm">
+                            <div class="flex justify-between gap-4">
+                                <span class="text-slate-500">Tujuan</span>
+                                <b id="confirmDestination" class="text-right">Belum dipilih</b>
+                            </div>
+                            <div class="flex justify-between gap-4">
+                                <span class="text-slate-500">Nomor akun</span>
+                                <b id="confirmAccount" class="text-right">Belum diisi</b>
+                            </div>
+                            <div class="flex justify-between gap-4">
+                                <span class="text-slate-500">Nominal penarikan</span>
+                                <b id="confirmAmount">Rp0</b>
+                            </div>
+                            <div class="flex justify-between gap-4 border-t border-slate-100 pt-3">
+                                <span class="font-semibold">Total pemotongan</span>
+                                <b id="confirmTotal" class="text-[#2457D6]">Rp0</b>
+                            </div>
+                        </div>
+
+                        {% if preview_mode %}
+                        <button type="button" disabled
+                                class="mt-5 w-full cursor-not-allowed rounded-lg bg-slate-300 px-4 py-3 text-sm font-semibold text-white">
+                            Login untuk Mengajukan Penarikan
+                        </button>
+                        {% else %}
+                        <button type="submit"
+                                class="mt-5 w-full rounded-lg bg-[#2457D6] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1946b5]">
+                            Konfirmasi &amp; Ajukan Penarikan
+                        </button>
+                        {% endif %}
+
+                        <p class="mt-3 text-center text-xs text-slate-500">
+                            Pastikan data penerima sudah benar.
+                        </p>
+                    </section>
+                </form>
+            </section>
+
+            <!-- SIDEBAR -->
+            <aside class="space-y-5 lg:col-span-5">
+                <section class="rounded-xl bg-white p-5 shadow-sm">
+                    <div class="flex items-center justify-between gap-3">
+                        <h2 class="font-semibold text-[#142653]">
+                            Ringkasan Penarikan
+                        </h2>
+                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-[#2457D6]">
+                            Live Summary
+                        </span>
+                    </div>
+
+                    <div class="mt-4 rounded-lg bg-[#f0f3ff] p-4">
+                        <p class="text-xs text-slate-500">TOTAL PENARIKAN</p>
+                        <p id="sidebarAmount" class="mt-1 text-2xl font-bold text-[#142653]">
+                            Rp0
+                        </p>
+                        <p class="mt-1 text-xs text-slate-500">
+                            Estimasi saldo yang dipotong
+                        </p>
+                    </div>
+
+                    <div class="mt-4 space-y-3 text-sm">
                         <div class="flex justify-between">
                             <span class="text-slate-500">Biaya admin</span>
                             <b>Rp0</b>
                         </div>
-                        <p class="mt-2 text-xs text-slate-500">Simulasi tugas: transfer belum terhubung ke penyedia pembayaran.</p>
+                        <div class="flex justify-between border-t border-slate-100 pt-3">
+                            <span class="text-slate-500">Sisa saldo</span>
+                            <b id="remainingBalance">Rp0</b>
+                        </div>
                     </div>
-
-                    <button class="w-full rounded-lg bg-[#2457D6] px-4 py-3 text-sm font-semibold text-white">Ajukan Penarikan</button>
-                </form>
-            </section>
-
-            <!-- Sidebar Informasi -->
-            <aside class="space-y-5 lg:col-span-5">
-                <section class="rounded-xl bg-white p-5 shadow-sm">
-                    <h2 class="font-semibold">Ringkasan penarikan</h2>
-                    <p class="mt-2 text-sm leading-relaxed text-slate-500">Nominal dicadangkan dari saldo tersedia setelah permintaan diajukan. Pastikan nama dan nomor tujuan benar.</p>
                 </section>
 
                 <section class="rounded-xl bg-white p-5 shadow-sm">
-                    <h2 class="font-semibold">Alur status</h2>
-                    <ol class="mt-4 space-y-4 text-sm">
-                        <li>
-                            ① <b>Diajukan</b>
-                            <p class="ml-6 text-slate-500">Permintaan tercatat.</p>
+                    <h2 class="font-semibold text-[#142653]">
+                        Alur Penarikan
+                    </h2>
+
+                    <ol class="mt-4 space-y-5 text-sm">
+                        <li class="flex gap-3">
+                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]">1</span>
+                            <div>
+                                <b>Permintaan Diajukan</b>
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Permintaan dicatat oleh sistem.
+                                </p>
+                            </div>
                         </li>
-                        <li>
-                            ② <b>Diproses</b>
-                            <p class="ml-6 text-slate-500">Menunggu proses admin simulasi.</p>
+                        <li class="flex gap-3">
+                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]">2</span>
+                            <div>
+                                <b>Menunggu Proses</b>
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Admin memeriksa permintaan penarikan.
+                                </p>
+                            </div>
                         </li>
-                        <li>
-                            ③ <b>Berhasil</b>
-                            <p class="ml-6 text-slate-500">Status akhir setelah diproses.</p>
+                        <li class="flex gap-3">
+                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]">3</span>
+                            <div>
+                                <b>Penarikan Selesai</b>
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Status diperbarui setelah diproses.
+                                </p>
+                            </div>
                         </li>
                     </ol>
+                </section>
+
+                <section class="rounded-xl border border-blue-100 bg-blue-50 p-4">
+                    <p class="text-sm font-semibold text-[#142653]">
+                        <span aria-hidden="true">ⓘ</span> Informasi Keamanan
+                    </p>
+                    <p class="mt-2 text-xs leading-relaxed text-slate-600">
+                        Jangan bagikan PIN, kata sandi, atau kode OTP. Pastikan rekening atau e-wallet tujuan merupakan milik penerima yang benar.
+                    </p>
                 </section>
             </aside>
         </div>
@@ -78,18 +369,208 @@
 {% include "components/footer.html" %}
 
 <style>
-    input:not([type=radio]), select, textarea {
+    #withdrawForm input:not([type=radio]):not([type=checkbox]),
+    #withdrawForm select,
+    #withdrawForm textarea {
         width: 100%;
         border: 1px solid #dbe2ee;
         border-radius: .6rem;
-        padding: .65rem .8rem;
+        padding: .7rem .8rem;
         background: #fff;
         font: inherit;
         color: #142653;
     }
-    input:focus, select:focus, textarea:focus {
-        outline: 2px solid #2457d633;
-        border-color: #2457d6;
+
+    #withdrawForm input:focus,
+    #withdrawForm select:focus,
+    #withdrawForm textarea:focus {
+        outline: 2px solid #2457D633;
+        border-color: #2457D6;
+    }
+
+    .amount-input {
+        position: relative;
+    }
+
+    .amount-input input {
+        padding-left: 2.5rem !important;
+        font-size: 1.25rem !important;
+        font-weight: 700;
+    }
+
+    .amount-preset {
+        border: 1px solid #dbe2ee;
+        border-radius: .5rem;
+        padding: .5rem .7rem;
+        color: #142653;
+        font-size: .75rem;
+        font-weight: 600;
+        background: white;
+    }
+
+    .amount-preset:hover,
+    .amount-preset.selected {
+        border-color: #2457D6;
+        background: #eff4ff;
+        color: #2457D6;
+    }
+
+    .all-button {
+        border-color: #2457D6;
+        color: #2457D6;
     }
 </style>
+
+<script>
+
+const typeInput = document.getElementById("id_destination_type");
+const nameInput = document.getElementById("id_destination_name");
+
+const optionsByType = {
+    bank: [
+        ["BCA", "BCA"],
+        ["BNI", "BNI"],
+        ["BRI", "BRI"],
+        ["Mandiri", "Bank Mandiri"],
+        ["BSI", "BSI"],
+        ["CIMB Niaga", "CIMB Niaga"],
+        ["BTN", "BTN"],
+        ["Permata", "Bank Permata"],
+        ["Danamon", "Bank Danamon"]
+    ],
+    ewallet: [
+        ["GoPay", "GoPay"],
+        ["OVO", "OVO"],
+        ["DANA", "DANA"],
+        ["ShopeePay", "ShopeePay"],
+        ["LinkAja", "LinkAja"]
+    ]
+};
+
+function refreshDestinations() {
+    if (!typeInput || !nameInput) return;
+
+    const options = optionsByType[typeInput.value] || [];
+    nameInput.replaceChildren();
+
+    options.forEach(([value, label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        nameInput.appendChild(option);
+    });
+
+    nameInput.dispatchEvent(new Event("change"));
+}
+
+typeInput?.addEventListener("change", refreshDestinations);
+refreshDestinations();
+
+document.addEventListener("DOMContentLoaded", function () {
+    const amountInput = document.querySelector(
+        '#withdrawForm [name="amount"]'
+    );
+    const typeInput = document.querySelector(
+        '#withdrawForm [name="destination_type"]'
+    );
+    const destinationInput = document.querySelector(
+        '#withdrawForm [name="destination_name"]'
+    );
+    const accountInput = document.querySelector(
+        '#withdrawForm [name="account_number"]'
+    );
+
+    const balance = Number(
+        "{{ wallet.balance|default_if_none:0|floatformat:0 }}"
+    ) || 0;
+
+    const rupiah = value => "Rp" +
+        Math.max(0, value).toLocaleString("id-ID");
+
+    function updateSummary() {
+        const amount = Math.max(
+            0, Number(amountInput?.value || 0)
+        );
+        const fee = 0;
+        const total = amount + fee;
+        const remaining = balance - total;
+
+        document.getElementById("feeAmount").textContent =
+            rupiah(amount);
+        document.getElementById("totalDeduction").textContent =
+            rupiah(total);
+        document.getElementById("confirmAmount").textContent =
+            rupiah(amount);
+        document.getElementById("confirmTotal").textContent =
+            rupiah(total);
+        document.getElementById("sidebarAmount").textContent =
+            rupiah(amount);
+        document.getElementById("remainingBalance").textContent =
+            rupiah(remaining);
+
+        document.getElementById("confirmDestination").textContent =
+            destinationInput?.selectedOptions?.[0]?.text ||
+            destinationInput?.value || "Belum dipilih";
+
+        document.getElementById("confirmAccount").textContent =
+            accountInput?.value || "Belum diisi";
+
+        const warning = document.getElementById("amountWarning");
+        if (amount > 0 && amount < 10000) {
+            warning.textContent =
+                "Minimum penarikan adalah Rp10.000.";
+            warning.classList.remove("hidden");
+        } else if (amount > balance) {
+            warning.textContent =
+                "Nominal melebihi saldo yang tersedia.";
+            warning.classList.remove("hidden");
+        } else {
+            warning.classList.add("hidden");
+        }
+
+        document.querySelectorAll(".amount-preset").forEach(button => {
+            button.classList.toggle(
+                "selected",
+                button.dataset.amount &&
+                Number(button.dataset.amount) === amount
+            );
+        });
+    }
+
+    document.querySelectorAll("[data-amount]").forEach(button => {
+        button.addEventListener("click", function () {
+            if (!amountInput) return;
+            amountInput.value = this.dataset.amount;
+            updateSummary();
+        });
+    });
+
+    document.getElementById("withdrawAll")
+        ?.addEventListener("click", function () {
+            if (!amountInput) return;
+            amountInput.value = balance;
+            updateSummary();
+        });
+
+    [amountInput, typeInput, destinationInput, accountInput]
+        .filter(Boolean)
+        .forEach(input => {
+            input.addEventListener("input", updateSummary);
+            input.addEventListener("change", updateSummary);
+        });
+
+    document.getElementById("withdrawForm")
+        ?.addEventListener("submit", function (event) {
+            const amount = Number(amountInput?.value || 0);
+
+            if (amount < 10000 || amount > balance) {
+                event.preventDefault();
+                updateSummary();
+                amountInput?.focus();
+            }
+        });
+
+    updateSummary();
+});
+</script>
 {% endblock %}
