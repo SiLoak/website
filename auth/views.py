@@ -7,7 +7,7 @@ from urllib.parse import urlencode
 import requests
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model, login
+from django.contrib.auth import get_user_model, login, logout
 from django.db import IntegrityError, transaction
 from django.http import HttpResponseRedirect
 from django.shortcuts import redirect, render
@@ -20,7 +20,8 @@ from google.auth.exceptions import GoogleAuthError
 from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2 import id_token
 
-from .models import GoogleIdentity
+from .forms import PhoneOnboardingForm
+from .models import GoogleIdentity, UserProfile
 
 
 GOOGLE_AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
@@ -42,8 +43,45 @@ def _oauth_error(request, message, next_url=""):
     return redirect(login_url)
 
 
+def _safe_destination(request, destination):
+    if url_has_allowed_host_and_scheme(
+        destination, allowed_hosts={request.get_host()}, require_https=request.is_secure()
+    ):
+        return destination
+    return reverse("dashboard")
+
+
+def complete_profile(request):
+    if not request.user.is_authenticated:
+        return redirect("auth_page")
+    profile, _ = UserProfile.objects.get_or_create(user=request.user)
+    if profile.phone_number:
+        return redirect("dashboard")
+
+    next_url = request.GET.get("next", "")
+    if request.method == "POST":
+        next_url = request.POST.get("next", "")
+        form = PhoneOnboardingForm(request.POST)
+        if form.is_valid():
+            profile.phone_number = form.cleaned_data["phone_number"]
+            profile.save(update_fields=["phone_number"])
+            return redirect(_safe_destination(request, next_url))
+    else:
+        form = PhoneOnboardingForm()
+    return render(request, "auth/complete_profile.html", {"form": form, "next_url": next_url})
+
+
+def logout_view(request):
+    if request.method == "POST":
+        logout(request)
+    return redirect("landing_page")
+
+
 def auth_page(request):
     if request.user.is_authenticated:
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if not profile.phone_number:
+            return redirect("complete_profile")
         return redirect("dashboard")
 
     next_url = request.GET.get("next", "")
@@ -66,6 +104,9 @@ def _oauth_configuration():
 @require_GET
 def google_login(request):
     if request.user.is_authenticated:
+        profile, _ = UserProfile.objects.get_or_create(user=request.user)
+        if not profile.phone_number:
+            return redirect("complete_profile")
         return redirect("dashboard")
 
     next_url = request.GET.get("next", "")
@@ -259,4 +300,11 @@ def google_callback(request):
         )
 
     login(request, user, backend="django.contrib.auth.backends.ModelBackend")
-    return redirect("dashboard")
+    profile, _ = UserProfile.objects.get_or_create(user=user)
+    if not profile.phone_number:
+        onboarding_url = reverse("complete_profile")
+        next_url = flow.get("next", "")
+        if next_url:
+            onboarding_url = f"{onboarding_url}?{urlencode({'next': next_url})}"
+        return redirect(onboarding_url)
+    return redirect(_safe_destination(request, flow.get("next", "")))
