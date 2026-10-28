@@ -48,6 +48,10 @@ class Submission(models.Model):
         VERIFIED = "verified", "Terverifikasi"
         CANCELED = "canceled", "Dibatalkan"
 
+    class IncentiveAllocation(models.TextChoices):
+        WALLET = "wallet", "Terima insentif"
+        DONATION = "donation", "Donasikan"
+
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
@@ -57,6 +61,11 @@ class Submission(models.Model):
         CollectionPoint,
         on_delete=models.PROTECT,
         related_name="submissions",
+    )
+    incentive_allocation = models.CharField(
+        max_length=12,
+        choices=IncentiveAllocation.choices,
+        default=IncentiveAllocation.WALLET,
     )
     status = models.CharField(
         max_length=12, choices=Status.choices, default=Status.PENDING
