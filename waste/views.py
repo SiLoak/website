@@ -10,6 +10,7 @@ from django.views.decorators.http import require_POST
 from pickup.models import PickupRequest
 from .forms import SubmissionForm, SubmissionItemFormSet
 from .models import Submission
+from wallet.models import Wallet
 
 
 def _submission_form_view(request, submission=None):
@@ -18,9 +19,14 @@ def _submission_form_view(request, submission=None):
         messages.error(request, "Pengajuan ini sudah tidak dapat diubah.")
         return redirect("waste:detail", submission_id=submission.pk)
 
-    form = SubmissionForm(request.POST or None, instance=submission)
-    formset = SubmissionItemFormSet(request.POST or None, instance=submission)
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
+    if editing: 
+        form = SubmissionForm(request.POST or None, instance=submission)
+    else :
+        form = SubmissionForm(request.POST or None, initial={"incentive_allocation": wallet.default_incentive})
 
+    formset = SubmissionItemFormSet(request.POST or None, instance=submission)
+        
     if request.method == "POST" and form.is_valid() and formset.is_valid():
         with transaction.atomic():
             saved_submission = form.save(commit=False)

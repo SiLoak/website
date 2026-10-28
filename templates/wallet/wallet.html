@@ -22,7 +22,10 @@
             <div class="flex flex-col gap-5 lg:col-span-8">
                 <!-- Saldo Card -->
                 <section class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-6 text-white shadow-md sm:p-8">
-                    <p class="text-sm text-white">SALDO INSENTIF</p>
+                    <div class="mb-2 flex items-center justify-between gap-3">
+                        <p class="text-sm text-white">SALDO TERSEDIA</p>
+                        <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white">SiLoak Wallet</span>
+                    </div>
                     <p class="mt-1 text-4xl font-bold">Rp {{ wallet.balance|floatformat:0 }}</p>
                     
                     <div class="mt-6 flex flex-wrap gap-3">
@@ -33,17 +36,32 @@
 
                 <!-- Stats Overview -->
                 <section class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <div class="rounded-xl bg-white p-4 shadow-sm">
-                        <p class="text-xs text-slate-500">Total insentif diterima</p>
-                        <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_earned|floatformat:0 }}</p>
+                    <div class="flex items-center gap-4 rounded-xl p-4 shadow-sm" style="background-color: #E7E2CE;">
+                        <div class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-emerald-50">
+                            {% include "components/lucide_icon.html" with name="arrow-down" icon_class="h-7 w-7 text-emerald-600" only %}
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">Total diterima</p>
+                            <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_withdrawn|floatformat:0 }}</p>
+                        </div>
                     </div>
-                    <div class="rounded-xl bg-white p-4 shadow-sm">
-                        <p class="text-xs text-slate-500">Total ditarik</p>
-                        <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_withdrawn|floatformat:0 }}</p>
+                    <div class="flex items-center gap-4 rounded-xl p-4 shadow-sm" style="background-color: #E7E2CE;">
+                        <div class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-amber-50">
+                            {% include "components/lucide_icon.html" with name="arrow-up" icon_class="h-7 w-7 text-amber-600" only %}
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">Total ditarik</p>
+                            <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_withdrawn|floatformat:0 }}</p>
+                        </div>
                     </div>
-                    <div class="rounded-xl bg-white p-4 shadow-sm">
-                        <p class="text-xs text-slate-500">Total didonasikan</p>
-                        <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_donated|floatformat:0 }}</p>
+                    <div class="flex items-center gap-4 rounded-xl p-4 shadow-sm" style="background-color: #E7E2CE;">
+                        <div class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
+                            {% include "components/lucide_icon.html" with name="heart" icon_class="h-7 w-7" only %}
+                        </div>
+                        <div>
+                            <p class="text-sm text-slate-500">Total donasi</p>
+                            <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_donated|floatformat:0 }}</p>
+                        </div>
                     </div>
                 </section>
 
@@ -105,23 +123,23 @@
                         {% csrf_token %}
                         <input type="hidden" name="action" value="preference">
                         
-                        <label class="flex gap-3 rounded-lg border p-3">
-                            <input type="radio" name="default_incentive" value="wallet" {% if wallet.default_incentive == 'wallet' %}checked{% endif %}>
+                        <label class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition hover:bg-slate-50">
+                            <input type="radio" name="default_incentive" value="wallet" {% if wallet.default_incentive == 'wallet' %}checked{% endif %} class="accent-emerald-600">
                             <span>
                                 <b class="block text-sm">Terima insentif</b>
                                 <small class="text-slate-500">Masuk ke saldo dompetmu</small>
                             </span>
                         </label>
                         
-                        <label class="flex gap-3 rounded-lg border p-3">
-                            <input type="radio" name="default_incentive" value="donation" {% if wallet.default_incentive == 'donation' %}checked{% endif %}>
+                        <label class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition hover:bg-slate-50">
+                            <input type="radio" name="default_incentive" value="donation" {% if wallet.default_incentive == 'donation' %}checked{% endif %} class="accent-rose-500">
                             <span>
                                 <b class="block text-sm">Donasikan</b>
                                 <small class="text-slate-500">Salurkan untuk kebaikan</small>
                             </span>
                         </label>
                         
-                        <button class="w-full rounded-lg bg-siloak-blue px-4 py-2.5 text-sm font-semibold text-white">Simpan pilihan</button>
+                        <button type="submit" class="w-full rounded-lg bg-siloak-blue px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90">Simpan pilihan</button>
                     </form>
                 </section>
 

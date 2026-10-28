@@ -80,7 +80,7 @@ class WithdrawalForm(forms.Form):
             "min": "10000",
             "step": "1000",
             "placeholder": "Minimal Rp10.000",
-            "class": f"{WITHDRAWAL_FIELD_CLASSES} pl-10 text-xl font-bold",
+            "class": f"{WITHDRAWAL_FIELD_CLASSES} pl-10 text-m font-semibold",
         }),
     )
 
@@ -132,7 +132,7 @@ class DonationForm(forms.Form):
             "min": "1000",
             "step": "1000",
             "placeholder": "Minimal Rp1.000",
-            "class": DONATION_FIELD_CLASSES,
+            "class": f"{DONATION_FIELD_CLASSES} pl-10 text-m font-semibold",
         }),
     )
     message = forms.CharField(

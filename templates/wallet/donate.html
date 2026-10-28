@@ -20,7 +20,7 @@
 
         <section class="space-y-5 lg:col-span-7">
 
-            <!-- SALDO -->
+            <!-- SALDO -->  
             <div class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-5 shadow-sm">
                 <div class="mb-2 flex items-center justify-between gap-3">
                     <p class="text-sm text-white">SALDO TERSEDIA</p>
@@ -36,15 +36,23 @@
                 {% csrf_token %}
                 {% for field in form %}
                     <div>
-                        <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium">{{ field.label }}</label>
-                        {{ field }}
+                        <label for="{{ field.id_for_label }}" class="mb-1 block text-sm font-medium text-slate-700">{{ field.label }}</label>
+                        {% if field.name == "amount" %}
+                            <div class="relative">
+                                <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-m font-semibold text-slate-500">Rp</span>
+                                {{ field }}
+                            </div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+
                         {% for error in field.errors %}
                             <p class="mt-1 text-xs text-red-600">{{ error }}</p>
                         {% endfor %}
                     </div>
                 {% endfor %}
 
-                <button class="w-full rounded-lg bg-[#2457D6] px-4 py-3 text-sm font-semibold text-white">Konfirmasi Donasi</button>
+                <button type="submit" class="w-full rounded-lg bg-[#2457D6] px-4 py-3 text-sm font-semibold text-white">Konfirmasi Donasi</button>
             </form>
         </section>
     </div>
