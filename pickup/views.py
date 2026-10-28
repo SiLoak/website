@@ -113,10 +113,10 @@ def show_pickup_list(request):
 
 
 def show_collector_pickup_list(request):
-  # if not request.user.is_authenticated:
-  #   return redirect_to_login(request.get_full_path())
-  # if not is_collector(request.user):
-  #   raise PermissionDenied
+  if not request.user.is_authenticated:
+    return redirect_to_login(request.get_full_path())
+  if not is_collector(request.user):
+    raise PermissionDenied
   
   id_query = request.GET.get("id", "").strip()
 
@@ -132,9 +132,12 @@ def request_pickup(request):
 
 
 def show_pickup_detail(request, pickup_id):
+  pickup, is_owner, is_assigned = _get_accessible_pickup(request.user, pickup_id)
+
   context = {
     "active_item": "history",
-    "submission_id": pickup_id
+    "submission_id": pickup_id,
+    "pickup": pickup,
   }
 
   return render(request, "waste/detail.html", context)
@@ -169,10 +172,10 @@ def get_pickup_json(request):
 
 
 def get_collector_pickup_json(request):
-  # if not request.user.is_authenticated:
-  #   return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
-  # if not is_collector(request.user):
-  #   return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
+  if not request.user.is_authenticated:
+    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
+  if not is_collector(request.user):
+    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
   scope = request.GET.get("scope", "mine").strip()
   if scope not in VALID_SCOPES:
@@ -183,7 +186,7 @@ def get_collector_pickup_json(request):
       status=Status.PENDING, collector__isnull=True
     )
   else:
-    pickup_list = PickupRequest.objects.all()
+    pickup_list = PickupRequest.objects.filter(collector=request.user)
 
   pickup_list = _apply_filters(pickup_list.select_related("giver"), request)
   
