@@ -28,6 +28,9 @@ PROGRESS_STATUSES = {
 }
 
 
+VALID_SCOPES = {"mine", "available"}
+
+
 # ---------- Helper ----------
 
 
@@ -110,10 +113,10 @@ def show_pickup_list(request):
 
 
 def show_collector_pickup_list(request):
-  if not request.user.is_authenticated:
-    return redirect_to_login(request.get_full_path())
-  if not is_collector(request.user):
-    raise PermissionDenied
+  # if not request.user.is_authenticated:
+  #   return redirect_to_login(request.get_full_path())
+  # if not is_collector(request.user):
+  #   raise PermissionDenied
   
   id_query = request.GET.get("id", "").strip()
 
@@ -121,7 +124,20 @@ def show_collector_pickup_list(request):
     "id_query": id_query,
   }
 
-  return render(request, "collector_pickup.html", context)
+  return render(request, "pickup/dashboard_collector.html", context)
+
+
+def request_pickup(request):
+  return render(request, "waste/request.html", {"active_item": "waste"})
+
+
+def show_pickup_detail(request, pickup_id):
+  context = {
+    "active_item": "history",
+    "submission_id": pickup_id
+  }
+
+  return render(request, "waste/detail.html", context)
   
 
 # ---------- API: read ----------
@@ -153,17 +169,21 @@ def get_pickup_json(request):
 
 
 def get_collector_pickup_json(request):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
-  if not is_collector(request.user):
-    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
+  # if not request.user.is_authenticated:
+  #   return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
+  # if not is_collector(request.user):
+  #   return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
-  if request.GET.get("scope", "mine") == "available":
+  scope = request.GET.get("scope", "mine").strip()
+  if scope not in VALID_SCOPES:
+    return JsonResponse({"error": "Scope tidak valid."}, status=400)
+
+  if scope == "available":
     pickup_list = PickupRequest.objects.filter(
       status=Status.PENDING, collector__isnull=True
     )
   else:
-    pickup_list = PickupRequest.objects.filter(collector=request.user)
+    pickup_list = PickupRequest.objects.all()
 
   pickup_list = _apply_filters(pickup_list.select_related("giver"), request)
   
