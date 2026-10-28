@@ -27,7 +27,7 @@ def wallet_index(request):
             return redirect("wallet:index")
     else:
         form = IncentivePreferenceForm(
-            initial={"default_insentive": wallet.default_incentive}
+            initial={"default_incentive": wallet.default_incentive}
         )
 
     return render(request, "wallet/wallet.html", {

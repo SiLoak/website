@@ -23,10 +23,7 @@ class WithdrawalForm(forms.Form):
         ("BRI", "BRI"),
         ("Mandiri", "Bank Mandiri"),
         ("BSI", "BSI"),
-        ("CIMB Niaga", "CIMB Niaga"),
-        ("BTN", "BTN"),
-        ("Permata", "Bank Permata"),
-        ("Danamon", "Bank Danamon"),
+        ("SeaBank", "SeaBank"),
     ]
 
     EWALLET_CHOICES = [
@@ -34,7 +31,6 @@ class WithdrawalForm(forms.Form):
         ("OVO", "OVO"),
         ("DANA", "DANA"),
         ("ShopeePay", "ShopeePay"),
-        ("LinkAja", "LinkAja"),
     ]
 
     destination_type = forms.ChoiceField(
