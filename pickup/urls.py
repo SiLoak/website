@@ -8,6 +8,7 @@ urlpatterns = [
   # Halaman
   path("", views.show_pickup_list, name="show_pickup_list"),
   path("collector/", views.show_collector_pickup_list, name="show_collector_pickup_list"),
+  path("collector/history/", views.show_collector_pickup_history, name="show_collector_pickup_history"),
   path("<uuid:pickup_id>/", views.show_pickup_detail, name="show_pickup_detail"),
 
   # API (JSON)

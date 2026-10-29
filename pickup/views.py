@@ -1,11 +1,10 @@
 import uuid
 
 from django.shortcuts import get_object_or_404, redirect, render
-from django.contrib.auth.views import redirect_to_login
+from django.urls import reverse
 from django.http import JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.db import transaction
@@ -26,7 +25,6 @@ PROGRESS_STATUSES = {
   Status.ON_THE_WAY,
   Status.ARRIVED,
   Status.WEIGHING,
-  Status.COMPLETED,
   Status.FAILED,
 }
 
@@ -150,15 +148,9 @@ def _get_current_month_string():
 def show_pickup_list(request):
   if not is_giver(request.user):
     raise PermissionDenied
-  
-  id_query = request.GET.get("id", "").strip()
-
-  context = {
-    "id_query": id_query,
-    "form": PickupRequestForm(),
-  }
-
-  return render(request, "pickup.html", context)
+  return redirect(
+    f"{reverse('waste:new')}?delivery_method=minta_dijemput"
+  )
 
 
 @login_required(login_url="auth_page")
@@ -176,6 +168,23 @@ def show_collector_pickup_list(request):
   }
 
   return render(request, "pickup/dashboard_collector.html", context)
+
+
+@login_required(login_url="auth_page")
+def show_collector_pickup_history(request):
+  if not is_collector(request.user):
+    raise PermissionDenied
+
+  pickups = (
+    PickupRequest.objects.filter(collector=request.user)
+    .select_related("giver")
+    .prefetch_related("items__waste_type", "status_history__changed_by")
+  )
+  return render(
+    request,
+    "pickup/collector_history.html",
+    {"active_item": "history", "pickups": pickups},
+  )
 
 
 def request_pickup(request):
@@ -207,6 +216,7 @@ def show_pickup_detail(request, pickup_id):
     "active_item": "history",
     "submission_id": pickup_id,
     "pickup": pickup,
+    "payout_pending": pickup.status == Status.COMPLETED and pickup.verified_at is None,
     "is_owner": is_owner,
     "is_assigned": is_assigned,
     "can_accept": can_accept,
@@ -265,7 +275,10 @@ def get_collector_pickup_json(request):
   else:
     pickup_list = PickupRequest.objects.filter(collector=request.user)
 
-  pickup_list = _apply_filters(pickup_list.select_related("giver"), request)
+  pickup_list = _apply_filters(
+    pickup_list.select_related("giver").prefetch_related("items__waste_type"),
+    request,
+  )
   
   data = []
   for pickup in pickup_list:
@@ -277,6 +290,11 @@ def get_collector_pickup_json(request):
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
         "address_detail": pickup.address_detail,
+        "pickup_address": pickup.pickup_address,
+        "completed_at": pickup.completed_at,
+        "estimated_weight": str(pickup.estimated_weight),
+        "actual_weight": str(pickup.actual_weight) if pickup.actual_weight is not None else None,
+        "items": [item.waste_type.name for item in pickup.items.all()],
         "giver_name": _display_name(pickup.giver),
       }
     })
@@ -412,6 +430,7 @@ def complete_weighing_ajax(request, pickup_id):
       pickup = services.change_status(
         pickup_id, Status.COMPLETED, request.user, reason="", collector=None
       )
+      pickup = services.verify_completed_pickup(pickup.pk, request.user)
   except PermissionDenied:
     return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
   except services.PickupServiceError as e:
@@ -419,7 +438,7 @@ def complete_weighing_ajax(request, pickup_id):
 
   return JsonResponse(
     {
-      "message": "Penimbangan selesai. Pickup ditandai selesai.",
+      "message": "Pickup selesai diverifikasi dan insentif berhasil diproses.",
       "pk": str(pickup.id),
       "status": pickup.status,
       "status_display": pickup.get_status_display(),

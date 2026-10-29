@@ -4,6 +4,24 @@ import uuid
 from django.db import migrations, models
 
 
+def fix_postgres_uuid(apps, schema_editor):
+    if schema_editor.connection.vendor == 'postgresql':
+        with schema_editor.connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT data_type 
+                FROM information_schema.columns 
+                WHERE table_name = 'pickup_pickuprequest' AND column_name = 'id'
+            """)
+            row = cursor.fetchone()
+            if row and row[0] != 'uuid':
+                cursor.execute("DROP TABLE IF EXISTS pickup_pickupstatushistory CASCADE;")
+                cursor.execute("DROP TABLE IF EXISTS pickup_pickuprequest CASCADE;")
+                PickupRequest = apps.get_model('pickup', 'PickupRequest')
+                PickupStatusHistory = apps.get_model('pickup', 'PickupStatusHistory')
+                schema_editor.create_model(PickupRequest)
+                schema_editor.create_model(PickupStatusHistory)
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -11,14 +29,20 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='pickuprequest',
-            name='id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
-        ),
-        migrations.AlterField(
-            model_name='pickupstatushistory',
-            name='id',
-            field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+        migrations.RunPython(fix_postgres_uuid, migrations.RunPython.noop),
+        migrations.SeparateDatabaseAndState(
+            state_operations=[
+                migrations.AlterField(
+                    model_name='pickuprequest',
+                    name='id',
+                    field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+                ),
+                migrations.AlterField(
+                    model_name='pickupstatushistory',
+                    name='id',
+                    field=models.UUIDField(default=uuid.uuid4, editable=False, primary_key=True, serialize=False),
+                ),
+            ],
+            database_operations=[],
         ),
     ]

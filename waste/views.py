@@ -1,5 +1,3 @@
-from decimal import Decimal
-
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -7,6 +5,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
+from main.history import build_history_context
 from pickup.models import PickupRequest, PickupStatusHistory
 from .forms import SubmissionForm, SubmissionItemFormSet
 from pickup.forms import PickupRequestForm, PickupItemFormSet
@@ -34,6 +33,7 @@ def _create_pickup_request(request, pickup_form, formset):
     with transaction.atomic():
         pickup = pickup_form.save(commit=False)
         pickup.giver = request.user
+        pickup.pickup_address = pickup.address_detail
         pickup.save()
 
         formset.instance = pickup
@@ -70,7 +70,11 @@ def _submission_form_view(request, submission=None):
         formset = PickupItemFormSet(request.POST)
         incentive_form = pickup_form
     else:
-        form = SubmissionForm(request.POST or None, initial={"incentive_allocation": wallet.default_incentive})
+        form = SubmissionForm(
+            request.POST or None,
+            instance=submission,
+            initial={"incentive_allocation": wallet.default_incentive},
+        )
 
         pickup_form = PickupRequestForm(
             initial={} if editing else _saved_pickup_initial(request.user)
@@ -135,11 +139,6 @@ def new_submission(request):
 
 
 @login_required(login_url="auth_page")
-def dropoff_submission(request):
-    return _submission_form_view(request)
-
-
-@login_required(login_url="auth_page")
 def edit_submission(request, submission_id):
     submission = get_object_or_404(
         Submission, pk=submission_id, user=request.user
@@ -180,37 +179,4 @@ def submission_detail(request, submission_id):
 
 @login_required(login_url="auth_page")
 def submission_history(request):
-    submissions = list(
-        Submission.objects.filter(user=request.user)
-        .select_related("collection_point")
-        .prefetch_related("items__waste_type")
-    )
-    verified = [
-        submission
-        for submission in submissions
-        if submission.status == Submission.Status.VERIFIED
-    ]
-    total_actual_weight = sum(
-        (submission.actual_weight or Decimal("0") for submission in verified),
-        Decimal("0"),
-    )
-    unpriced_verified_count = sum(
-        1 for submission in verified if submission.actual_reward is None
-    )
-    total_actual_reward = sum(
-        (submission.actual_reward or Decimal("0") for submission in verified),
-        Decimal("0"),
-    )
-    return render(
-        request,
-        "history.html",
-        {
-            "active_item": "history",
-            "submissions": submissions,
-            "total_submissions": len(submissions),
-            "verified_count": len(verified),
-            "total_actual_weight": total_actual_weight,
-            "total_actual_reward": total_actual_reward,
-            "unpriced_verified_count": unpriced_verified_count,
-        },
-    )
+    return render(request, "history.html", build_history_context(request.user))

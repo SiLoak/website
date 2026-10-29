@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from django.contrib import admin, messages
 from django.utils import timezone
 from django.db import transaction
@@ -41,39 +43,74 @@ class SubmissionItemInline(admin.TabularInline):
 def verify_submissions(modeladmin, request, queryset):
     pending_submissions = queryset.filter(status=Submission.Status.PENDING)
     verified_count = 0
-    incomplete_count = 0
+    missing_weight_count = 0
+    missing_rate_count = 0
+    invalid_reward_count = 0
 
     for submission in pending_submissions:
         with transaction.atomic():
-            submission = (Submission.objects.select_for_update().get(pk=submission.pk))
+            submission = Submission.objects.select_for_update().get(pk=submission.pk)
 
             if submission.status != Submission.Status.PENDING:
                 continue
 
-            items = submission.items.all()
+            items = list(submission.items.select_related("waste_type"))
 
-            if not items.exists() or items.filter(actual_weight__isnull=True).exists() or items.filter(unit_rate_snapshot__isnull=True).exists():
-                incomplete_count += 1
+            if not items or any(item.actual_weight is None for item in items):
+                missing_weight_count += 1
                 continue
 
-            actual_reward = submission.actual_reward
+            snapshot_updates = []
+            for item in items:
+                if item.unit_rate_snapshot is not None:
+                    continue
+                if item.waste_type.rate_per_kg is None:
+                    missing_rate_count += 1
+                    break
+                item.unit_rate_snapshot = item.waste_type.rate_per_kg
+                snapshot_updates.append(item)
+            else:
+                actual_reward = sum(
+                    (
+                        item.actual_weight * item.unit_rate_snapshot
+                        for item in items
+                    ),
+                    Decimal("0"),
+                )
 
-            if (submission.incentive_allocation == Submission.IncentiveAllocation.WALLET and (actual_reward is None or actual_reward <= 0)):
-                incomplete_count += 1
+                if actual_reward <= 0:
+                    invalid_reward_count += 1
+                    continue
+
+                if snapshot_updates:
+                    SubmissionItem.objects.bulk_update(
+                        snapshot_updates, ["unit_rate_snapshot"]
+                    )
+
+                submission.status = Submission.Status.VERIFIED
+                submission.verified_at = timezone.now()
+                submission.verified_by = request.user
+                submission.save(
+                    update_fields=["status", "verified_at", "verified_by", "updated_at"]
+                )
+
+                if submission.incentive_allocation == Submission.IncentiveAllocation.WALLET:
+                    credit_wallet(
+                        user=submission.user,
+                        amount=actual_reward,
+                        description=f"Insentif setoran #{submission.pk}",
+                        reference=f"waste_submission:{submission.pk}",
+                    )
+                elif submission.incentive_allocation == Submission.IncentiveAllocation.DONATION:
+                    record_donation(
+                        user=submission.user,
+                        amount=actual_reward,
+                        description=f"Donasi insentif setoran #{submission.pk}",
+                        reference=f"waste_submission_donation:{submission.pk}",
+                    )
+
+                verified_count += 1
                 continue
-            submission.status = Submission.Status.VERIFIED
-            submission.verified_at = timezone.now()
-            submission.verified_by = request.user
-            submission.save(
-                update_fields=["status", "verified_at", "verified_by", "updated_at"]
-            )
-
-            if submission.incentive_allocation == Submission.IncentiveAllocation.WALLET:
-                credit_wallet(user=submission.user, amount=actual_reward, description=f"Insentif setoran #{submission.pk}", reference=f"waste_submission:{submission.pk}")
-
-            elif submission.incentive_allocation == Submission.IncentiveAllocation.DONATION:
-                record_donation(user=submission.user, amount=actual_reward, description=f"Donasi insentif setoran #{submission.pk}", reference=f"waste_submission_donation:{submission.pk}")
-            verified_count += 1
 
     if verified_count:
         modeladmin.message_user(
@@ -81,10 +118,22 @@ def verify_submissions(modeladmin, request, queryset):
             f"{verified_count} pengajuan berhasil diverifikasi.",
             messages.SUCCESS,
         )
-    if incomplete_count:
+    if missing_weight_count:
         modeladmin.message_user(
             request,
-            f"{incomplete_count} pengajuan dilewati karena hasil timbang belum lengkap.",
+            f"{missing_weight_count} pengajuan dilewati karena berat aktual belum lengkap.",
+            messages.WARNING,
+        )
+    if missing_rate_count:
+        modeladmin.message_user(
+            request,
+            f"{missing_rate_count} pengajuan dilewati karena tarif jenis sampah belum diatur. Atur tarif di Waste → Waste types, lalu jalankan verifikasi kembali.",
+            messages.WARNING,
+        )
+    if invalid_reward_count:
+        modeladmin.message_user(
+            request,
+            f"{invalid_reward_count} pengajuan dilewati karena total insentif harus lebih dari nol.",
             messages.WARNING,
         )
 

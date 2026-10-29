@@ -1,38 +1,111 @@
 {% load static %}
 <header class="sticky top-0 z-50 w-full bg-siloak-navy shadow-sm">
-    <nav class="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6" aria-label="Navigasi utama">
-        <a class="flex shrink-0 items-center gap-2.5 text-white" href="{% url 'landing_page' %}" aria-label="SiLoak, beranda">
-            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">♻</span>
-            <span class="text-xl font-bold tracking-tight">SiLoak</span>
-        </a>
+  <nav class="mx-auto max-w-[1200px] px-3 sm:px-6" aria-label="Navigasi utama">
+    <div class="flex h-16 items-center justify-between gap-2 xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
+      <a class="flex shrink-0 items-center gap-2.5 text-white" href="{% url 'landing_page' %}" aria-label="SiLoak, beranda">
+        <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">♻</span>
+        <span class="text-xl font-bold tracking-tight">SiLoak</span>
+      </a>
 
-        {% if public %}
-            <div class="hidden items-center gap-1 md:flex">
-                <a class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white" href="{% url 'landing_page' %}">Beranda</a>
-                <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#cara-kerja">Cara Kerja</a>
-                <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#titik-pengumpulan">Titik Pengumpulan</a>
-                <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#manfaat">Manfaat</a>
-            </div>
-            <div class="flex items-center gap-3">
-                {% if landing and request.user.is_authenticated %}
-                    <a class="rounded-lg bg-[#dce6ff] px-3 py-2 text-sm font-semibold text-[#142653]" href="{% url 'dashboard' %}">Ke Dashboard</a>
-                {% else %}
-                    <a class="px-3 py-2 text-sm text-white" href="{% url 'auth_page' %}">Masuk</a>
-                    <a class="rounded-lg bg-[#dce6ff] px-3 py-2 text-sm font-semibold text-[#142653]" href="{% url 'auth_page' %}">Daftar Sekarang</a>
-                {% endif %}
-            </div>
-        {% else %}
-            <div class="hidden items-center gap-1 md:flex">
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'dashboard' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'dashboard' %}">Beranda</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'waste' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/waste/new/">Setor Loak</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'location' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/location/">Titik Pengumpulan</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'wallet' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'wallet:index' %}">Dompet</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'history' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/history/">Riwayat</a>
-            </div>
-            <div class="flex items-center gap-3">
-                <a class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white" href="/waste/new/">+ Setor Loak</a>
-                <a class="hidden text-sm text-white sm:block" href="/profile/">{{ request.user.get_full_name|default:request.user.username }}</a>
-            </div>
-        {% endif %}
-    </nav>
+      {% if public %}
+        <div class="hidden items-center gap-3 xl:flex xl:justify-self-center">
+          <a class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white" href="{% url 'landing_page' %}">Beranda</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#cara-kerja">Cara Kerja</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#titik-pengumpulan">Titik Pengumpulan</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#manfaat">Manfaat</a>
+        </div>
+        <div class="ml-auto flex shrink-0 items-center gap-1 sm:gap-3 xl:ml-0 xl:justify-self-end">
+          {% if request.user.is_authenticated %}
+            {% if landing %}<a class="hidden rounded-lg bg-[#dce6ff] px-3 py-2 text-sm font-semibold text-[#142653] sm:inline-flex" href="{% url 'dashboard' %}">Ke Dashboard</a>{% endif %}
+            {% include "components/user_menu.html" %}
+          {% else %}
+            <a class="rounded-lg px-2 py-2 text-sm text-white sm:px-3" href="{% url 'auth_page' %}">Masuk</a>
+            <a class="rounded-lg bg-[#dce6ff] px-2 py-2 text-sm font-semibold text-[#142653] sm:px-3" href="{% url 'auth_page' %}"><span class="sm:hidden">Daftar</span><span class="hidden sm:inline">Daftar Sekarang</span></a>
+          {% endif %}
+          <button class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/60 xl:hidden" type="button" aria-label="Buka navigasi" aria-expanded="false" aria-controls="mobile-nav-panel" data-mobile-nav-trigger>
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" data-mobile-menu-open-icon><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <svg class="hidden h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" data-mobile-menu-close-icon><path d="m6 6 12 12M18 6 6 18" /></svg>
+          </button>
+        </div>
+      {% else %}
+        <div class="hidden items-center gap-3 xl:flex xl:justify-self-center">
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'dashboard' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'dashboard' %}">Beranda</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'waste' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/waste/new/">Setor Loak</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'location' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/location/">Titik Pengumpulan</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'wallet' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'wallet:index' %}">Dompet</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'history' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'waste:submissions' %}">Riwayat</a>
+        </div>
+        <div class="ml-auto flex shrink-0 items-center gap-1 sm:gap-3 xl:ml-0 xl:justify-self-end">
+          <a class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[#2457D6] text-lg font-semibold text-white sm:h-auto sm:w-auto sm:px-3 sm:py-2 sm:text-sm" href="{% url 'waste:new' %}" aria-label="Setor Loak"><span class="sm:hidden" aria-hidden="true">+</span><span class="hidden sm:inline">+ Setor Loak</span></a>
+          {% include "components/user_menu.html" %}
+          <button class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/60 xl:hidden" type="button" aria-label="Buka navigasi" aria-expanded="false" aria-controls="mobile-nav-panel" data-mobile-nav-trigger>
+            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" data-mobile-menu-open-icon><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+            <svg class="hidden h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" data-mobile-menu-close-icon><path d="m6 6 12 12M18 6 6 18" /></svg>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+
+    <div id="mobile-nav-panel" class="hidden border-t border-white/10 py-2 xl:hidden" data-mobile-nav-panel>
+      {% if public %}
+        <div class="grid grid-cols-1 gap-1 sm:grid-cols-2">
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="{% url 'landing_page' %}">Beranda</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#cara-kerja">Cara Kerja</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#titik-pengumpulan">Titik Pengumpulan</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#manfaat">Manfaat</a>
+          {% if request.user.is_authenticated %}<a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="{% url 'dashboard' %}">Dashboard</a>{% endif %}
+        </div>
+      {% else %}
+        <div class="grid grid-cols-1 gap-1 sm:grid-cols-2">
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'dashboard' %}bg-white/10 font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'dashboard' %}">Beranda</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'waste' %}bg-white/10 font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/waste/new/">Setor Loak</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'location' %}bg-white/10 font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/location/">Titik Pengumpulan</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'wallet' %}bg-white/10 font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'wallet:index' %}">Dompet</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'history' %}bg-white/10 font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'waste:submissions' %}">Riwayat</a>
+        </div>
+      {% endif %}
+    </div>
+  </nav>
 </header>
+
+<script>
+  (() => {
+    const trigger = document.querySelector("[data-mobile-nav-trigger]");
+    const panel = document.querySelector("[data-mobile-nav-panel]");
+    if (!trigger || !panel) return;
+
+    const openIcon = trigger.querySelector("[data-mobile-menu-open-icon]");
+    const closeIcon = trigger.querySelector("[data-mobile-menu-close-icon]");
+    const setOpen = (open) => {
+      panel.hidden = !open;
+      panel.classList.toggle("hidden", !open);
+      trigger.setAttribute("aria-expanded", String(open));
+      trigger.setAttribute("aria-label", open ? "Tutup navigasi" : "Buka navigasi");
+      if (openIcon) openIcon.classList.toggle("hidden", open);
+      if (closeIcon) closeIcon.classList.toggle("hidden", !open);
+    };
+
+    trigger.addEventListener("click", () => {
+      setOpen(trigger.getAttribute("aria-expanded") !== "true");
+    });
+
+    panel.addEventListener("click", (event) => {
+      if (event.target.closest("a")) setOpen(false);
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!panel.contains(event.target) && !trigger.contains(event.target)) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && trigger.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        trigger.focus();
+      }
+    });
+
+    window.addEventListener("resize", () => {
+      if (window.matchMedia("(min-width: 1280px)").matches) setOpen(false);
+    });
+  })();
+</script>
