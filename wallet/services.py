@@ -5,7 +5,7 @@ from .models import Wallet, WalletTransaction, Donation
 
 @transaction.atomic
 def credit_wallet(user, amount, description, reference=""):
-    # Panggil dari Waste Submission hanya setelah submission diverifikasi/selesai.
+    # Panggil setelah setoran atau pickup diverifikasi dan insentif siap diproses.
     amount = Decimal(str(amount))
     if amount <= 0: 
         raise ValidationError("Insentif harus lebih besar dari nol.")

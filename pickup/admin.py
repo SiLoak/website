@@ -1,12 +1,7 @@
-from decimal import Decimal
-
 from django.contrib import admin, messages
-from django.db import transaction
-from django.utils import timezone
 
+from pickup import services
 from pickup.models import PickupItem, PickupRequest, PickupStatusHistory
-from wallet.services import credit_wallet, record_donation
-from waste.models import Submission
 
 
 class PickupItemInline(admin.TabularInline):
@@ -42,75 +37,21 @@ def verify_pickups(modeladmin, request, queryset):
         status=PickupRequest.Status.COMPLETED,
         verified_at__isnull=True,
     ):
-        with transaction.atomic():
-            pickup = (
-                PickupRequest.objects.select_for_update()
-                .select_related("giver")
-                .get(pk=selected.pk)
+        try:
+            services.verify_completed_pickup(
+                selected.pk,
+                request.user,
+                note="Hasil timbang dan insentif diverifikasi admin.",
             )
-            if (
-                pickup.status != PickupRequest.Status.COMPLETED
-                or pickup.verified_at is not None
-            ):
-                continue
-
-            items = list(pickup.items.select_related("waste_type"))
-            if not items or any(item.actual_weight is None for item in items):
+        except services.PickupServiceError as error:
+            if error.code == "missing_weight":
                 missing_weight_count += 1
-                continue
-
-            snapshot_updates = []
-            for item in items:
-                if item.unit_rate_snapshot is not None:
-                    continue
-                if item.waste_type.rate_per_kg is None:
-                    missing_rate_count += 1
-                    break
-                item.unit_rate_snapshot = item.waste_type.rate_per_kg
-                snapshot_updates.append(item)
-            else:
-                actual_reward = sum(
-                    (
-                        item.actual_weight * item.unit_rate_snapshot
-                        for item in items
-                    ),
-                    Decimal("0"),
-                )
-                if actual_reward <= 0:
-                    invalid_reward_count += 1
-                    continue
-
-                if snapshot_updates:
-                    PickupItem.objects.bulk_update(
-                        snapshot_updates, ["unit_rate_snapshot"]
-                    )
-
-                pickup.verified_at = timezone.now()
-                pickup.verified_by = request.user
-                pickup.save(update_fields=["verified_at", "verified_by", "updated_at"])
-                PickupStatusHistory.objects.create(
-                    pickup=pickup,
-                    previous_status=PickupRequest.Status.COMPLETED,
-                    new_status=PickupRequest.Status.COMPLETED,
-                    changed_by=request.user,
-                    note="Hasil timbang dan insentif diverifikasi admin.",
-                )
-
-                if pickup.incentive_allocation == Submission.IncentiveAllocation.WALLET:
-                    credit_wallet(
-                        user=pickup.giver,
-                        amount=actual_reward,
-                        description=f"Insentif pickup #{pickup.pk}",
-                        reference=f"pickup:{pickup.pk}",
-                    )
-                else:
-                    record_donation(
-                        user=pickup.giver,
-                        amount=actual_reward,
-                        description=f"Donasi insentif pickup #{pickup.pk}",
-                        reference=f"pickup_donation:{pickup.pk}",
-                    )
-                verified_count += 1
+            elif error.code == "missing_rate":
+                missing_rate_count += 1
+            elif error.code == "invalid_reward":
+                invalid_reward_count += 1
+            continue
+        verified_count += 1
 
     if verified_count:
         modeladmin.message_user(

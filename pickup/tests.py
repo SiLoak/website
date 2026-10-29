@@ -219,7 +219,7 @@ class PickupIntegrationTests(TestCase):
             ).exists()
         )
 
-    def test_collector_completion_records_weight_but_waits_for_admin_payout(self):
+    def test_collector_completion_verifies_pickup_and_processes_incentive(self):
         pickup, item = self.make_pickup(status=PickupRequest.Status.WEIGHING)
         self.client.force_login(self.collector)
 
@@ -236,9 +236,15 @@ class PickupIntegrationTests(TestCase):
         )
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.json()["message"],
+            "Pickup selesai diverifikasi dan insentif berhasil diproses.",
+        )
         pickup.refresh_from_db()
         item.refresh_from_db()
         self.assertEqual(pickup.status, PickupRequest.Status.COMPLETED)
         self.assertEqual(item.actual_weight, Decimal("1.75"))
-        self.assertIsNone(pickup.verified_at)
-        self.assertFalse(WalletTransaction.objects.filter(reference=f"pickup:{pickup.pk}").exists())
+        self.assertIsNotNone(pickup.verified_at)
+        self.assertEqual(pickup.verified_by, self.collector)
+        transaction = WalletTransaction.objects.get(reference=f"pickup:{pickup.pk}")
+        self.assertEqual(transaction.amount, Decimal("14000.00"))

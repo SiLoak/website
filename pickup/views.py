@@ -430,6 +430,7 @@ def complete_weighing_ajax(request, pickup_id):
       pickup = services.change_status(
         pickup_id, Status.COMPLETED, request.user, reason="", collector=None
       )
+      pickup = services.verify_completed_pickup(pickup.pk, request.user)
   except PermissionDenied:
     return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
   except services.PickupServiceError as e:
@@ -437,7 +438,7 @@ def complete_weighing_ajax(request, pickup_id):
 
   return JsonResponse(
     {
-      "message": "Penimbangan selesai. Pickup menunggu verifikasi insentif oleh admin.",
+      "message": "Pickup selesai diverifikasi dan insentif berhasil diproses.",
       "pk": str(pickup.id),
       "status": pickup.status,
       "status_display": pickup.get_status_display(),
