@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 from pathlib import Path
 from dotenv import load_dotenv
 import os
+from urllib.parse import urlparse, unquote, parse_qs
 
 load_dotenv()
 
@@ -91,12 +92,32 @@ WSGI_APPLICATION = 'main.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+DATABASE_URL = os.getenv('DATABASE_URL', '').strip()
+
+if DATABASE_URL:
+    url = urlparse(DATABASE_URL)
+    db_config = {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': unquote(url.path.lstrip('/')),
+        'USER': unquote(url.username or ''),
+        'PASSWORD': unquote(url.password or ''),
+        'HOST': url.hostname or '',
+        'PORT': str(url.port or '') if url.port else '',
     }
-}
+    if url.query:
+        query_params = parse_qs(url.query)
+        options = {k: v[-1] for k, v in query_params.items() if v}
+        if options:
+            db_config['OPTIONS'] = options
+
+    DATABASES = {'default': db_config}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 
 # Password validation
