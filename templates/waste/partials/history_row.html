@@ -1,0 +1,21 @@
+<tr id="entry-{{ entry.kind }}-{{ entry.pk }}" class="history-row is-{{ entry.status_group }}" data-entry-row>
+  <td>
+    {% if entry.cancellable %}
+      <input type="checkbox" name="selected" value="{{ entry.select_value }}" data-select-entry aria-label="Pilih {{ entry.number }}">
+    {% endif %}
+  </td>
+  <td class="whitespace-nowrap">
+    <span class="history-number">{{ entry.number }}</span>
+    <span class="history-kind is-{{ entry.kind }}">{% if entry.kind == "pickup" %}Dijemput{% else %}Antar sendiri{% endif %}</span>
+    <span class="history-meta">{{ entry.created_at|date:"j M Y, H:i" }}</span>
+  </td>
+  <td class="history-place">{{ entry.place }}</td>
+  <td>{{ entry.waste_names|default:"—" }}</td>
+  <td class="whitespace-nowrap">
+    <span class="history-meta">{% if entry.weight_is_actual %}Aktual{% else %}Estimasi{% endif %}</span>{{ entry.weight|floatformat:2 }} kg
+  </td>
+  <td class="whitespace-nowrap"><span class="history-badge is-{{ entry.status_group }}" data-status-badge>{{ entry.status_display }}</span></td>
+  <td class="whitespace-nowrap text-right">
+    <a class="history-link" href="{{ entry.detail_url }}">Detail <span aria-hidden="true">→</span></a>
+  </td>
+</tr>

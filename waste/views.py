@@ -1,8 +1,10 @@
+import json
 from datetime import timedelta
-from decimal import Decimal
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.http import QueryDict
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -13,6 +15,14 @@ from pickup.models import PickupRequest, PickupStatusHistory
 from .forms import SubmissionForm, SubmissionItemFormSet
 from pickup.forms import PickupRequestForm, PickupItemFormSet
 from .models import Submission
+from .history import (
+    PAGE_SIZE,
+    HistoryFilterForm,
+    build_history,
+    cancel_entries,
+    history_stats,
+    parse_selection,
+)
 from wallet.models import Wallet
 from main.security import rate_limit
 
@@ -228,39 +238,56 @@ def submission_detail(request, submission_id):
     )
 
 
+def _is_htmx(request):
+    return request.headers.get("HX-Request") == "true"
+
+
+def _toast(response, message, level="success"):
+    response["HX-Trigger"] = json.dumps({"showToast": {"message": message, "level": level}})
+    return response
+
+
+def _history_context(request, params):
+    filter_form = HistoryFilterForm(params)
+    entries = build_history(request.user, filter_form.filters())
+    page_obj = Paginator(entries, PAGE_SIZE).get_page(params.get("page"))
+    query = params.copy()
+    query.pop("page", None)
+    return {
+        "active_item": "history",
+        "filter_form": filter_form,
+        "page_obj": page_obj,
+        "filter_query": query.urlencode(),
+        "stats": history_stats(request.user),
+        "is_htmx": _is_htmx(request),
+    }
+
+
+def _render_history(request, params, status=200):
+    context = _history_context(request, params)
+    template = "waste/partials/history_results.html" if _is_htmx(request) else "history.html"
+    return render(request, template, context, status=status)
+
+
 @login_required(login_url="auth_page")
 def submission_history(request):
-    submissions = list(
-        Submission.objects.filter(user=request.user)
-        .select_related("collection_point")
-        .prefetch_related("items__waste_type")
-    )
-    verified = [
-        submission
-        for submission in submissions
-        if submission.status == Submission.Status.VERIFIED
-    ]
-    total_actual_weight = sum(
-        (submission.actual_weight or Decimal("0") for submission in verified),
-        Decimal("0"),
-    )
-    unpriced_verified_count = sum(
-        1 for submission in verified if submission.actual_reward is None
-    )
-    total_actual_reward = sum(
-        (submission.actual_reward or Decimal("0") for submission in verified),
-        Decimal("0"),
-    )
-    return render(
-        request,
-        "history.html",
-        {
-            "active_item": "history",
-            "submissions": submissions,
-            "total_submissions": len(submissions),
-            "verified_count": len(verified),
-            "total_actual_weight": total_actual_weight,
-            "total_actual_reward": total_actual_reward,
-            "unpriced_verified_count": unpriced_verified_count,
-        },
-    )
+    return _render_history(request, request.GET)
+
+
+@login_required(login_url="auth_page")
+@require_POST
+@rate_limit("history-bulk-cancel", "5/m")
+def bulk_cancel(request):
+    dropoff_ids, pickup_ids = parse_selection(request.POST.getlist("selected"))
+    count = cancel_entries(request.user, dropoff_ids, pickup_ids, reason="Dibatalkan dari riwayat.")
+    if count:
+        message, level = f"{count} pengajuan berhasil dibatalkan.", "success"
+    else:
+        message, level = "Tidak ada pengajuan yang dapat dibatalkan dari pilihanmu.", "warning"
+
+    if _is_htmx(request):
+        # Re-render the list with the filters the user is looking at.
+        params = QueryDict(request.POST.get("filter_query", ""))
+        return _toast(_render_history(request, params), message, level)
+    getattr(messages, level)(request, message)
+    return redirect("waste:submissions")

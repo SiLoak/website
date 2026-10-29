@@ -1,0 +1,6 @@
+<section id="history-stats" class="grid grid-cols-2 gap-3 lg:grid-cols-4" aria-label="Ringkasan riwayat"{% if oob %} hx-swap-oob="true"{% endif %}>
+  <div class="history-stat"><p>Total pengajuan</p><strong>{{ stats.total }}</strong></div>
+  <div class="history-stat"><p>Sedang diproses</p><strong>{{ stats.active }}</strong></div>
+  <div class="history-stat"><p>Selesai</p><strong>{{ stats.done }}</strong></div>
+  <div class="history-stat"><p>Berat terverifikasi</p><strong>{{ stats.weight|floatformat:2 }} <span>kg</span></strong></div>
+</section>

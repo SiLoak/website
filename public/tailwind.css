@@ -233,3 +233,57 @@
 .waste-point-empty:not([hidden]) { @apply [display:block]; }
 .waste-filter-note:not([hidden]) { @apply [display:block]; }
 }
+
+/* ---------- History (riwayat) ---------- */
+.history-stat { @apply rounded-xl border border-border-slate bg-[#E7E2CE] p-4 shadow-sm; }
+.history-stat p { @apply text-xs text-text-body sm:text-sm; }
+.history-stat strong { @apply mt-1 block text-2xl font-bold text-text-primary sm:text-3xl; }
+.history-stat strong span { @apply text-base font-medium; }
+.history-filters { @apply grid grid-cols-2 gap-2 rounded-xl border border-border-slate bg-surface-card p-3 shadow-sm sm:grid-cols-3 xl:grid-cols-[minmax(0,1.6fr)_repeat(2,minmax(0,1fr))_auto_auto_minmax(0,1fr)_auto] xl:items-center; }
+.history-filters select, .history-filters input { @apply h-10 w-full rounded-lg border border-border-slate bg-white px-3 text-sm text-text-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20; }
+.history-search { @apply relative col-span-2 flex items-center sm:col-span-3 xl:col-span-1; }
+.history-search > span { @apply pointer-events-none absolute left-3 text-text-body; }
+.history-search input { @apply pl-9; }
+.history-date { @apply flex items-center gap-2 text-xs text-text-body; }
+.history-reset { @apply flex items-center justify-center text-sm font-semibold text-primary hover:underline xl:px-2; }
+.history-filter-error { @apply mb-3 rounded-lg border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-900; }
+.history-card { @apply overflow-hidden rounded-xl border border-border-slate bg-surface-card shadow-sm; }
+.history-card-head { @apply flex flex-col gap-3 border-b border-border-slate px-5 py-4 sm:flex-row sm:items-center sm:justify-between; }
+.history-card-head h2 { @apply font-semibold text-text-primary; }
+.history-card-head p { @apply text-xs text-text-body; }
+.history-bulk-bar { @apply flex items-center gap-3; }
+.history-check { @apply flex items-center gap-2 text-sm text-text-body; }
+.history-bulk-button { @apply rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-semibold text-red-700 hover:bg-red-100 disabled:cursor-not-allowed disabled:border-border-slate disabled:bg-surface-soft disabled:text-text-body/60; }
+.history-table { @apply w-full min-w-[820px] text-left text-sm; }
+.history-table thead { @apply bg-surface-soft text-xs uppercase tracking-wide text-text-body; }
+.history-table th, .history-table td { @apply px-4 py-3 align-top; }
+.history-table tbody tr { @apply border-t border-border-slate transition-colors hover:bg-page-bg; }
+.history-row.is-pending-change { @apply opacity-60; }
+.history-number { @apply block font-semibold text-text-primary; }
+.history-kind { @apply mt-1 inline-block rounded-full px-2 py-0.5 text-[11px] font-semibold; }
+.history-kind.is-dropoff { @apply bg-sky-50 text-sky-800; }
+.history-kind.is-pickup { @apply bg-indigo-50 text-indigo-800; }
+.history-meta { @apply mt-1 block text-xs text-text-body; }
+.history-place { @apply max-w-[220px] text-text-primary; }
+.history-badge { @apply inline-block rounded-full px-2.5 py-1 text-xs font-semibold; }
+.history-badge.is-active { @apply bg-amber-100 text-amber-800; }
+.history-badge.is-done { @apply bg-green-100 text-green-800; }
+.history-badge.is-canceled { @apply bg-red-100 text-red-800; }
+.history-link { @apply font-semibold text-primary hover:underline; }
+.history-cancel { @apply ml-3 font-semibold text-red-700 hover:underline; }
+.history-empty { @apply flex flex-col items-center px-6 py-14 text-center text-text-body; }
+.history-empty h3 { @apply mt-3 font-semibold text-text-primary; }
+.history-empty p { @apply mt-1 text-sm; }
+.history-empty a { @apply mt-5 inline-flex rounded-lg bg-primary px-4 py-2.5 font-semibold text-white hover:bg-tertiary; }
+.history-pagination { @apply flex items-center justify-between border-t border-border-slate px-5 py-3 text-sm; }
+.history-pagination a { @apply font-semibold text-primary hover:underline; }
+.history-pagination span[aria-disabled] { @apply text-text-body/50; }
+#history-results.htmx-request { @apply opacity-60 transition-opacity; }
+
+/* ---------- Toasts ---------- */
+.siloak-toast-region { @apply pointer-events-none fixed bottom-4 right-4 z-[1000] flex w-[min(360px,calc(100vw-32px))] flex-col gap-2; }
+.siloak-toast { @apply pointer-events-auto rounded-lg border px-4 py-3 text-sm font-medium shadow-lg transition-all duration-300; }
+.siloak-toast.is-success { @apply border-green-200 bg-green-50 text-green-900; }
+.siloak-toast.is-warning { @apply border-amber-200 bg-amber-50 text-amber-900; }
+.siloak-toast.is-error { @apply border-red-200 bg-red-50 text-red-900; }
+.siloak-toast.is-leaving { @apply translate-y-2 opacity-0; }

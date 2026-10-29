@@ -1,0 +1,69 @@
+{% if filter_form.errors %}
+  <p class="history-filter-error" role="alert">Sebagian filter tidak valid dan diabaikan: {% for field, errors in filter_form.errors.items %}{{ errors|join:" " }} {% endfor %}</p>
+{% endif %}
+<section class="history-card" aria-labelledby="history-list-heading">
+  <form id="history-bulk-form" method="post" action="{% url 'waste:bulk_cancel' %}"
+        hx-post="{% url 'waste:bulk_cancel' %}" hx-target="#history-results"
+        hx-confirm="Batalkan semua pengajuan yang dipilih?" data-bulk-form>
+    {% csrf_token %}
+    <input type="hidden" name="filter_query" value="{{ filter_query }}">
+    <div class="history-card-head">
+      <div>
+        <h2 id="history-list-heading">Semua pengajuan</h2>
+        <p>{{ page_obj.paginator.count }} hasil{% if page_obj.paginator.num_pages > 1 %} · halaman {{ page_obj.number }} dari {{ page_obj.paginator.num_pages }}{% endif %}</p>
+      </div>
+      <div class="history-bulk-bar">
+        <label class="history-check"><input type="checkbox" data-select-all aria-label="Pilih semua yang bisa dibatalkan"> Pilih semua</label>
+        <button type="submit" class="history-bulk-button" data-bulk-submit disabled>Batalkan terpilih (<span data-selected-count>0</span>)</button>
+      </div>
+    </div>
+
+    {% if page_obj.object_list %}
+      <div class="overflow-x-auto">
+        <table class="history-table">
+          <thead>
+            <tr>
+              <th class="w-10"><span class="sr-only">Pilih</span></th>
+              <th>Nomor / tanggal</th>
+              <th>Lokasi</th>
+              <th>Jenis barang</th>
+              <th>Berat</th>
+              <th>Status</th>
+              <th class="text-right">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for entry in page_obj %}
+              {% include "waste/partials/history_row.html" %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div class="history-empty">
+        <span class="font-symbols text-5xl leading-none" aria-hidden="true">recycling</span>
+        {% if filter_query %}
+          <h3>Tidak ada yang cocok dengan filter</h3>
+          <p>Coba ubah kata kunci atau reset filter.</p>
+        {% else %}
+          <h3>Belum ada pengajuan setoran</h3>
+          <p>Pengajuan yang kamu buat akan muncul di halaman ini.</p>
+          <a href="{% url 'waste:new' %}">Buat pengajuan pertama</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  </form>
+
+  {% if page_obj.paginator.num_pages > 1 %}
+    <nav class="history-pagination" aria-label="Halaman riwayat">
+      {% if page_obj.has_previous %}
+        <a href="?{{ filter_query }}{% if filter_query %}&{% endif %}page={{ page_obj.previous_page_number }}" hx-get="?{{ filter_query }}{% if filter_query %}&{% endif %}page={{ page_obj.previous_page_number }}" hx-target="#history-results" hx-push-url="true">← Sebelumnya</a>
+      {% else %}<span aria-disabled="true">← Sebelumnya</span>{% endif %}
+      <span>{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+      {% if page_obj.has_next %}
+        <a href="?{{ filter_query }}{% if filter_query %}&{% endif %}page={{ page_obj.next_page_number }}" hx-get="?{{ filter_query }}{% if filter_query %}&{% endif %}page={{ page_obj.next_page_number }}" hx-target="#history-results" hx-push-url="true">Berikutnya →</a>
+      {% else %}<span aria-disabled="true">Berikutnya →</span>{% endif %}
+    </nav>
+  {% endif %}
+</section>
+{% if is_htmx %}{% include "waste/partials/history_stats.html" with oob=True %}{% endif %}

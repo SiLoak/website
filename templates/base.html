@@ -10,10 +10,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'tailwind.css' %}">
+    <script src="https://unpkg.com/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <script src="{% static 'js/siloak/htmx-setup.js' %}" defer></script>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="min-h-screen bg-page-bg font-body-md text-text-primary antialiased">
+<body class="min-h-screen bg-page-bg font-body-md text-text-primary antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
     {% block content %}{% endblock %}
+    <div id="toast-region" class="siloak-toast-region" aria-live="polite" aria-atomic="false"></div>
     {% block extra_js %}{% endblock %}
 </body>
 </html>
