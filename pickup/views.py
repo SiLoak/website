@@ -1,6 +1,7 @@
 import uuid
 
 from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse
 from django.contrib.auth.views import redirect_to_login
 from django.http import JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
@@ -14,6 +15,7 @@ from pickup import services
 from pickup.models import PickupRequest
 from pickup.forms import PickupRequestForm, PickupWeighingFormSet
 from pickup.permissions import is_giver, is_collector, is_admin
+from waste.views import _submission_form_view
 from main.security import ajax_login_required, collector_required, giver_required, rate_limit
 
 
@@ -149,14 +151,15 @@ def _get_current_month_string():
 
 @giver_required()
 def show_pickup_list(request):
-  id_query = request.GET.get("id", "").strip()
+  # Givers track pickups together with drop-offs on the history page.
+  return redirect(reverse("waste:submissions") + "?type=pickup")
 
-  context = {
-    "id_query": id_query,
-    "form": PickupRequestForm(),
-  }
 
-  return render(request, "pickup.html", context)
+@giver_required()
+@rate_limit("pickup-edit", "20/m")
+def edit_pickup(request, pickup_id):
+  pickup = get_object_or_404(PickupRequest, pk=pickup_id, giver=request.user)
+  return _submission_form_view(request, pickup=pickup)
 
 
 @collector_required()
@@ -185,6 +188,7 @@ def show_pickup_detail(request, pickup_id):
   )
   can_see_contact = is_owner or is_assigned or user_is_admin
   can_cancel = pickup.is_cancellable and (is_owner or user_is_admin)
+  can_edit = is_owner and pickup.status == Status.PENDING
 
   collector_actions = COLLECTOR_ACTIONS.get(pickup.status, ()) if is_assigned else ()
 
@@ -202,6 +206,7 @@ def show_pickup_detail(request, pickup_id):
     "is_assigned": is_assigned,
     "can_accept": can_accept,
     "can_cancel": can_cancel,
+    "can_edit": can_edit,
     "can_see_contact": can_see_contact,
     "collector_actions": collector_actions,
     "weighing_formset": weighing_formset,

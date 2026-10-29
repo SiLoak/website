@@ -241,6 +241,9 @@
           </ol>
         </section>
 
+        {% if can_edit %}
+          <a class="block w-full rounded-lg bg-primary px-4 py-3 text-center font-semibold text-white hover:opacity-90" href="{% url 'pickup:edit' pickup_id=pickup.pk %}">Ubah permintaan</a>
+        {% endif %}
         {% if can_cancel %}
           <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="button" data-ajax-action data-url="{% url 'pickup:cancel_pickup_ajax' pickup_id=pickup.pk %}" data-confirm="Batalkan pickup setoran ini?">Batalkan pickup</button>
         {% endif %}

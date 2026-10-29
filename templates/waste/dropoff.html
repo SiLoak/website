@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% load static l10n %}
-{% block title %}{% if editing %}Ubah Pengajuan{% else %}Setor Loak{% endif %} · SiLoak{% endblock %}
+{% block title %}{% if editing_pickup %}Ubah Pickup{% elif editing %}Ubah Pengajuan{% else %}Setor Loak{% endif %} · SiLoak{% endblock %}
 {% block extra_head %}
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,10 +18,10 @@
     <nav class="waste-breadcrumb" aria-label="Breadcrumb">
       <a href="{% url 'dashboard' %}">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Beranda</a>
       <span aria-hidden="true">/</span>
-      <span>{% if editing %}Ubah pengajuan{% else %}Setor Loak{% endif %}</span>
+      <span>{% if editing_pickup %}Ubah pickup{% elif editing %}Ubah pengajuan{% else %}Setor Loak{% endif %}</span>
     </nav>
     <div class="waste-heading">
-      <h1>{% if editing %}Ubah pengajuan{% else %}Setor Loak{% endif %}</h1>
+      <h1>{% if editing_pickup %}Ubah permintaan pickup{% elif editing %}Ubah pengajuan{% else %}Setor Loak{% endif %}</h1>
       <p>Pilih barang bekasmu, lalu tentukan mau diantar sendiri atau dijemput petugas.</p>
     </div>
 
@@ -33,7 +33,7 @@
       </div>
     {% endif %}
 
-    <form id="waste-submission-form" method="post" novalidate data-editing="{% if editing %}true{% else %}false{% endif %}" data-selected-point="{{ form.collection_point.value|default:'' }}">
+    <form id="waste-submission-form" method="post" novalidate data-editing="{% if editing or editing_pickup %}true{% else %}false{% endif %}" data-selected-point="{{ form.collection_point.value|default:'' }}">
       {% csrf_token %}
       {% if form.non_field_errors or formset.non_form_errors or form.delivery_method.errors %}
         <div class="waste-alert" role="alert">
@@ -128,7 +128,7 @@
             </div>
             <div class="waste-methods" role="radiogroup" aria-labelledby="waste-method-heading">
               <label class="waste-method-option group is-selected" data-method-card>
-                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="antar_sendiri" data-delivery-mode {% if request.POST.delivery_method != 'minta_dijemput' %}checked{% endif %}>
+                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="antar_sendiri" data-delivery-mode {% if delivery_method != 'minta_dijemput' %}checked{% endif %}{% if editing_pickup %} disabled{% endif %}>
                 <div class="waste-method-top">
                   <span class="waste-icon-box">{% include "components/lucide_icon.html" with name="bike" icon_class="h-5 w-5" only %}</span>
                   <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
@@ -139,7 +139,7 @@
                 <div class="waste-method-foot">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Kamu akan memilih titik pengumpulan.</div>
               </label>
               <label class="waste-method-option group is-inactive" data-method-card>
-                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="minta_dijemput" data-delivery-mode {% if request.POST.delivery_method == 'minta_dijemput' %}checked{% endif %}{% if editing %} disabled{% endif %}>
+                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="minta_dijemput" data-delivery-mode {% if delivery_method == 'minta_dijemput' %}checked{% endif %}{% if editing %} disabled{% endif %}>
                 <div class="waste-method-top">
                   <span class="waste-icon-box"><span class="font-symbols text-[20px] leading-none" aria-hidden="true">local_shipping</span></span>
                   <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
@@ -344,7 +344,9 @@
             {% if incentive_form.incentive_allocation.errors %}<p class="waste-field-error">{{ incentive_form.incentive_allocation.errors|join:", " }}</p>{% endif %}
           </section>
 
-          {% if editing %}
+          {% if editing_pickup %}
+            <div><a class="waste-history-link" href="{% url 'pickup:show_pickup_detail' pickup.pk %}">Kembali ke rincian pickup</a></div>
+          {% elif editing %}
             <div><a class="waste-history-link" href="{% url 'waste:detail' submission.pk %}">Kembali ke rincian pengajuan</a></div>
           {% else %}
             <div><a class="waste-history-link" href="{% url 'waste:submissions' %}">Lihat riwayat setoran</a></div>
@@ -384,10 +386,10 @@
               <div><strong data-summary-pickup-schedule>Jadwal belum dipilih</strong><span data-summary-pickup-date>Pilih tanggal dan rentang waktu.</span></div>
             </div>
             <button id="submit-waste" class="waste-submit" type="submit">
-              <span data-submit-label>{% if editing %}Simpan perubahan{% else %}Buat pengajuan{% endif %}</span>
+              <span data-submit-label>{% if editing or editing_pickup %}Simpan perubahan{% else %}Buat pengajuan{% endif %}</span>
               <span data-submit-arrow>{% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-4 w-4" only %}</span>
             </button>
-            <a class="waste-cancel" href="{% if editing %}{% url 'waste:detail' submission.pk %}{% else %}{% url 'waste:submissions' %}{% endif %}">Batal</a>
+            <a class="waste-cancel" href="{% if editing_pickup %}{% url 'pickup:show_pickup_detail' pickup.pk %}{% elif editing %}{% url 'waste:detail' submission.pk %}{% else %}{% url 'waste:submissions' %}{% endif %}">Batal</a>
             <p class="waste-summary-footnote" data-summary-pickup-row hidden>Permintaan bisa dibatalkan secara gratis selama petugas belum dalam perjalanan.</p>
           </div>
         </aside>
@@ -668,9 +670,9 @@
       document.querySelector("[data-summary-method-note]").textContent = pickup ? "Penjemputan langsung ke rumah" : "Tidak ada biaya penjemputan";
       document.querySelector("[data-summary-point-row]").hidden = pickup;
       document.querySelectorAll("[data-summary-pickup-row]").forEach((row) => { row.hidden = !pickup; });
-      submitLabel.textContent = pickup
-        ? "Minta pick-up"
-        : (form.dataset.editing === "true" ? "Simpan perubahan" : "Buat pengajuan");
+      submitLabel.textContent = form.dataset.editing === "true"
+        ? "Simpan perubahan"
+        : (pickup ? "Minta pick-up" : "Buat pengajuan");
       if (pickup) updatePickupSummary();
       window.setTimeout(() => {
         if (pickup && pickupMap) pickupMap.invalidateSize();

@@ -9,6 +9,7 @@ urlpatterns = [
   path("", views.show_pickup_list, name="show_pickup_list"),
   path("collector/", views.show_collector_pickup_list, name="show_collector_pickup_list"),
   path("<uuid:pickup_id>/", views.show_pickup_detail, name="show_pickup_detail"),
+  path("<uuid:pickup_id>/edit/", views.edit_pickup, name="edit"),
 
   # API (JSON)
   path("api/", views.get_pickup_json, name="get_pickup_json"),

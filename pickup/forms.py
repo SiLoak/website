@@ -133,12 +133,23 @@ class PickupRequestForm(forms.ModelForm):
       "Cari alamatmu atau geser pin di peta agar petugas tahu lokasi penjemputan."
     )
     today = timezone.localdate()
+    if self.instance.pk and not self.is_bound and self.instance.scheduled_date:
+      self._initial_date_option(self.instance.scheduled_date, today)
     self.fields["custom_date"].widget.attrs.update(
       {
         "min": today.isoformat(),
         "max": (today + timedelta(days=MAX_ADVANCE_DAYS)).isoformat(),
       }
     )
+
+  def _initial_date_option(self, scheduled_date, today):
+    offset = (scheduled_date - today).days
+    for option, days in self.DATE_OFFSETS.items():
+      if days == offset:
+        self.initial["pickup_date_option"] = option
+        return
+    self.initial["pickup_date_option"] = self.DATE_CUSTOM
+    self.initial["custom_date"] = scheduled_date
 
   def clean_delivery_method(self):
     return self.cleaned_data.get("delivery_method") or "minta_dijemput"

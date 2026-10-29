@@ -5,6 +5,8 @@ from django.utils import timezone
 
 from pickup.models import PickupRequest, PickupStatusHistory
 from pickup.permissions import is_admin, is_collector
+from waste.models import Submission
+from wallet.services import credit_wallet, record_donation
 
 Status = PickupRequest.Status
 
@@ -85,5 +87,32 @@ def change_status(pickup_id, new_status, actor, reason="", collector=None):
     pickup.status = new_status
     pickup.save()
     _log(pickup, previous_status, new_status, actor, reason)
-    
+
+    if new_status == Status.COMPLETED:
+        credit_pickup_incentive(pickup)
+
     return pickup
+
+
+def credit_pickup_incentive(pickup):
+    """Send the weighed reward to the giver's wallet, or record it as a donation.
+
+    The wallet services skip a reference they already saw, so calling this
+    twice for the same pickup never pays twice.
+    """
+    reward = pickup.actual_reward
+    if reward is None or reward <= 0:
+        return None
+    if pickup.incentive_allocation == Submission.IncentiveAllocation.DONATION:
+        return record_donation(
+            user=pickup.giver,
+            amount=reward,
+            description=f"Donasi insentif pickup #{str(pickup.pk)[:8]}",
+            reference=f"pickup-donation:{pickup.pk}",
+        )
+    return credit_wallet(
+        user=pickup.giver,
+        amount=reward,
+        description=f"Insentif pickup #{str(pickup.pk)[:8]}",
+        reference=f"pickup:{pickup.pk}",
+    )

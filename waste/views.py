@@ -57,89 +57,104 @@ def _pickup_date_choices():
         for offset, (value, label) in enumerate(labels)
     ]
 
-def _create_pickup_request(request, pickup_form, formset):
+def _save_items(formset, parent):
+    """Save formset items, deleting removed rows and snapshotting new rates."""
+    formset.instance = parent
+    formset.save(commit=False)
+    for deleted_item in formset.deleted_objects:
+        deleted_item.delete()
+    for item_form in formset.forms:
+        if (
+            not item_form.cleaned_data
+            or item_form.cleaned_data.get("DELETE")
+            or not item_form.has_changed()
+        ):
+            continue
+        item = item_form.save(commit=False)
+        if not item.pk or "waste_type" in item_form.changed_data:
+            item.unit_rate_snapshot = item.waste_type.rate_per_kg
+        item.save()
+
+
+def _save_pickup_request(request, pickup_form, formset, editing):
     with transaction.atomic():
         pickup = pickup_form.save(commit=False)
-        pickup.giver = request.user
+        if not editing:
+            pickup.giver = request.user
         pickup.save()
-
-        formset.instance = pickup
-        for item in formset.save(commit=False):
-            item.unit_rate_snapshot = item.waste_type.rate_per_kg
-            item.save()
-
+        _save_items(formset, pickup)
         PickupStatusHistory.objects.create(
             pickup=pickup,
-            previous_status="",
+            previous_status="" if not editing else pickup.status,
             new_status=pickup.status,
             changed_by=request.user,
-            note="Permintaan penjemputan dibuat.",
+            note="Permintaan penjemputan diperbarui." if editing else "Permintaan penjemputan dibuat.",
         )
-
     return pickup
 
-def _submission_form_view(request, submission=None):
-    editing = submission is not None
-    if editing and submission.status != Submission.Status.PENDING:
+
+def _save_submission(request, form, formset, editing):
+    with transaction.atomic():
+        submission = form.save(commit=False)
+        if not editing:
+            submission.user = request.user
+        submission.save()
+        _save_items(formset, submission)
+    return submission
+
+
+def _submission_form_view(request, submission=None, pickup=None):
+    """One form for three jobs: new setoran/pickup, edit setoran, edit pickup."""
+    if submission is not None and submission.status != Submission.Status.PENDING:
         messages.error(request, "Pengajuan ini sudah tidak dapat diubah.")
         return redirect("waste:detail", submission_id=submission.pk)
+    if pickup is not None and pickup.status != PickupRequest.Status.PENDING:
+        messages.error(request, "Pickup yang sudah diproses petugas tidak dapat diubah.")
+        return redirect("pickup:show_pickup_detail", pickup_id=pickup.pk)
 
+    editing = submission is not None
+    editing_pickup = pickup is not None
+    data = request.POST if request.method == "POST" else None
     wallet, _ = Wallet.objects.get_or_create(user=request.user)
-    is_pickup = (
-        request.method == "POST"
-        and not editing
-        and request.POST.get("delivery_method") == "minta_dijemput"
-    )
+
+    if editing_pickup:
+        delivery_method = "minta_dijemput"
+    elif editing:
+        delivery_method = "antar_sendiri"
+    else:
+        delivery_method = (data or {}).get("delivery_method") or "antar_sendiri"
+    is_pickup = delivery_method == "minta_dijemput"
 
     if is_pickup:
         form = SubmissionForm()
-        pickup_form = PickupRequestForm(request.POST)
-        formset = PickupItemFormSet(request.POST)
+        pickup_form = PickupRequestForm(data, instance=pickup)
+        formset = PickupItemFormSet(data, instance=pickup)
         incentive_form = pickup_form
     else:
-        form = SubmissionForm(request.POST or None, initial={"incentive_allocation": wallet.default_incentive})
-
-        pickup_form = PickupRequestForm(
-            initial={} if editing else _saved_pickup_initial(request.user)
+        form = SubmissionForm(
+            data, instance=submission,
+            initial={"incentive_allocation": wallet.default_incentive},
         )
-        formset = SubmissionItemFormSet(request.POST or None, instance=submission)
+        pickup_form = PickupRequestForm(initial=_saved_pickup_initial(request.user))
+        formset = SubmissionItemFormSet(data, instance=submission)
         incentive_form = form
 
-    if is_pickup and pickup_form.is_valid() and formset.is_valid():
-        pickup = _create_pickup_request(request, pickup_form, formset)
-        messages.success(request, "Permintaan penjemputan berhasil dibuat.")
-        return redirect("pickup:show_pickup_detail", pickup_id=pickup.pk)
-
-    if request.method == "POST" and not is_pickup and form.is_valid() and formset.is_valid():
-        with transaction.atomic():
-            saved_submission = form.save(commit=False)
-            if not editing:
-                saved_submission.user = request.user
-            saved_submission.save()
-
-            formset.instance = saved_submission
-            formset.save(commit=False)
-            for deleted_item in formset.deleted_objects:
-                deleted_item.delete()
-
-            for item_form in formset.forms:
-                if (
-                    not item_form.cleaned_data
-                    or item_form.cleaned_data.get("DELETE")
-                    or not item_form.has_changed()
-                ):
-                    continue
-                item = item_form.save(commit=False)
-                item.submission = saved_submission
-                if not item.pk or "waste_type" in item_form.changed_data:
-                    item.unit_rate_snapshot = item.waste_type.rate_per_kg
-                item.save()
-
-        messages.success(
-            request,
-            "Pengajuan berhasil diperbarui." if editing else "Pengajuan setoran berhasil dibuat.",
-        )
-        return redirect("waste:detail", submission_id=saved_submission.pk)
+    if data is not None:
+        if is_pickup and pickup_form.is_valid() and formset.is_valid():
+            saved = _save_pickup_request(request, pickup_form, formset, editing_pickup)
+            messages.success(
+                request,
+                "Permintaan penjemputan berhasil diperbarui." if editing_pickup
+                else "Permintaan penjemputan berhasil dibuat.",
+            )
+            return redirect("pickup:show_pickup_detail", pickup_id=saved.pk)
+        if not is_pickup and form.is_valid() and formset.is_valid():
+            saved = _save_submission(request, form, formset, editing)
+            messages.success(
+                request,
+                "Pengajuan berhasil diperbarui." if editing else "Pengajuan setoran berhasil dibuat.",
+            )
+            return redirect("waste:detail", submission_id=saved.pk)
 
     return render(
         request,
@@ -151,7 +166,10 @@ def _submission_form_view(request, submission=None):
             "incentive_form": incentive_form,
             "formset": formset,
             "editing": editing,
+            "editing_pickup": editing_pickup,
             "submission": submission,
+            "pickup": pickup,
+            "delivery_method": delivery_method,
             "pickup_dates": _pickup_date_choices(),
         },
     )
