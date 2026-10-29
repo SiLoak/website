@@ -5,7 +5,7 @@ from decimal import Decimal
 from django import forms
 from django.core.exceptions import ValidationError
 from django.db.models import Q
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 from django.utils import timezone
 
 from waste.forms import BaseSubmissionItemFormSet, WasteTypeChoiceField
@@ -246,4 +246,31 @@ PickupItemFormSet = inlineformset_factory(
   validate_min=True,
   validate_max=True,
   can_delete=True,
+)
+
+
+class PickupItemWeighingForm(forms.ModelForm):
+  class Meta:
+    model = PickupItem
+    fields = ["actual_weight"]
+    widgets = {
+      "actual_weight": forms.NumberInput(
+        attrs={
+          "class": INPUT_CLASS,
+          "min": "0.01",
+          "step": "0.01",
+          "placeholder": "Contoh: 2.50",
+        }
+      ),
+    }
+
+  def __init__(self, *args, **kwargs):
+    super().__init__(*args, **kwargs)
+    self.fields["actual_weight"].required = True
+
+
+PickupWeighingFormSet = modelformset_factory(
+  PickupItem,
+  form=PickupItemWeighingForm,
+  extra=0,
 )

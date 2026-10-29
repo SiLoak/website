@@ -8,10 +8,11 @@ from django.core.exceptions import PermissionDenied
 from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.utils import timezone
+from django.db import transaction
 
 from pickup import services
 from pickup.models import PickupRequest
-from pickup.forms import PickupRequestForm
+from pickup.forms import PickupRequestForm, PickupWeighingFormSet
 from pickup.permissions import is_giver, is_collector, is_admin
 
 
@@ -27,6 +28,28 @@ PROGRESS_STATUSES = {
   Status.WEIGHING,
   Status.COMPLETED,
   Status.FAILED,
+}
+
+
+def _action(status, label, danger=False, needs_note=False):
+  return {"status": status.value, "label": label, "danger": danger, "needs_note": needs_note}
+
+
+COLLECTOR_ACTIONS = {
+  Status.ASSIGNED.value: (
+    _action(Status.ON_THE_WAY, "Berangkat menjemput"),
+  ),
+  Status.ON_THE_WAY.value: (
+    _action(Status.ARRIVED, "Tandai sudah tiba"),
+    _action(Status.FAILED, "Tandai gagal", danger=True, needs_note=True),
+  ),
+  Status.ARRIVED.value: (
+    _action(Status.WEIGHING, "Mulai penimbangan"),
+    _action(Status.FAILED, "Tandai gagal", danger=True, needs_note=True),
+  ),
+  Status.WEIGHING.value: (
+    _action(Status.FAILED, "Tandai gagal", danger=True, needs_note=True),
+  ),
 }
 
 
@@ -63,7 +86,10 @@ def _apply_filters(queryset, request):
 
 def _get_accessible_pickup(user, pickup_id):
   pickup = get_object_or_404(
-    PickupRequest.objects.select_related("giver", "collector"), pk=pickup_id
+    PickupRequest.objects.select_related("giver", "collector").prefetch_related(
+      "items__waste_type", "status_history__changed_by"
+    ),
+    pk=pickup_id,
   )
   is_owner = pickup.giver_id == user.pk
   is_assigned = pickup.collector_id == user.pk
@@ -159,11 +185,35 @@ def request_pickup(request):
 @login_required(login_url="auth_page")
 def show_pickup_detail(request, pickup_id):
   pickup, is_owner, is_assigned = _get_accessible_pickup(request.user, pickup_id)
+  user_is_admin = is_admin(request.user)
+
+  can_accept = (
+    is_collector(request.user)
+    and pickup.status == Status.PENDING
+    and pickup.collector_id is None
+  )
+  can_see_contact = is_owner or is_assigned or user_is_admin
+  can_cancel = pickup.is_cancellable and (is_owner or user_is_admin)
+
+  collector_actions = COLLECTOR_ACTIONS.get(pickup.status, ()) if is_assigned else ()
+
+  weighing_formset = None
+  if is_assigned and pickup.status == Status.WEIGHING:
+    weighing_formset = PickupWeighingFormSet(
+      queryset=pickup.items.all(), prefix="weigh"
+    )
 
   context = {
     "active_item": "history",
     "submission_id": pickup_id,
     "pickup": pickup,
+    "is_owner": is_owner,
+    "is_assigned": is_assigned,
+    "can_accept": can_accept,
+    "can_cancel": can_cancel,
+    "can_see_contact": can_see_contact,
+    "collector_actions": collector_actions,
+    "weighing_formset": weighing_formset,
   }
 
   return render(request, "pickup/detail.html", context)
@@ -242,7 +292,7 @@ def get_pickup_detail_json(request, pickup_id):
   can_see_contact = is_owner or is_assigned or is_admin(request.user)
 
   history = []
-  for item in pickup.status_history.select_related("changed_by"):
+  for item in pickup.status_history.all():
     history.append({
       "previous_status": item.previous_status,
       "new_status": item.new_status,
@@ -328,3 +378,50 @@ def update_pickup_status_ajax(request, pickup_id):
 
   note = request.POST.get("note", "").strip()
   return _transition_response(request, pickup_id, new_status, note=note)
+
+
+@require_POST
+def complete_weighing_ajax(request, pickup_id):
+  if not request.user.is_authenticated:
+    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
+
+  pickup = get_object_or_404(
+    PickupRequest.objects.prefetch_related("items__waste_type"), pk=pickup_id
+  )
+  if pickup.collector_id != request.user.pk and not is_admin(request.user):
+    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
+  if pickup.status != Status.WEIGHING:
+    return JsonResponse({"error": "Pickup belum berada pada tahap penimbangan."}, status=400)
+
+  formset = PickupWeighingFormSet(
+    request.POST, queryset=pickup.items.all(), prefix="weigh"
+  )
+  if not formset.is_valid():
+    return JsonResponse(
+      {
+        "error": "Periksa kembali berat aktual yang diisi.",
+        "form_errors": [form.errors.get_json_data() for form in formset.forms],
+        "non_form_errors": list(formset.non_form_errors()),
+      },
+      status=400,
+    )
+
+  try:
+    with transaction.atomic():
+      formset.save()
+      pickup = services.change_status(
+        pickup_id, Status.COMPLETED, request.user, reason="", collector=None
+      )
+  except PermissionDenied:
+    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
+  except services.PickupServiceError as e:
+    return JsonResponse({"error": e.message}, status=e.status_code)
+
+  return JsonResponse(
+    {
+      "message": "Penimbangan selesai. Pickup ditandai selesai.",
+      "pk": str(pickup.id),
+      "status": pickup.status,
+      "status_display": pickup.get_status_display(),
+    }
+  )
