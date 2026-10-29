@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Riwayat Tugas Pickup · SiLoak{% endblock %}
+{% block content %}
+{% include "components/navbar.html" with active_item="history" %}
+<main id="main-content" class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto flex max-w-5xl flex-col gap-6">
+    <header class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div>
+        <p class="mb-2 text-sm font-semibold text-primary">Area collector</p>
+        <h1 class="text-3xl font-bold tracking-tight text-text-primary">Riwayat tugas pickup</h1>
+        <p class="mt-1 text-text-body">Semua permintaan yang pernah ditugaskan kepadamu.</p>
+      </div>
+      <a class="inline-flex items-center justify-center rounded-lg bg-primary px-4 py-3 font-semibold text-white shadow-sm hover:bg-tertiary" href="{% url 'pickup:show_collector_pickup_list' %}">Kembali ke antrean</a>
+    </header>
+
+    <section class="overflow-hidden rounded-xl border border-border-slate bg-surface-card shadow-sm">
+      {% if pickups %}
+        <div class="divide-y divide-border-slate">
+          {% for pickup in pickups %}
+            <article class="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div class="min-w-0">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h2 class="font-semibold text-text-primary">Pickup #{{ pickup.pk }}</h2>
+                  {% if pickup.status == "COMPLETED" and pickup.verified_at %}
+                    <span class="rounded-full bg-green-100 px-2.5 py-1 text-xs font-semibold text-green-800">{{ pickup.get_status_display }} · insentif diproses</span>
+                  {% elif pickup.status == "COMPLETED" %}
+                    <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-800">Selesai · menunggu verifikasi insentif</span>
+                  {% elif pickup.status == "CANCELLED" or pickup.status == "FAILED" %}
+                    <span class="rounded-full bg-red-100 px-2.5 py-1 text-xs font-semibold text-red-800">{{ pickup.get_status_display }}</span>
+                  {% else %}
+                    <span class="rounded-full bg-blue-100 px-2.5 py-1 text-xs font-semibold text-blue-800">{{ pickup.get_status_display }}</span>
+                  {% endif %}
+                </div>
+                <p class="mt-1 truncate text-sm text-text-body">{{ pickup.pickup_address }}</p>
+                <p class="mt-1 text-xs text-text-body">{{ pickup.scheduled_date|date:"j M Y" }} · {{ pickup.get_time_slot_display }} · {{ pickup.giver.get_full_name|default:pickup.giver.get_username }}</p>
+              </div>
+              <a class="shrink-0 font-semibold text-primary hover:underline" href="{% url 'pickup:show_pickup_detail' pickup_id=pickup.pk %}">Lihat detail →</a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="px-6 py-14 text-center">
+          <h2 class="font-semibold text-text-primary">Belum ada tugas pickup</h2>
+          <p class="mt-1 text-sm text-text-body">Pickup yang kamu ambil akan muncul di sini.</p>
+        </div>
+      {% endif %}
+    </section>
+  </div>
+</main>
+{% include "components/footer.html" %}
+{% endblock %}

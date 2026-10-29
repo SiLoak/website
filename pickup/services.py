@@ -62,6 +62,10 @@ def change_status(pickup_id, new_status, actor, reason="", collector=None):
         )
     if new_status == Status.FAILED and not reason:
         raise PickupServiceError("Alasan kegagalan wajib diisi.")
+    if new_status == Status.COMPLETED:
+        items = list(pickup.items.all())
+        if not items or any(item.actual_weight is None for item in items):
+            raise PickupServiceError("Berat aktual semua barang harus diisi sebelum pickup diselesaikan.")
 
     previous_status = pickup.status
     now = timezone.now()

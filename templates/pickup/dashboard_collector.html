@@ -7,6 +7,7 @@
   data-base-endpoint="{% url 'pickup:get_collector_pickup_json' %}"
   data-new-base-endpoint="{% url 'pickup:get_collector_pickup_json' %}?scope=available"
   data-is-superuser="{{ user.is_superuser|yesno:'true,false' }}"
+  data-csrf-token="{{ csrf_token }}"
   data-detail-url-template="{% url 'pickup:show_pickup_detail' '00000000-0000-0000-0000-000000000000' %}"
   data-accept-url-template="{% url 'pickup:accept_pickup_ajax' '00000000-0000-0000-0000-000000000000' %}"
 ></div>
@@ -98,7 +99,7 @@
               <div id="completed-pickups-card" class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5"></div>
             </div>
             <div class="mt-4 pt-3 bg-surface-soft/40 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
-              <a class="font-label-md text-label-md text-primary-container font-semibold inline-flex items-center gap-1 group" href="/history/"> Lihat riwayat tugas <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+              <a class="font-label-md text-label-md text-primary-container font-semibold inline-flex items-center gap-1 group" href="{% url 'pickup:show_collector_pickup_history' %}"> Lihat riwayat tugas <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
               </a>
             </div>
           </div>
@@ -139,12 +140,12 @@
             <!-- Bottom Footer Link -->
             <div class="mt-4 pt-3 flex items-center justify-between">
               <span class="font-label-sm text-label-sm text-text-body/70">Urut berdasarkan jadwal terdekat</span>
-              <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="/history/"> Lihat semua tugas <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+              <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="{% url 'pickup:show_collector_pickup_history' %}"> Lihat semua tugas <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
               </a>
             </div>
           </div>
           <!-- Card: Permintaan Pick Up Pending (belum ada collector) -->
-          <div class="bg-surface-card rounded-xl p-6 shadow-sm flex flex-col justify-between">
+          <div id="new-pickup-requests" class="bg-surface-card rounded-xl p-6 shadow-sm flex flex-col justify-between">
             <div>
               <!-- Header Row -->
               <div class="flex items-center justify-between pb-4">
@@ -177,7 +178,7 @@
             <!-- Bottom Footer Link -->
             <div class="mt-4 pt-3 flex items-center justify-between">
               <span class="font-label-sm text-label-sm text-text-body/70">Menampilkan permintaan di wilayah tugasmu</span>
-              <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="/pickup/pending/"> Lihat semua permintaan <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+              <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="{% url 'pickup:show_collector_pickup_list' %}#new-pickup-requests"> Lihat semua permintaan <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
               </a>
             </div>
           </div>

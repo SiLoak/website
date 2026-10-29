@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 {% load l10n %}
-{% block title %}Detail Setoran Pick Up #{{ pickup.pk }} · SiLoak{% endblock %}
+{% block title %}Detail Pickup #{{ pickup.pk }} · SiLoak{% endblock %}
 {% block content %}
 {% include "components/navbar.html" with active_item="history" %}
 <main id="main-content" class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8">
   <div class="mx-auto max-w-5xl">
     <nav class="mb-4 text-sm text-text-body" aria-label="Breadcrumb">
       <a class="hover:text-primary" href="{% url 'dashboard' %}">Beranda</a><span class="px-2">/</span>
-      <a class="hover:text-primary" href="{% url 'waste:submissions' %}">Riwayat setoran</a><span class="px-2">/</span>
+      <a class="hover:text-primary" href="{% url 'waste:submissions' %}">Riwayat aktivitas</a><span class="px-2">/</span>
       <span class="text-primary">#{{ pickup.pk }}</span>
     </nav>
     {% if messages %}
@@ -17,8 +17,8 @@
     {% endif %}
     <header class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
       <div>
-        <p class="text-sm text-text-body">Pickup setoran #{{ pickup.pk }}</p>
-        <h1 class="mt-1 text-3xl font-bold tracking-tight text-text-primary">Detail setoran pick up</h1>
+        <p class="text-sm text-text-body">Pickup #{{ pickup.pk }}</p>
+        <h1 class="mt-1 text-3xl font-bold tracking-tight text-text-primary">Detail pickup</h1>
         <p class="mt-2 text-sm text-text-body">Diajukan {{ pickup.created_at|date:"j M Y, H:i" }}</p>
       </div>
       {% if pickup.status == "PENDING" %}
@@ -182,11 +182,19 @@
           </dl>
           {% if pickup.status == "COMPLETED" %}
             <div class="mt-5 border-t border-border-slate pt-4">
-              {% if pickup.actual_reward != None %}
-                <p class="text-sm text-text-body">Estimasi insentif berdasarkan berat aktual</p>
+              {% if payout_pending %}
+                <p class="text-sm font-semibold text-amber-800">Penimbangan selesai · menunggu verifikasi admin</p>
+                {% if pickup.actual_reward != None %}
+                  <p class="mt-2 text-sm text-text-body">Insentif berdasarkan berat aktual</p>
+                  <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ pickup.actual_reward|floatformat:0 }}</p>
+                {% else %}
+                  <p class="mt-2 text-sm text-text-body">Tarif belum tersedia untuk menghitung insentif.</p>
+                {% endif %}
+              {% elif pickup.actual_reward != None %}
+                <p class="text-sm text-text-body">{% if pickup.incentive_allocation == "wallet" %}Insentif telah dikirim ke wallet{% else %}Insentif telah dicatat sebagai donasi{% endif %}</p>
                 <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ pickup.actual_reward|floatformat:0 }}</p>
               {% else %}
-                <p class="text-sm text-text-body">Insentif belum tersedia karena tarif untuk satu atau lebih jenis sampah belum diatur.</p>
+                <p class="text-sm text-text-body">Pickup selesai diverifikasi, tetapi nilai insentif belum tersedia.</p>
               {% endif %}
             </div>
           {% elif pickup.estimated_reward != None %}
@@ -238,7 +246,7 @@
         {% if can_cancel %}
           <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="button" data-ajax-action data-url="{% url 'pickup:cancel_pickup_ajax' pickup_id=pickup.pk %}" data-confirm="Batalkan pickup setoran ini?">Batalkan pickup</button>
         {% endif %}
-        <a class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline" href="{% url 'waste:submissions' %}">← Kembali ke riwayat</a>
+        <a class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline" href="{% url 'waste:submissions' %}">← Kembali ke riwayat aktivitas</a>
       </aside>
     </div>
   </div>

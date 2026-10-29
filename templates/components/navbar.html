@@ -27,7 +27,7 @@
                 <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'waste' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/waste/new/">Setor Loak</a>
                 <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'location' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/location/">Titik Pengumpulan</a>
                 <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'wallet' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'wallet:index' %}">Dompet</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'history' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/history/">Riwayat</a>
+                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'history' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'waste:submissions' %}">Riwayat</a>
             </div>
             <div class="flex items-center gap-3">
                 <a class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white" href="/waste/new/">+ Setor Loak</a>

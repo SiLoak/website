@@ -88,7 +88,7 @@
             <p class="!font-['Roboto_Mono',monospace] pt-[7px] pb-[9px] text-sm leading-[22.75px] text-[#334155]">Tidak sempat datang? Minta petugas menjemput dari rumahmu dan pantau statusnya sampai barang ditimbang.</p>
             <span class="!font-['Roboto_Mono',monospace] mt-[7px] inline-flex whitespace-nowrap bg-[#e7e2ce] px-3 py-1 text-xs font-medium leading-4 text-[#334155]">Jadwal fleksibel <b class="px-1">•</b> Tracking kurir real-time</span>
           </div>
-          <a class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="/pickup/new/">
+          <a class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="{% url 'pickup:show_pickup_list' %}">
             <span>Minta Pick up</span>
             {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[11px] w-[11px]" only %}
           </a>

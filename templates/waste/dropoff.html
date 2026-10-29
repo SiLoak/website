@@ -35,12 +35,20 @@
 
     <form id="waste-submission-form" method="post" novalidate data-editing="{% if editing %}true{% else %}false{% endif %}" data-selected-point="{{ form.collection_point.value|default:'' }}">
       {% csrf_token %}
-      {% if form.non_field_errors or formset.non_form_errors or form.delivery_method.errors %}
+      {% if form.errors or pickup_form.errors or formset.total_error_count or formset.non_form_errors %}
         <div class="waste-alert" role="alert">
-          Periksa kembali data pengajuan.
-          {% if form.non_field_errors %}<ul>{% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-          {% if form.delivery_method.errors %}<ul>{% for error in form.delivery_method.errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
-          {% if formset.non_form_errors %}<ul>{% for error in formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}</ul>{% endif %}
+          <p>Pengajuan belum tersimpan. Perbaiki kesalahan berikut:</p>
+          <ul>
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+            {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+            {% for error in pickup_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+            {% for field in pickup_form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+            {% for error in formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
+            {% for item_form in formset %}
+              {% for error in item_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+              {% for field in item_form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+            {% endfor %}
+          </ul>
         </div>
       {% endif %}
 
@@ -128,7 +136,7 @@
             </div>
             <div class="waste-methods" role="radiogroup" aria-labelledby="waste-method-heading">
               <label class="waste-method-option group is-selected" data-method-card>
-                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="antar_sendiri" data-delivery-mode {% if request.POST.delivery_method != 'minta_dijemput' %}checked{% endif %}>
+                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="antar_sendiri" data-delivery-mode {% if request.POST.delivery_method != 'minta_dijemput' and request.GET.delivery_method != 'minta_dijemput' %}checked{% endif %}>
                 <div class="waste-method-top">
                   <span class="waste-icon-box">{% include "components/lucide_icon.html" with name="bike" icon_class="h-5 w-5" only %}</span>
                   <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
@@ -139,7 +147,7 @@
                 <div class="waste-method-foot">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Kamu akan memilih titik pengumpulan.</div>
               </label>
               <label class="waste-method-option group is-inactive" data-method-card>
-                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="minta_dijemput" data-delivery-mode {% if request.POST.delivery_method == 'minta_dijemput' %}checked{% endif %}{% if editing %} disabled{% endif %}>
+                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="minta_dijemput" data-delivery-mode {% if request.POST.delivery_method == 'minta_dijemput' or request.GET.delivery_method == 'minta_dijemput' %}checked{% endif %}{% if editing %} disabled{% endif %}>
                 <div class="waste-method-top">
                   <span class="waste-icon-box"><span class="font-symbols text-[20px] leading-none" aria-hidden="true">local_shipping</span></span>
                   <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
@@ -206,7 +214,7 @@
             </div>
           </section>
 
-          <section class="waste-card" data-pickup-only aria-labelledby="pickup-address-heading" hidden>
+          <section class="waste-card" data-pickup-only aria-labelledby="pickup-address-heading"{% if request.POST.delivery_method != 'minta_dijemput' and request.GET.delivery_method != 'minta_dijemput' %} hidden{% endif %}>
             <div class="waste-card-head">
               <div class="waste-card-title">
                 <span class="waste-step">3</span>
@@ -240,7 +248,7 @@
             </div>
           </section>
 
-          <section class="waste-card" data-pickup-only aria-labelledby="pickup-schedule-heading" hidden>
+          <section class="waste-card" data-pickup-only aria-labelledby="pickup-schedule-heading"{% if request.POST.delivery_method != 'minta_dijemput' and request.GET.delivery_method != 'minta_dijemput' %} hidden{% endif %}>
             <div class="waste-card-head">
               <div class="waste-card-title">
                 <span class="waste-step">4</span>
