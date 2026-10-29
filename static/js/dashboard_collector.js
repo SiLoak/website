@@ -21,6 +21,7 @@ const newPickupGridContainer = document.getElementById("new-pickup-grid");
 
 const helloSubmsg = document.getElementById("hello-submsg");
 const todaysPickupsCard = document.getElementById("todays-pickups-card");
+const totalWeightCard = document.getElementById("total-weight-card");
 const activePickupsCard = document.getElementById("active-pickups-card");
 const completedPickupsCard = document.getElementById("completed-pickups-card");
 const todaysPickupsStatCard = document.getElementById("todays-pickups-stat-card");
@@ -43,6 +44,8 @@ function displayNewPickupSection({ showLoading = false, showError = false, showE
   newPickupGridContainer.classList.toggle('hidden', !showGrid);
 }
 
+const now = new Date();
+
 // Formatting tanggal
 function formatDate(date) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -52,11 +55,6 @@ function formatDate(date) {
     timeZone: "Asia/Jakarta",
   }).format(new Date(date));
 }
-
-const today = new Date().toLocaleDateString("id-ID", {
-  timeZone: "Asia/Jakarta",
-});
-const now = new Date();
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -69,15 +67,22 @@ function escapeHtml(value) {
 }
 
 function getTodaysPickups(pickupData) {
-  return pickupData.filter((pickup) => {
-    const scheduledDate = new Date(pickup.fields.scheduled_date);
+  const parts = new Intl.DateTimeFormat("id-ID", {
+    timeZone: "Asia/Jakarta",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(new Date());
 
-    const pickupDate = scheduledDate.toLocaleDateString("id-ID", {
-      timeZone: "Asia/Jakarta",
-    });
+  const dateParts = Object.fromEntries(
+    parts.map(({ type, value }) => [type, value])
+  );
 
-    return pickupDate === today;
-  });
+  const today = `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
+
+  return pickupData.filter(
+    (pickup) => pickup.fields.scheduled_date === today
+  );
 }
 
 function getActivePickups(pickupData) {
@@ -87,8 +92,6 @@ function getActivePickups(pickupData) {
 }
 
 function getCompletedPickups(pickupData) {
-  const now = new Date();
-
   return pickupData.filter((pickup) => {
     const completedAt = pickup.fields.completed_at ? new Date(pickup.fields.completed_at) : null;
     return (
@@ -109,6 +112,19 @@ function getUncompletedPickups(pickupData) {
       pickup.fields.status !== "FAILED"
     )
   })
+}
+
+function getTotalWeight(pickupData) {
+  let totalWeight = 0;
+  pickupData.forEach((pickup) => {
+    if (pickup.fields.status === "COMPLETED") {
+      const weight = Number(pickup.fields.actual_weight);
+      if (Number.isFinite(weight)) {
+        totalWeight += weight;
+      }
+    }
+  })
+  return totalWeight;
 }
 
 function getTodaysStat(pickupData) {
@@ -274,6 +290,9 @@ async function fetchPickupList() {
 
     const todaysPickups = getTodaysPickups(pickupData);
     todaysPickupsCard.textContent = todaysPickups.length;
+
+    const totalWeight = getTotalWeight(todaysPickups);
+    totalWeightCard.textContent = totalWeight;
 
     const activePickups = getActivePickups(pickupData);
     activePickupsCard.textContent = activePickups.length;
