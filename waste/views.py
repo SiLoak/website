@@ -11,6 +11,7 @@ from pickup.models import PickupRequest, PickupStatusHistory
 from .forms import SubmissionForm, SubmissionItemFormSet
 from pickup.forms import PickupRequestForm, PickupItemFormSet
 from .models import Submission
+from wallet.models import Wallet
 
 PICKUP_PREFILL_FIELDS = ("address_detail", "contact_phone", "latitude", "longitude")
 
@@ -56,6 +57,7 @@ def _submission_form_view(request, submission=None):
         messages.error(request, "Pengajuan ini sudah tidak dapat diubah.")
         return redirect("waste:detail", submission_id=submission.pk)
 
+    wallet, _ = Wallet.objects.get_or_create(user=request.user)
     is_pickup = (
         request.method == "POST"
         and not editing
@@ -68,7 +70,8 @@ def _submission_form_view(request, submission=None):
         formset = PickupItemFormSet(request.POST)
         incentive_form = pickup_form
     else:
-        form = SubmissionForm(request.POST or None, instance=submission)
+        form = SubmissionForm(request.POST or None, initial={"incentive_allocation": wallet.default_incentive})
+
         pickup_form = PickupRequestForm(
             initial={} if editing else _saved_pickup_initial(request.user)
         )
