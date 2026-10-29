@@ -20,4 +20,5 @@ urlpatterns = [
   path("<uuid:pickup_id>/cancel/", views.cancel_pickup_ajax, name="cancel_pickup_ajax"),
   path("<uuid:pickup_id>/accept/", views.accept_pickup_ajax, name="accept_pickup_ajax"),
   path("<uuid:pickup_id>/status/", views.update_pickup_status_ajax, name="update_pickup_status_ajax"),
+  path("<uuid:pickup_id>/complete-weighing/", views.complete_weighing_ajax, name="complete_weighing_ajax"),
 ]

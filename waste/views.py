@@ -23,7 +23,7 @@ def _saved_pickup_initial(user):
             latitude__isnull=False,
             longitude__isnull=False,
         )
-        .order_by("-pk")
+        .order_by("-created_at")
         .first()
     )
     if saved_pickup is None:
@@ -58,8 +58,7 @@ def _submission_form_view(request, submission=None):
         return redirect("waste:detail", submission_id=submission.pk)
 
     wallet, _ = Wallet.objects.get_or_create(user=request.user)
-    if editing: 
-        is_pickup = (
+    is_pickup = (
         request.method == "POST"
         and not editing
         and request.POST.get("delivery_method") == "minta_dijemput"
@@ -82,7 +81,7 @@ def _submission_form_view(request, submission=None):
     if is_pickup and pickup_form.is_valid() and formset.is_valid():
         pickup = _create_pickup_request(request, pickup_form, formset)
         messages.success(request, "Permintaan penjemputan berhasil dibuat.")
-        return redirect("pickup:detail", pickup_id=pickup.pk)
+        return redirect("pickup:show_pickup_detail", pickup_id=pickup.pk)
 
     if request.method == "POST" and not is_pickup and form.is_valid() and formset.is_valid():
         with transaction.atomic():
