@@ -244,6 +244,7 @@ def google_callback(request):
         )
 
     try:
+        print(f"[OAUTH] Exchanging code with redirect_uri={redirect_uri}", flush=True)
         token_response = requests.post(
             GOOGLE_TOKEN_ENDPOINT,
             data={
@@ -259,16 +260,28 @@ def google_callback(request):
         token_response.raise_for_status()
         token_data = token_response.json()
         claims = id_token.verify_oauth2_token(
-            token_data["id_token"], GoogleRequest(), audience=client_id
+            token_data["id_token"],
+            GoogleRequest(),
+            audience=client_id,
+            clock_skew_in_seconds=60,
         )
     except (requests.RequestException, ValueError, KeyError, TypeError, GoogleAuthError) as exc:
+        import sys, traceback
         if isinstance(exc, requests.HTTPError) and exc.response is not None:
-            logger.error("Google OAuth token exchange failed: %s - Response: %s", exc, exc.response.text)
+            err_detail = f"HTTP {exc.response.status_code}: {exc.response.text}"
         else:
-            logger.error("Google OAuth verification failed: %s", exc)
+            err_detail = f"{type(exc).__name__}: {exc}"
+        print(f"[OAUTH ERROR] {err_detail}", file=sys.stderr, flush=True)
+        print(f"[OAUTH ERROR] {err_detail}", flush=True)
+        traceback.print_exc()
+
+        msg = "Google tidak dapat memverifikasi akunmu. Silakan coba lagi."
+        if settings.DEBUG:
+            msg += f" [Debug: {err_detail}]"
+
         return _oauth_error(
             request,
-            "Google tidak dapat memverifikasi akunmu. Silakan coba lagi.",
+            msg,
             flow.get("next", ""),
         )
 
