@@ -2,7 +2,7 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .forms import WithdrawalForm, DonationForm, IncentivePreferenceForm
 from .models import Wallet, WalletTransaction, WithdrawalRequest, Donation
@@ -73,6 +73,43 @@ def wallet_index(request):
         "last_withdrawal": last_withdrawal,
         "preference_form": form,
         "preview_mode": False,
+    })
+
+@login_required(login_url="auth_page")
+def transaction_detail(request, pk):
+    wallet = get_wallet(request.user)
+    tx = get_object_or_404(WalletTransaction, pk=pk, wallet=wallet)
+    withdrawal = None
+
+    try:
+        withdrawal = tx.withdrawal_request
+    except WithdrawalRequest.DoesNotExist:
+        pass
+
+    total_deduction = tx.amount
+
+    if (withdrawal and withdrawal.total_deduction is not None and withdrawal.total_deduction > 0):
+        total_deduction = withdrawal.total_deduction
+
+    type_labels = {
+        WalletTransaction.Type.EARNING: "Insentif setoran",
+        WalletTransaction.Type.WITHDRAWAL: "Penarikan saldo",
+        WalletTransaction.Type.DONATION: "Donasi insentif",
+        WalletTransaction.Type.REFUND: "Pengembalian dana",
+    }
+
+    return render(request, "wallet/transaction_detail.html", {
+        "active_item": "wallet",
+        "wallet": wallet,
+        "tx": tx,
+        "withdrawal": withdrawal,
+        "type_label": type_labels.get(
+            tx.transaction_type,
+            tx.get_transaction_type_display()
+            if hasattr(tx, "get_transaction_type_display")
+            else tx.transaction_type,
+        ),
+        "total_deduction": total_deduction,
     })
 
 
