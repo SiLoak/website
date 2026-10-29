@@ -7,11 +7,49 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 
-from pickup.models import PickupRequest
+from pickup.models import PickupRequest, PickupStatusHistory
 from .forms import SubmissionForm, SubmissionItemFormSet
+from pickup.forms import PickupRequestForm, PickupItemFormSet
 from .models import Submission
 from wallet.models import Wallet
 
+PICKUP_PREFILL_FIELDS = ("address_detail", "contact_phone", "latitude", "longitude")
+
+
+def _saved_pickup_initial(user):
+    saved_pickup = (
+        PickupRequest.objects.filter(
+            giver=user,
+            latitude__isnull=False,
+            longitude__isnull=False,
+        )
+        .order_by("-created_at")
+        .first()
+    )
+    if saved_pickup is None:
+        return {}
+    return {name: getattr(saved_pickup, name) for name in PICKUP_PREFILL_FIELDS}
+
+def _create_pickup_request(request, pickup_form, formset):
+    with transaction.atomic():
+        pickup = pickup_form.save(commit=False)
+        pickup.giver = request.user
+        pickup.save()
+
+        formset.instance = pickup
+        for item in formset.save(commit=False):
+            item.unit_rate_snapshot = item.waste_type.rate_per_kg
+            item.save()
+
+        PickupStatusHistory.objects.create(
+            pickup=pickup,
+            previous_status="",
+            new_status=pickup.status,
+            changed_by=request.user,
+            note="Permintaan penjemputan dibuat.",
+        )
+
+    return pickup
 
 def _submission_form_view(request, submission=None):
     editing = submission is not None
@@ -20,14 +58,32 @@ def _submission_form_view(request, submission=None):
         return redirect("waste:detail", submission_id=submission.pk)
 
     wallet, _ = Wallet.objects.get_or_create(user=request.user)
-    if editing: 
-        form = SubmissionForm(request.POST or None, instance=submission)
-    else :
+    is_pickup = (
+        request.method == "POST"
+        and not editing
+        and request.POST.get("delivery_method") == "minta_dijemput"
+    )
+
+    if is_pickup:
+        form = SubmissionForm()
+        pickup_form = PickupRequestForm(request.POST)
+        formset = PickupItemFormSet(request.POST)
+        incentive_form = pickup_form
+    else:
         form = SubmissionForm(request.POST or None, initial={"incentive_allocation": wallet.default_incentive})
 
-    formset = SubmissionItemFormSet(request.POST or None, instance=submission)
-        
-    if request.method == "POST" and form.is_valid() and formset.is_valid():
+        pickup_form = PickupRequestForm(
+            initial={} if editing else _saved_pickup_initial(request.user)
+        )
+        formset = SubmissionItemFormSet(request.POST or None, instance=submission)
+        incentive_form = form
+
+    if is_pickup and pickup_form.is_valid() and formset.is_valid():
+        pickup = _create_pickup_request(request, pickup_form, formset)
+        messages.success(request, "Permintaan penjemputan berhasil dibuat.")
+        return redirect("pickup:show_pickup_detail", pickup_id=pickup.pk)
+
+    if request.method == "POST" and not is_pickup and form.is_valid() and formset.is_valid():
         with transaction.atomic():
             saved_submission = form.save(commit=False)
             if not editing:
@@ -58,22 +114,17 @@ def _submission_form_view(request, submission=None):
         )
         return redirect("waste:detail", submission_id=saved_submission.pk)
 
-    saved_pickup = PickupRequest.objects.filter(
-        giver=request.user,
-        latitude__isnull=False,
-        longitude__isnull=False,
-    ).first()
     return render(
         request,
         "waste/dropoff.html",
         {
             "active_item": "waste",
             "form": form,
+            "pickup_form": pickup_form,
+            "incentive_form": incentive_form,
             "formset": formset,
             "editing": editing,
             "submission": submission,
-            "pickup_latitude": saved_pickup.latitude if saved_pickup else None,
-            "pickup_longitude": saved_pickup.longitude if saved_pickup else None,
         },
     )
 
