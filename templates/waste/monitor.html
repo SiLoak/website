@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block title %}Pantau Aktivitas · SiLoak{% endblock %}
+{% block content %}
+{% include "components/navbar.html" with active_item="monitor" %}
+<main class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto flex max-w-6xl flex-col gap-6">
+    <header class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+      <div>
+        <p class="mb-2 text-sm font-semibold text-primary">Khusus admin</p>
+        <h1 class="text-3xl font-bold tracking-tight text-text-primary">Pantau aktivitas</h1>
+        <p class="mt-1 text-text-body">Ringkasan operasional setoran dan pickup SiLoak.</p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <a class="monitor-button" href="{% url 'admin:pickup_pickuprequest_changelist' %}">Kelola pickup</a>
+        <a class="monitor-button" href="{% url 'admin:waste_submission_changelist' %}">Kelola setoran</a>
+      </div>
+    </header>
+
+    <section class="grid grid-cols-2 gap-3 lg:grid-cols-3" aria-label="Ringkasan">
+      <div class="history-stat"><p>Pickup menunggu kurir</p><strong>{{ summary.pickups_waiting }}</strong></div>
+      <div class="history-stat"><p>Pickup sedang berjalan</p><strong>{{ summary.pickups_active }}</strong></div>
+      <div class="history-stat"><p>Setoran menunggu timbang</p><strong>{{ summary.dropoffs_pending }}</strong></div>
+      <div class="history-stat"><p>Pengajuan baru hari ini</p><strong>{{ summary.new_today }}</strong></div>
+      <div class="history-stat"><p>Berat terverifikasi · 30 hari</p><strong>{{ summary.weight_30d|floatformat:2 }} <span>kg</span></strong></div>
+      <div class="history-stat"><p>Insentif dibayarkan · 30 hari</p><strong><span>Rp</span> {{ summary.incentive_30d|floatformat:"0g" }}</strong></div>
+    </section>
+
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
+      <div class="flex flex-col gap-6">
+        <section class="history-card" aria-labelledby="attention-heading">
+          <div class="history-card-head">
+            <div>
+              <h2 id="attention-heading">Perlu perhatian</h2>
+              <p>Pickup tanpa kurir lebih dari {{ stale_pickup_hours }} jam dan setoran menunggu lebih dari {{ stale_dropoff_days }} hari.</p>
+            </div>
+          </div>
+          <ul class="monitor-list">
+            {% for item in attention.pickups %}
+              <li><a href="{{ item.url }}"><strong>{{ item.label }}</strong><span>{{ item.who }} · {{ item.where }}</span><time>{{ item.since|timesince }} lalu</time></a></li>
+            {% endfor %}
+            {% for item in attention.dropoffs %}
+              <li><a href="{{ item.url }}"><strong>{{ item.label }}</strong><span>{{ item.who }} · {{ item.where }}</span><time>{{ item.since|timesince }} lalu</time></a></li>
+            {% endfor %}
+            {% if not attention.pickups and not attention.dropoffs %}
+              <li class="monitor-empty">Semua aman. Tidak ada pengajuan yang tertahan.</li>
+            {% endif %}
+          </ul>
+        </section>
+
+        <section class="history-card" aria-labelledby="breakdown-heading">
+          <div class="history-card-head"><div><h2 id="breakdown-heading">Status pickup</h2><p>Jumlah pickup di setiap status.</p></div></div>
+          <table class="monitor-table">
+            <tbody>
+              {% for row in pickup_breakdown %}
+                <tr><th scope="row">{{ row.label }}</th><td>{{ row.count }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      </div>
+
+      <section class="history-card" aria-labelledby="feed-heading">
+        <div class="history-card-head">
+          <div><h2 id="feed-heading">Aktivitas terbaru</h2><p>Diperbarui otomatis setiap 30 detik.</p></div>
+          <label class="history-check">
+            <span class="sr-only">Jenis aktivitas</span>
+            <select name="kind" class="monitor-select" hx-get="{% url 'waste:monitor' %}" hx-target="#monitor-feed" hx-swap="outerHTML">
+              <option value="">Semua</option>
+              <option value="pickup">Pickup</option>
+              <option value="dropoff">Setoran</option>
+            </select>
+          </label>
+        </div>
+        {% include "waste/partials/monitor_feed.html" %}
+      </section>
+    </div>
+  </div>
+</main>
+{% include "components/footer.html" %}
+{% endblock %}

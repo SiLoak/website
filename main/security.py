@@ -1,7 +1,7 @@
 """Reusable security decorators for SiLoak views.
 
 - ``ajax_login_required``: JSON 401 instead of a login redirect for API views.
-- ``giver_required`` / ``collector_required``: role checks for pages or JSON APIs.
+- ``giver_required`` / ``collector_required`` / ``staff_required``: role checks for pages or JSON APIs.
 - ``rate_limit``: per-user (or per-IP) limit on state-changing requests.
 """
 
@@ -68,6 +68,10 @@ def giver_required(*, json=False):
 
 def collector_required(*, json=False):
     return role_required(is_collector, json=json)
+
+
+def staff_required(*, json=False):
+    return role_required(lambda user: user.is_staff or user.is_superuser, json=json)
 
 
 def _parse_rate(rate):

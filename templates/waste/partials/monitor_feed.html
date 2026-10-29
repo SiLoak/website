@@ -1,0 +1,14 @@
+<ol id="monitor-feed" class="monitor-feed" aria-live="polite"
+    hx-get="{% url 'waste:monitor' %}{% if feed_kind %}?kind={{ feed_kind }}{% endif %}"
+    hx-trigger="every 30s" hx-swap="outerHTML">
+  {% for event in feed %}
+    <li>
+      <span class="history-kind is-{{ event.kind }}">{% if event.kind == "pickup" %}Pickup{% else %}Setoran{% endif %}</span>
+      <a href="{{ event.url }}"><strong>{{ event.title }}</strong></a>
+      <span>{{ event.detail }}</span>
+      <time datetime="{{ event.when|date:'c' }}">{{ event.when|date:"j M Y, H:i" }} · {{ event.who }}</time>
+    </li>
+  {% empty %}
+    <li class="monitor-empty">Belum ada aktivitas.</li>
+  {% endfor %}
+</ol>

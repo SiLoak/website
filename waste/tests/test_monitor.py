@@ -46,13 +46,14 @@ class MonitorSummaryTests(MonitorTestCase):
         self.make_submission()
         verified = self.make_submission(status=Submission.Status.VERIFIED)
         verified.items.update(actual_weight=Decimal("4.00"))
-        self.make_pickup(status=PickupStatus.COMPLETED, actual_weight="1.50")
+        Submission.objects.filter(pk=verified.pk).update(verified_at=timezone.now())
+        self.make_pickup(status=PickupStatus.COMPLETED, actual_weight="1.50", completed_at=timezone.now())
         credit_wallet(self.giver, Decimal("12000"), "Insentif uji", reference="uji:1")
 
         summary = self.client.get(MONITOR_URL).context["summary"]
 
         self.assertEqual(summary["pickups_waiting"], 1)
-        self.assertEqual(summary["pickups_active"], 2)
+        self.assertEqual(summary["pickups_active"], 1)
         self.assertEqual(summary["dropoffs_pending"], 1)
         self.assertEqual(summary["weight_30d"], Decimal("5.50"))
         self.assertEqual(summary["incentive_30d"], Decimal("12000"))

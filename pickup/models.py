@@ -250,7 +250,7 @@ class PickupItem(models.Model):
     ]
 
   def __str__(self):
-    return f"{self.waste_type} — {self.submission}"
+    return f"{self.waste_type} — pickup #{str(self.pickup_request_id)[:8]}"
 
   @property
   def estimated_subtotal(self):

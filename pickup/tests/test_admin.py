@@ -55,6 +55,7 @@ class PickupAdminTests(PickupTestCase):
             "pickup_address": "Jl. Baru No. 1, Tebet, Jakarta Selatan",
             "items-TOTAL_FORMS": "1", "items-INITIAL_FORMS": "1", "items-MIN_NUM_FORMS": "0", "items-MAX_NUM_FORMS": "1000",
             "items-0-id": str(pickup.items.get().pk), "items-0-pickup_request": str(pickup.pk),
+            "items-0-estimated_weight": "5.00", "items-0-actual_weight": "",
             "status_history-TOTAL_FORMS": "1", "status_history-INITIAL_FORMS": "1",
             "status_history-MIN_NUM_FORMS": "0", "status_history-MAX_NUM_FORMS": "1000",
             "status_history-0-id": str(pickup.status_history.get().pk), "status_history-0-pickup": str(pickup.pk),

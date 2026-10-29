@@ -14,6 +14,7 @@ from django.views.decorators.http import require_POST
 from pickup.models import PickupRequest, PickupStatusHistory
 from .forms import SubmissionForm, SubmissionItemFormSet
 from pickup.forms import PickupRequestForm, PickupItemFormSet
+from . import monitoring
 from .models import Submission
 from .history import (
     PAGE_SIZE,
@@ -26,7 +27,7 @@ from .history import (
 )
 from wallet.models import Wallet
 from main.htmx import hx_location, is_htmx, with_toast
-from main.security import rate_limit
+from main.security import rate_limit, staff_required
 
 PICKUP_PREFILL_FIELDS = (
     "pickup_address",
@@ -322,3 +323,22 @@ def cancel_entry(request):
         "stats": history_stats(request.user),
     })
     return with_toast(response, message)
+
+
+@staff_required()
+def monitor(request):
+    """Staff page: operational numbers, items needing attention, live activity."""
+    kind = request.GET.get("kind")
+    kind = kind if kind in monitoring.FEED_KINDS else None
+    context = {"feed": monitoring.feed(kind), "feed_kind": kind or ""}
+    if is_htmx(request):
+        return render(request, "waste/partials/monitor_feed.html", context)
+    context.update({
+        "active_item": "monitor",
+        "summary": monitoring.summary(),
+        "pickup_breakdown": monitoring.pickup_breakdown(),
+        "attention": monitoring.attention(),
+        "stale_pickup_hours": monitoring.STALE_PICKUP_HOURS,
+        "stale_dropoff_days": monitoring.STALE_DROPOFF_DAYS,
+    })
+    return render(request, "waste/monitor.html", context)
