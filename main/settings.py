@@ -25,17 +25,51 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-8+z*1^k0s3)(qzcx57s9**li+-+(86w%^io7*31v$)q-slu)&)'
+SECRET_KEY = os.getenv('SECRET_KEY')
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True').strip().lower() in ('true', '1', 'yes')
 
 GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID', '')
 GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET', '')
 GOOGLE_OAUTH_REDIRECT_URI = os.getenv('GOOGLE_OAUTH_REDIRECT_URI', '')
 
-ALLOWED_HOSTS = ["bagas-aulia-siloak.pws.cs.ui.ac.id", "127.0.0.1:8000", "localhost:8000", "localhost", "127.0.0.1"]
+default_allowed_hosts = [
+    "bagas-aulia-siloak.pws.cs.ui.ac.id",
+    "127.0.0.1",
+    "localhost",
+]
+
+env_allowed_hosts = os.getenv('ALLOWED_HOSTS', '')
+if env_allowed_hosts.strip():
+    ALLOWED_HOSTS = [h.strip() for h in env_allowed_hosts.split(',') if h.strip()]
+else:
+    ALLOWED_HOSTS = default_allowed_hosts
+
+default_csrf_origins = [
+    "https://bagas-aulia-siloak.pws.cs.ui.ac.id",
+    "http://127.0.0.1:8000",
+    "http://localhost:8000",
+]
+env_csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+if env_csrf_origins.strip():
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in env_csrf_origins.split(',') if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = default_csrf_origins
+
+SESSION_COOKIE_SECURE = os.getenv(
+    'SESSION_COOKIE_SECURE',
+    str(not DEBUG),
+).strip().lower() in ('true', '1', 'yes')
+
+CSRF_COOKIE_SECURE = os.getenv(
+    'CSRF_COOKIE_SECURE',
+    str(not DEBUG),
+).strip().lower() in ('true', '1', 'yes')
+
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_HTTPONLY = False
 
 
 # Application definition

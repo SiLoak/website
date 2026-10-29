@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import logging
 import secrets
 import uuid
 from urllib.parse import urlencode
@@ -23,6 +24,7 @@ from google.oauth2 import id_token
 from .forms import PhoneOnboardingForm
 from .models import GoogleIdentity, UserProfile
 
+logger = logging.getLogger(__name__)
 
 GOOGLE_AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
@@ -242,6 +244,7 @@ def google_callback(request):
         )
 
     try:
+        print(f"[OAUTH] Exchanging code with redirect_uri={redirect_uri}", flush=True)
         token_response = requests.post(
             GOOGLE_TOKEN_ENDPOINT,
             data={
@@ -257,12 +260,28 @@ def google_callback(request):
         token_response.raise_for_status()
         token_data = token_response.json()
         claims = id_token.verify_oauth2_token(
-            token_data["id_token"], GoogleRequest(), audience=client_id
+            token_data["id_token"],
+            GoogleRequest(),
+            audience=client_id,
+            clock_skew_in_seconds=60,
         )
-    except (requests.RequestException, ValueError, KeyError, TypeError, GoogleAuthError):
+    except (requests.RequestException, ValueError, KeyError, TypeError, GoogleAuthError) as exc:
+        import sys, traceback
+        if isinstance(exc, requests.HTTPError) and exc.response is not None:
+            err_detail = f"HTTP {exc.response.status_code}: {exc.response.text}"
+        else:
+            err_detail = f"{type(exc).__name__}: {exc}"
+        print(f"[OAUTH ERROR] {err_detail}", file=sys.stderr, flush=True)
+        print(f"[OAUTH ERROR] {err_detail}", flush=True)
+        traceback.print_exc()
+
+        msg = "Google tidak dapat memverifikasi akunmu. Silakan coba lagi."
+        if settings.DEBUG:
+            msg += f" [Debug: {err_detail}]"
+
         return _oauth_error(
             request,
-            "Google tidak dapat memverifikasi akunmu. Silakan coba lagi.",
+            msg,
             flow.get("next", ""),
         )
 
