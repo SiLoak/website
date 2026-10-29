@@ -135,3 +135,13 @@ class RateLimitTests(SecurityTestCase):
     def test_invalid_rate_is_rejected_at_decoration_time(self):
         with self.assertRaises(ValueError):
             rate_limit("bad", "5/week")
+
+
+class StaffRequiredTests(SecurityTestCase):
+    def test_staff_required_allows_staff_and_blocks_others(self):
+        from main.security import staff_required
+
+        staff = get_user_model().objects.create_user("staff-sec", password="unused-test-pass", is_staff=True)
+        self.assertEqual(staff_required()(ok_view)(self.request(staff)).content, b"ok")
+        self.assertEqual(staff_required()(ok_view)(self.request(self.giver)).status_code, 403)
+        self.assertEqual(staff_required()(ok_view)(self.request()).status_code, 302)
