@@ -1,9 +1,13 @@
-def is_giver(user):
-  return user.groups.filter(name='Giver').exists()
+COLLECTOR_GROUP = "Collector"
 
 
 def is_collector(user):
-  return user.groups.filter(name='Collector').exists()
+  return user.is_authenticated and user.groups.filter(name=COLLECTOR_GROUP).exists()
+
+
+def is_giver(user):
+  # Every signed-in user can hand over waste, except collector accounts.
+  return user.is_authenticated and not is_collector(user)
 
 
 def is_admin(user):

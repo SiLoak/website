@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Akses ditolak · SiLoak{% endblock %}
+{% block content %}
+<main class="flex min-h-screen items-center justify-center bg-page-bg px-4">
+  <div class="w-full max-w-md rounded-2xl border border-border-slate bg-surface-card p-8 text-center shadow-sm">
+    <p class="font-mono text-sm font-semibold text-primary">403</p>
+    <h1 class="mt-2 text-2xl font-bold text-text-primary">Halaman ini bukan untukmu</h1>
+    <p class="mt-2 text-sm text-text-body">{{ reason|default:"Akunmu tidak memiliki akses ke halaman ini. Kalau menurutmu ini keliru, hubungi admin SiLoak." }}</p>
+    <div class="mt-6 flex flex-col gap-2 sm:flex-row sm:justify-center">
+      <a class="rounded-lg bg-primary px-4 py-2.5 text-sm font-semibold text-white hover:bg-tertiary" href="{% url 'dashboard' %}">Kembali ke beranda</a>
+      <a class="rounded-lg border border-border-slate px-4 py-2.5 text-sm font-semibold text-text-primary hover:bg-surface-soft" href="{% url 'history' %}">Lihat riwayat</a>
+    </div>
+  </div>
+</main>
+{% endblock %}

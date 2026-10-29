@@ -14,6 +14,7 @@ from pickup import services
 from pickup.models import PickupRequest
 from pickup.forms import PickupRequestForm, PickupWeighingFormSet
 from pickup.permissions import is_giver, is_collector, is_admin
+from main.security import ajax_login_required, collector_required, giver_required, rate_limit
 
 
 # Create your views here.
@@ -146,11 +147,8 @@ def _get_current_month_string():
 # --------------- Page ---------------
 
 
-@login_required(login_url="auth_page")
+@giver_required()
 def show_pickup_list(request):
-  if not is_giver(request.user):
-    raise PermissionDenied
-  
   id_query = request.GET.get("id", "").strip()
 
   context = {
@@ -161,11 +159,8 @@ def show_pickup_list(request):
   return render(request, "pickup.html", context)
 
 
-@login_required(login_url="auth_page")
+@collector_required()
 def show_collector_pickup_list(request):
-  if not is_collector(request.user):
-    raise PermissionDenied
-  
   id_query = request.GET.get("id", "").strip()
 
   context = {
@@ -176,10 +171,6 @@ def show_collector_pickup_list(request):
   }
 
   return render(request, "pickup/dashboard_collector.html", context)
-
-
-def request_pickup(request):
-  return render(request, "waste/request.html", {"active_item": "waste"})
 
 
 @login_required(login_url="auth_page")
@@ -222,12 +213,8 @@ def show_pickup_detail(request, pickup_id):
 # ---------- API: read ----------
 
 
+@giver_required(json=True)
 def get_pickup_json(request):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
-  if not is_giver(request.user):
-    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
-  
   pickup_list = PickupRequest.objects.filter(giver=request.user).select_related("collector")
   pickup_list = _apply_filters(pickup_list, request)
 
@@ -248,11 +235,8 @@ def get_pickup_json(request):
   return JsonResponse(data, safe=False)
 
 
+@collector_required(json=True)
 def get_collector_pickup_json(request):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
-  if not is_collector(request.user):
-    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
   scope = request.GET.get("scope", "mine").strip()
   if scope not in VALID_SCOPES:
@@ -284,9 +268,8 @@ def get_collector_pickup_json(request):
   return JsonResponse(data, safe=False)
 
 
+@ajax_login_required
 def get_pickup_detail_json(request, pickup_id):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
 
   pickup, is_owner, is_assigned = _get_accessible_pickup(request.user, pickup_id)
   can_see_contact = is_owner or is_assigned or is_admin(request.user)
@@ -330,11 +313,9 @@ def get_pickup_detail_json(request, pickup_id):
 
 
 @require_POST
+@giver_required(json=True)
+@rate_limit("pickup-create", "5/m")
 def create_pickup_ajax(request):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
-  if not is_giver(request.user):
-    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
   form = PickupRequestForm(request.POST)
   if not form.is_valid():
@@ -348,20 +329,18 @@ def create_pickup_ajax(request):
 
 
 @require_POST
+@ajax_login_required
+@rate_limit("pickup-cancel", "10/m")
 def cancel_pickup_ajax(request, pickup_id):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
 
   reason = request.POST.get("reason", "").strip()
   return _transition_response(request, pickup_id, Status.CANCELLED, note=reason)
 
 
 @require_POST
+@collector_required(json=True)
+@rate_limit("pickup-accept", "20/m")
 def accept_pickup_ajax(request, pickup_id):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
-  if not is_collector(request.user):
-    return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
   return _transition_response(
     request, pickup_id, Status.ASSIGNED, collector=request.user
@@ -369,9 +348,9 @@ def accept_pickup_ajax(request, pickup_id):
 
 
 @require_POST
+@ajax_login_required
+@rate_limit("pickup-status", "30/m")
 def update_pickup_status_ajax(request, pickup_id):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
 
   new_status = request.POST.get("status", "").strip()
   if new_status not in PROGRESS_STATUSES:
@@ -382,9 +361,9 @@ def update_pickup_status_ajax(request, pickup_id):
 
 
 @require_POST
+@ajax_login_required
+@rate_limit("pickup-weighing", "10/m")
 def complete_weighing_ajax(request, pickup_id):
-  if not request.user.is_authenticated:
-    return JsonResponse({"error": "Autentikasi diperlukan."}, status=401)
 
   pickup = get_object_or_404(
     PickupRequest.objects.prefetch_related("items__waste_type"), pk=pickup_id

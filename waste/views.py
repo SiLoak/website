@@ -14,6 +14,7 @@ from .forms import SubmissionForm, SubmissionItemFormSet
 from pickup.forms import PickupRequestForm, PickupItemFormSet
 from .models import Submission
 from wallet.models import Wallet
+from main.security import rate_limit
 
 PICKUP_PREFILL_FIELDS = (
     "pickup_address",
@@ -157,16 +158,19 @@ def _submission_form_view(request, submission=None):
 
 
 @login_required(login_url="auth_page")
+@rate_limit("submission-create", "10/m")
 def new_submission(request):
     return _submission_form_view(request)
 
 
 @login_required(login_url="auth_page")
+@rate_limit("submission-create", "10/m")
 def dropoff_submission(request):
     return _submission_form_view(request)
 
 
 @login_required(login_url="auth_page")
+@rate_limit("submission-edit", "20/m")
 def edit_submission(request, submission_id):
     submission = get_object_or_404(
         Submission, pk=submission_id, user=request.user
@@ -176,6 +180,7 @@ def edit_submission(request, submission_id):
 
 @login_required(login_url="auth_page")
 @require_POST
+@rate_limit("submission-cancel", "10/m")
 def cancel_submission(request, submission_id):
     submission = get_object_or_404(
         Submission, pk=submission_id, user=request.user
