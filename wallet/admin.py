@@ -64,7 +64,7 @@ def mark_withdrawals_failed(modeladmin, request, queryset):
             wallet = (Wallet.objects.select_for_update().get(pk=withdrawal.wallet_id))
 
             # Kembalikan saldo yang dipotong saat withdraw diajukan.
-            wallet.balance += withdrawal.amount
+            wallet.balance += withdrawal.total_deduction
             wallet.total_withdrawn -= withdrawal.amount
             wallet.save(update_fields=["balance", "total_withdrawn", "updated_at"])
 
@@ -79,7 +79,7 @@ def mark_withdrawals_failed(modeladmin, request, queryset):
                 wallet=wallet,
                 transaction_type=WalletTransaction.Type.REFUND,
                 status=WalletTransaction.Status.SUCCESS,
-                amount=withdrawal.amount,
+                amount=withdrawal.total_deduction,
                 description="Pengembalian dana",
                 reference=f"withdrawal_refund:{withdrawal.pk}",
                 destination=tx.destination,

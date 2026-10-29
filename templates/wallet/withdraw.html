@@ -181,7 +181,7 @@
                         <p id="amountWarning" class="mt-2 hidden text-xs text-red-600"></p>
                     </section>
 
-                    <!-- 4. FEE -->
+                    <!-- 4. FEE & SETTLEMENT -->
                     <section class="rounded-xl bg-white p-5 shadow-sm">
                         <div class="mb-4 flex items-center gap-3">
                             <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">4</span>
@@ -201,9 +201,14 @@
                                 <b id="feeAmount">Rp0</b>
                             </div>
                             <div class="flex justify-between gap-3">
-                                <span class="text-slate-500">Biaya admin</span>
-                                <b>Rp0</b>
+                                <span class="text-slate-500">Biaya transfer</span>
+                                <b id="transferFee">Rp0</b>
                             </div>
+                            <div class="flex justify-between gap-3">
+                                <span class="text-slate-500">Biaya layanan (2%)</span>
+                                <b id="serviceFee">Rp0</b>
+                            </div>
+
                             <div class="border-t border-slate-200 pt-3">
                                 <div class="flex justify-between gap-3">
                                     <span class="font-semibold text-[#142653]">
@@ -215,7 +220,8 @@
                         </div>
 
                         <p class="mt-3 text-xs leading-relaxed text-slate-500">
-                            Biaya admin Rp0 merupakan asumsi simulasi. Transfer belum terhubung ke penyedia pembayaran.
+                            Biaya layanan sebesar 2% dari nominal penarikan.
+                            Biaya transfer mengikuti bank atau e-wallet tujuan.
                         </p>
                     </section>
 
@@ -286,22 +292,35 @@
                     <div class="mt-4 rounded-lg bg-[#f0f3ff] p-4">
                         <p class="text-xs text-slate-500">TOTAL PENARIKAN</p>
                         <p id="sidebarAmount" class="mt-1 text-2xl font-bold text-[#142653]">
-                            Rp0
+                            Rp0,00
                         </p>
                         <p class="mt-1 text-xs text-slate-500">
-                            Estimasi saldo yang dipotong
+                            Estimasi saldo yang diterima
                         </p>
                     </div>
 
                     <div class="mt-4 space-y-3 text-sm">
                         <div class="flex justify-between">
-                            <span class="text-slate-500">Biaya admin</span>
-                            <b>Rp0</b>
+                            <span class="text-slate-500">Biaya transfer</span>
+                            <b id="sidebarTransferFee">Rp0</b>
                         </div>
+
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Biaya layanan</span>
+                            <b id="sidebarServiceFee">Rp0</b>
+                        </div>
+
+                        <div class="flex justify-between">
+                            <span class="text-slate-500">Total potongan</span>
+                            <b id="sidebarTotalDeduction">Rp0</b>
+                        </div>
+
                         <div class="flex justify-between border-t border-slate-100 pt-3">
                             <span class="text-slate-500">Sisa saldo</span>
                             <b id="remainingBalance">Rp0</b>
                         </div>
+
+                        <p id="feeValidation" class="text-xs text-red-600" aria-live="polite"></p>
                     </div>
                 </section>
 
@@ -356,152 +375,241 @@
 
 {% include "components/footer.html" %}
 
+<span
+    id="walletBalanceData"
+    data-balance="{{ wallet.balance|stringformat:'f' }}"
+    hidden
+></span>
+
+{{ bank_transfer_fees|json_script:"bank-transfer-fees-data" }}
+{{ ewallet_transfer_fees|json_script:"ewallet-transfer-fees-data" }}
+
+
 <script>
-
-const typeInput = document.getElementById("id_destination_type");
-const nameInput = document.getElementById("id_destination_name");
-
-const optionsByType = {
-    bank: [
-        ["BCA", "BCA"],
-        ["BNI", "BNI"],
-        ["BRI", "BRI"],
-        ["Mandiri", "Bank Mandiri"],
-        ["BSI", "BSI"],
-        ["SeaBank", "SeaBank"]
-    ],
-    ewallet: [
-        ["GoPay", "GoPay"],
-        ["OVO", "OVO"],
-        ["DANA", "DANA"],
-        ["ShopeePay", "ShopeePay"]
-    ]
-};
-
-function refreshDestinations() {
-    if (!typeInput || !nameInput) return;
-
-    const options = optionsByType[typeInput.value] || [];
-    nameInput.replaceChildren();
-
-    options.forEach(([value, label]) => {
-        const option = document.createElement("option");
-        option.value = value;
-        option.textContent = label;
-        nameInput.appendChild(option);
-    });
-
-    nameInput.dispatchEvent(new Event("change"));
-}
-
-typeInput?.addEventListener("change", refreshDestinations);
-refreshDestinations();
-
 document.addEventListener("DOMContentLoaded", function () {
-    const amountInput = document.querySelector(
-        '#withdrawForm [name="amount"]'
-    );
-    const typeInput = document.querySelector(
-        '#withdrawForm [name="destination_type"]'
-    );
-    const destinationInput = document.querySelector(
-        '#withdrawForm [name="destination_name"]'
-    );
-    const accountInput = document.querySelector(
-        '#withdrawForm [name="account_number"]'
-    );
+    const form = document.getElementById("withdrawForm");
+    const amountInput = document.getElementById("id_amount");
+    const typeInput = document.getElementById("id_destination_type");
+    const nameInput = document.getElementById("id_destination_name");
+    const accountInput = document.getElementById("id_account_number");
 
-    const balance = Number(
-        "{{ wallet.balance|default_if_none:0|floatformat:2 }}"
-    ) || 0;
+    if (!form || !amountInput || !typeInput || !nameInput) return;
 
-    const rupiah = value => "Rp" +
-        Math.max(0, value).toLocaleString("id-ID");
+    const balance = Number(document.getElementById("walletBalanceData").dataset.balance) || 0;
+    const bankFees = JSON.parse(document.getElementById("bank-transfer-fees-data").textContent);
+    const ewalletFees = JSON.parse(document.getElementById("ewallet-transfer-fees-data").textContent);
+    const SERVICE_FEE_RATE = 0.02;
+
+    const optionsByType = {
+        bank: [
+            ["BCA", "BCA"],
+            ["BNI", "BNI"],
+            ["BRI", "BRI"],
+            ["Mandiri", "Bank Mandiri"],
+            ["BSI", "BSI"],
+            ["SeaBank", "SeaBank"]
+        ],
+        ewallet: [
+            ["GoPay", "GoPay"],
+            ["OVO", "OVO"],
+            ["DANA", "DANA"],
+            ["ShopeePay", "ShopeePay"]
+        ]
+    };
+
+    function refreshDestinations() {
+        const previousValue = nameInput.value;
+        const options = optionsByType[typeInput.value] || [];
+
+        nameInput.replaceChildren();
+
+        options.forEach(([value, label]) => {
+            const option = document.createElement("option");
+            option.value = value;
+            option.textContent = label;
+            nameInput.appendChild(option);
+        });
+
+        if (options.some(([value]) => value === previousValue)) {
+            nameInput.value = previousValue;
+        }
+
+        updateSummary();
+    }
+
+    const formatRupiah = value =>
+        new Intl.NumberFormat("id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        }).format(Math.max(0, value));
+
+    function calculateServiceFee(amount) {
+        return Math.floor(amount * SERVICE_FEE_RATE + 0.5);
+    }
+
+    function getTransferFee() {
+        const feeTable = typeInput.value === "ewallet"
+            ? ewalletFees
+            : bankFees;
+
+        const destination = nameInput.value;
+
+        if (!Object.prototype.hasOwnProperty.call(
+            feeTable, destination
+        )) {
+            return null;
+        }
+
+        return Number(feeTable[destination]);
+    }
 
     function updateSummary() {
         const amount = Math.max(
-            0, Number(amountInput?.value || 0)
+            0, Number(amountInput.value) || 0
         );
-        const fee = 0;
-        const total = amount + fee;
-        const remaining = balance - total;
 
-        document.getElementById("feeAmount").textContent =
-            rupiah(amount);
-        document.getElementById("totalDeduction").textContent =
-            rupiah(total);
-        document.getElementById("confirmAmount").textContent =
-            rupiah(amount);
-        document.getElementById("confirmTotal").textContent =
-            rupiah(total);
-        document.getElementById("sidebarAmount").textContent =
-            rupiah(amount);
-        document.getElementById("remainingBalance").textContent =
-            rupiah(remaining);
+        const transferFee = getTransferFee();
+        const validDestination = transferFee !== null;
+        const actualTransferFee = validDestination ? transferFee : 0;
+        const serviceFee = calculateServiceFee(amount);
+        const totalDeduction =
+            amount + actualTransferFee + serviceFee;
+        const remaining = balance - totalDeduction;
 
-        document.getElementById("confirmDestination").textContent =
-            destinationInput?.selectedOptions?.[0]?.text ||
-            destinationInput?.value || "Belum dipilih";
+        // Fee breakdown
+        document.getElementById("feeAmount").textContent = formatRupiah(amount);
+        document.getElementById("transferFee").textContent = validDestination ? formatRupiah(transferFee) : "Belum tersedia";
+        document.getElementById("serviceFee").textContent = formatRupiah(serviceFee);
+        document.getElementById("totalDeduction").textContent = formatRupiah(totalDeduction);
 
-        document.getElementById("confirmAccount").textContent =
-            accountInput?.value || "Belum diisi";
+        // Confirmation summary
+        document.getElementById("confirmDestination").textContent = nameInput.selectedOptions[0]?.text || "Belum dipilih";
+        document.getElementById("confirmAccount").textContent = accountInput?.value || "Belum diisi";
+        document.getElementById("confirmAmount").textContent = formatRupiah(amount);
+        document.getElementById("confirmTotal").textContent = formatRupiah(totalDeduction);
 
+        // Sidebar summary
+        document.getElementById("sidebarAmount").textContent = formatRupiah(amount);
+        document.getElementById("sidebarTransferFee").textContent = validDestination ? formatRupiah(transferFee) : "Belum tersedia";
+        document.getElementById("sidebarServiceFee").textContent = formatRupiah(serviceFee);
+        document.getElementById("sidebarTotalDeduction").textContent = formatRupiah(totalDeduction);
+        document.getElementById("remainingBalance").textContent = formatRupiah(Math.max(0, remaining));
+
+        // Validation warning
         const warning = document.getElementById("amountWarning");
-        if (amount > 0 && amount < 10000) {
-            warning.textContent =
-                "Minimum penarikan adalah Rp10.000.";
-            warning.classList.remove("hidden");
-        } else if (amount > balance) {
-            warning.textContent =
-                "Nominal melebihi saldo yang tersedia.";
-            warning.classList.remove("hidden");
-        } else {
-            warning.classList.add("hidden");
+        let warningMessage = "";
+
+        if (!validDestination) {
+            warningMessage = "Pilih tujuan transfer yang valid.";
+        } else if (amount > 0 && amount < 10000) {
+            warningMessage = "Minimum penarikan adalah Rp10.000,00.";
+        } else if (amount >= 10000 && totalDeduction > balance) {
+            warningMessage = "Saldo tidak cukup untuk nominal dan seluruh biaya.";
         }
 
-        document.querySelectorAll("[data-amount], #withdrawAll").forEach(button => {
-            const selected = Boolean(button.dataset.amount) &&
-                Number(button.dataset.amount) === amount;
-            button.classList.toggle("bg-[#eff4ff]", selected);
-            button.classList.toggle("border-[#2457D6]", selected || button.id === "withdrawAll");
-            button.classList.toggle("text-[#2457D6]", selected || button.id === "withdrawAll");
-        });
+        if (warning) {
+            warning.textContent = warningMessage;
+            warning.classList.toggle("hidden", !warningMessage);
+        }
+
+        const feeValidation = document.getElementById("feeValidation");
+
+        if (feeValidation) {
+            feeValidation.textContent = warningMessage;
+        }
+
+        // Disable submit when invalid
+        const submitButton = form.querySelector(
+            'button[type="submit"]'
+        );
+
+        if (submitButton) {
+            const validAmount = amount >= 10000;
+            const validBalance = totalDeduction <= balance;
+
+            submitButton.disabled = !(validDestination && validAmount && validBalance);
+            submitButton.classList.toggle("opacity-50", submitButton.disabled);
+            submitButton.classList.toggle("cursor-not-allowed", submitButton.disabled);
+        }
+
+        // Highlight selected amount button
+        document.querySelectorAll("[data-amount], #withdrawAll")
+            .forEach(button => {
+                const selected =
+                    button.hasAttribute("data-amount") &&
+                    Number(button.dataset.amount) === amount;
+
+                button.classList.toggle("bg-[#eff4ff]", selected);
+                button.classList.toggle("border-[#2457D6]", selected);
+                button.classList.toggle("text-[#2457D6]", selected);
+            });
     }
+
+    function getMaxWithdrawable() {
+        const transferFee = getTransferFee();
+
+        if (transferFee === null) return 0;
+
+        let amount = Math.floor((balance - transferFee) / 1.02);
+
+        while (
+            amount >= 0 &&
+            amount + transferFee + calculateServiceFee(amount) > balance
+        ) {
+            amount--;
+        }
+
+        // Nominal kelipatan Rp1.000.
+        return Math.max(0, Math.floor(amount / 1000) * 1000);
+    }
+
+    document.getElementById("withdrawAll")?.addEventListener(
+        "click",
+        function () {
+            amountInput.value = getMaxWithdrawable();
+            updateSummary();
+        }
+    );
 
     document.querySelectorAll("[data-amount]").forEach(button => {
         button.addEventListener("click", function () {
-            if (!amountInput) return;
             amountInput.value = this.dataset.amount;
             updateSummary();
         });
     });
 
-    document.getElementById("withdrawAll")
-        ?.addEventListener("click", function () {
-            if (!amountInput) return;
-            amountInput.value = balance;
-            updateSummary();
-        });
+    typeInput.addEventListener("change", refreshDestinations);
 
-    [amountInput, typeInput, destinationInput, accountInput]
+    [amountInput, nameInput, accountInput]
         .filter(Boolean)
         .forEach(input => {
             input.addEventListener("input", updateSummary);
             input.addEventListener("change", updateSummary);
         });
 
-    document.getElementById("withdrawForm")
-        ?.addEventListener("submit", function (event) {
-            const amount = Number(amountInput?.value || 0);
+    form.addEventListener("submit", function (event) {
+        const amount = Number(amountInput.value) || 0;
+        const transferFee = getTransferFee();
 
-            if (amount < 10000 || amount > balance) {
-                event.preventDefault();
-                updateSummary();
-                amountInput?.focus();
-            }
-        });
+        const total = transferFee === null
+            ? Infinity
+            : amount + transferFee + calculateServiceFee(amount);
 
-    updateSummary();
+        if (
+            amount < 10000 ||
+            transferFee === null ||
+            total > balance
+        ) {
+            event.preventDefault();
+            updateSummary();
+            amountInput.focus();
+        }
+    });
+
+    refreshDestinations();
 });
 </script>
+
 {% endblock %}
