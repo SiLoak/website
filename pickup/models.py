@@ -95,6 +95,12 @@ class PickupRequest(models.Model):
     blank=True
   )
 
+  courier_note = models.CharField(
+    max_length=300,
+    blank=True,
+    help_text="Catatan opsional dari giver untuk petugas penjemput.",
+  )
+
   # Schedule
   scheduled_date = models.DateField(
     help_text="Tanggal pickup yang diminta oleh giver.",

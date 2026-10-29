@@ -83,6 +83,12 @@
               <dt class="text-text-body">Detail alamat dan patokan</dt>
               <dd class="mt-1 text-text-primary">{{ pickup.address_detail|linebreaksbr }}</dd>
             </div>
+            {% if pickup.courier_note %}
+              <div class="sm:col-span-2">
+                <dt class="text-text-body">Catatan untuk petugas</dt>
+                <dd class="mt-1 text-text-primary">{{ pickup.courier_note }}</dd>
+              </div>
+            {% endif %}
             <div>
               <dt class="text-text-body">Nomor HP yang bisa dihubungi</dt>
               <dd class="mt-1 font-semibold text-text-primary">

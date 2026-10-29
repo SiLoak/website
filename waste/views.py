@@ -1,3 +1,4 @@
+from datetime import timedelta
 from decimal import Decimal
 
 from django.contrib import messages
@@ -5,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
+from django.utils.formats import date_format
 from django.views.decorators.http import require_POST
 
 from pickup.models import PickupRequest, PickupStatusHistory
@@ -13,7 +15,13 @@ from pickup.forms import PickupRequestForm, PickupItemFormSet
 from .models import Submission
 from wallet.models import Wallet
 
-PICKUP_PREFILL_FIELDS = ("address_detail", "contact_phone", "latitude", "longitude")
+PICKUP_PREFILL_FIELDS = (
+    "pickup_address",
+    "address_detail",
+    "contact_phone",
+    "latitude",
+    "longitude",
+)
 
 
 def _saved_pickup_initial(user):
@@ -26,9 +34,27 @@ def _saved_pickup_initial(user):
         .order_by("-created_at")
         .first()
     )
-    if saved_pickup is None:
-        return {}
-    return {name: getattr(saved_pickup, name) for name in PICKUP_PREFILL_FIELDS}
+    initial = {}
+    if saved_pickup is not None:
+        initial = {name: getattr(saved_pickup, name) for name in PICKUP_PREFILL_FIELDS}
+    if not initial.get("contact_phone"):
+        profile = getattr(user, "profile", None)
+        if profile is not None and profile.phone_number:
+            initial["contact_phone"] = profile.phone_number
+    return initial
+
+
+def _pickup_date_choices():
+    today = timezone.localdate()
+    labels = (("today", "Hari ini"), ("tomorrow", "Besok"), ("day_after", "Lusa"))
+    return [
+        {
+            "value": value,
+            "label": label,
+            "date_label": date_format(today + timedelta(days=offset), "D, j M"),
+        }
+        for offset, (value, label) in enumerate(labels)
+    ]
 
 def _create_pickup_request(request, pickup_form, formset):
     with transaction.atomic():
@@ -125,6 +151,7 @@ def _submission_form_view(request, submission=None):
             "formset": formset,
             "editing": editing,
             "submission": submission,
+            "pickup_dates": _pickup_date_choices(),
         },
     )
 

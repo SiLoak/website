@@ -80,24 +80,41 @@ class PickupRequestForm(forms.ModelForm):
   class Meta:
     model = PickupRequest
     fields = [
+      "pickup_address",
       "address_detail",
       "contact_phone",
+      "courier_note",
       "latitude",
       "longitude",
       "time_slot",
       "incentive_allocation",
     ]
     labels = {
+      "pickup_address": "Alamat penjemputan",
       "address_detail": "Detail alamat & patokan",
       "contact_phone": "Nomor HP yang bisa dihubungi",
+      "courier_note": "Catatan untuk petugas (opsional)",
       "incentive_allocation": "Insentifmu",
     }
     widgets = {
-      "address_detail": forms.Textarea(
+      "pickup_address": forms.TextInput(
         attrs={
           "class": "waste-address-control",
-          "rows": 3,
-          "placeholder": "Contoh: Jl. Mawar No. 12, RT 03/RW 05, pagar hijau di samping warung",
+          "placeholder": "Cari alamat, contoh: Jl. Mawar No. 12, Pasar Minggu",
+          "autocomplete": "street-address",
+        }
+      ),
+      "address_detail": forms.TextInput(
+        attrs={
+          "class": "waste-address-control",
+          "placeholder": "Contoh: Pagar hitam, seberang Mushola Al-Ikhlas",
+        }
+      ),
+      "courier_note": forms.TextInput(
+        attrs={
+          "class": "waste-address-control",
+          "maxlength": "300",
+          "placeholder": "Contoh: Barang sudah diikat di teras garasi. Tolong tekan bel gerbang.",
         }
       ),
       "contact_phone": forms.TextInput(
@@ -112,6 +129,9 @@ class PickupRequestForm(forms.ModelForm):
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
+    self.fields["pickup_address"].error_messages["required"] = (
+      "Cari alamatmu atau geser pin di peta agar petugas tahu lokasi penjemputan."
+    )
     today = timezone.localdate()
     self.fields["custom_date"].widget.attrs.update(
       {
@@ -126,13 +146,24 @@ class PickupRequestForm(forms.ModelForm):
   def clean_incentive_allocation(self):
     return self.cleaned_data.get("incentive_allocation") or Submission.IncentiveAllocation.WALLET
 
-  def clean_address_detail(self):
-    address = (self.cleaned_data.get("address_detail") or "").strip()
+  def clean_pickup_address(self):
+    address = (self.cleaned_data.get("pickup_address") or "").strip()
     if len(address) < 10:
       raise ValidationError(
-        "Tulis alamat selengkapnya agar kurir mudah menemukan lokasi Anda."
+        "Cari alamatmu atau geser pin di peta agar petugas tahu lokasi penjemputan."
       )
     return address
+
+  def clean_address_detail(self):
+    detail = (self.cleaned_data.get("address_detail") or "").strip()
+    if len(detail) < 5:
+      raise ValidationError(
+        "Tulis patokan rumah, misalnya warna pagar atau bangunan terdekat."
+      )
+    return detail
+
+  def clean_courier_note(self):
+    return (self.cleaned_data.get("courier_note") or "").strip()
 
   def clean_contact_phone(self):
     raw = self.cleaned_data.get("contact_phone") or ""

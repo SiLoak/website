@@ -309,6 +309,7 @@ def get_pickup_detail_json(request, pickup_id):
       "collector_name": _display_name(pickup.collector),
       "address": pickup.pickup_address,
       "address_detail": pickup.address_detail,
+      "courier_note": pickup.courier_note,
       "latitude": float(pickup.latitude) if pickup.latitude is not None else None,
       "longitude": float(pickup.longitude) if pickup.longitude is not None else None,
       "contact_phone": pickup.contact_phone if can_see_contact else None,

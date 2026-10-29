@@ -115,6 +115,36 @@
 .waste-dates,.waste-time-slots { @apply [display:flex] [flex-wrap:wrap] [gap:8px]; }
 .waste-date-button,.waste-time-button { @apply [border:1px_solid_#d1d5db] [border-radius:6px] [background:#fff] [padding:8px_12px] [color:#334155] [font:500_11px/16px_"Roboto_Mono",monospace]; }
 .waste-date-button.is-active,.waste-time-button.is-active { @apply [border-color:#1b367e] [background:#1b367e] [color:#fff]; }
+.waste-address-search { @apply [position:relative]; }
+.waste-address-search .waste-address-control { @apply [padding-left:36px]; }
+.waste-address-suggestions { @apply [position:absolute] [z-index:20] [top:calc(100%+4px)] [left:0] [right:0] [margin:0] [overflow:hidden] [border:1px_solid_#e2e8f0] [border-radius:10px] [background:#fff] [padding:4px] [list-style:none] [box-shadow:0_10px_24px_-8px_rgba(15,23,42,.25)]; }
+.waste-address-suggestions li { @apply [display:flex] [flex-direction:column] [gap:1px] [border-radius:7px] [padding:8px_10px] [cursor:pointer]; }
+.waste-address-suggestions li:hover { @apply [background:#eef3ff]; }
+.waste-address-suggestions li strong { @apply [color:#0f172a] [font-size:12px] [font-weight:600] [line-height:17px]; }
+.waste-address-suggestions li span { @apply [color:#64748b] [font-size:11px] [line-height:15px]; }
+.waste-address-suggestions li.is-empty { @apply [color:#64748b] [font-size:12px] [cursor:default]; }
+.waste-pickup-location-note { @apply [margin:-8px_0_0] [color:#64748b] [font-size:11px] [line-height:16px]; }
+.waste-pickup-map-hint { @apply [position:absolute] [z-index:500] [top:12px] [right:12px] [display:inline-flex] [align-items:center] [gap:5px] [border:1px_solid_#e5e7eb] [border-radius:8px] [background:rgba(255,255,255,.95)] [padding:6px_10px] [color:#475569] [font:500_10px/14px_"Roboto_Mono",monospace] [pointer-events:none] [box-shadow:0_1px_3px_rgba(0,0,0,.08)]; }
+.waste-pickup-card { @apply [border:1px_solid_#e2e8f0] [border-radius:12px] [background:#f8fafc] [padding:14px_16px_16px]; }
+.waste-pickup-card-head { @apply [display:flex] [align-items:flex-start] [gap:10px] [padding-bottom:12px]; }
+.waste-pickup-card-icon { @apply [display:flex] [width:28px] [height:28px] [flex:0_0_auto] [align-items:center] [justify-content:center] [border-radius:50%] [background:#eef3ff] [color:#1b367e]; }
+.waste-pickup-card-text { @apply [min-width:0] [flex:1]; }
+.waste-pickup-card-text strong { @apply [display:block] [color:#0f172a] [font-size:13px] [font-weight:700] [line-height:18px]; }
+.waste-pickup-card-text span { @apply [display:block] [margin-top:2px] [color:#64748b] [font:400_11px/16px_"Roboto_Mono",monospace]; }
+.waste-pickup-change { @apply [border:0] [background:transparent] [padding:2px_4px] [color:#1b367e] [font-size:12px] [font-weight:600] [cursor:pointer]; }
+.waste-pickup-change:hover { @apply [text-decoration:underline]; }
+.waste-pickup-card .waste-address-grid { @apply [padding:12px_0_0]; }
+.waste-pickup-note-field { @apply [padding-top:12px]; }
+.waste-pickup-note-field label { @apply [display:block] [margin-bottom:5px] [color:#94a3b8] [font-size:11px] [line-height:15px]; }
+.waste-dates-custom { @apply [margin-top:8px]; }
+.waste-date-button,.waste-time-button { @apply [display:inline-flex] [align-items:center] [gap:5px]; }
+.waste-date-check { @apply [display:none]; }
+.is-active > .waste-date-check { @apply [display:inline-flex]; }
+.waste-time-button:disabled { @apply [border-color:#e5e7eb] [background:#f8fafc] [color:#cbd5e1] [text-decoration:line-through] [cursor:not-allowed]; }
+.waste-slot-info { @apply [display:flex] [align-items:center] [gap:6px] [margin:14px_0_0] [color:#64748b] [font:400_11px/16px_"Roboto_Mono",monospace]; }
+.waste-slot-info svg { @apply [color:#1b367e] [flex:0_0_auto]; }
+.waste-summary-detail-tight { @apply [margin-top:12px] [border-top:0] [padding-top:0]; }
+.waste-summary-footnote { @apply [margin:8px_0_0] [color:#94a3b8] [font:400_10px/15px_"Roboto_Mono",monospace] [text-align:center]; }
 .waste-pickup-disabled-note { @apply [border:1px_solid_#fde68a] [border-radius:8px] [background:#fffbeb] [padding:10px_12px] [color:#92400e] [font-size:12px] [line-height:17px]; }
 .waste-incentives { @apply [display:grid] [grid-template-columns:repeat(2,minmax(0,1fr))] [gap:12px] [padding-top:18px]; }
 .waste-incentive-card { @apply [position:relative] [display:flex] [min-height:204px] [flex-direction:column] [gap:4px] [border:1px_solid_#e2e8f0] [border-radius:12px] [background:#fff] [padding:20px] [cursor:pointer] [transition:border-color_.15s,background_.15s,box-shadow_.15s]; }
