@@ -139,11 +139,6 @@ def new_submission(request):
 
 
 @login_required(login_url="auth_page")
-def dropoff_submission(request):
-    return _submission_form_view(request)
-
-
-@login_required(login_url="auth_page")
 def edit_submission(request, submission_id):
     submission = get_object_or_404(
         Submission, pk=submission_id, user=request.user

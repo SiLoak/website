@@ -85,7 +85,10 @@ class WasteSubmissionFlowTests(TestCase):
             page.context["form"]["incentive_allocation"].value(),
             Submission.IncentiveAllocation.WALLET,
         )
-        self.assertEqual(self.client.get(reverse("waste:dropoff")).status_code, 200)
+        self.assertRedirects(
+            self.client.get(reverse("waste:dropoff")),
+            reverse("waste:new"),
+        )
 
         response = self.client.post(
             reverse("waste:new"), self.submission_payload()
