@@ -1,5 +1,6 @@
 import base64
 import hashlib
+import logging
 import secrets
 import uuid
 from urllib.parse import urlencode
@@ -23,6 +24,7 @@ from google.oauth2 import id_token
 from .forms import PhoneOnboardingForm
 from .models import GoogleIdentity, UserProfile
 
+logger = logging.getLogger(__name__)
 
 GOOGLE_AUTHORIZATION_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 GOOGLE_TOKEN_ENDPOINT = "https://oauth2.googleapis.com/token"
@@ -259,7 +261,11 @@ def google_callback(request):
         claims = id_token.verify_oauth2_token(
             token_data["id_token"], GoogleRequest(), audience=client_id
         )
-    except (requests.RequestException, ValueError, KeyError, TypeError, GoogleAuthError):
+    except (requests.RequestException, ValueError, KeyError, TypeError, GoogleAuthError) as exc:
+        if isinstance(exc, requests.HTTPError) and exc.response is not None:
+            logger.error("Google OAuth token exchange failed: %s - Response: %s", exc, exc.response.text)
+        else:
+            logger.error("Google OAuth verification failed: %s", exc)
         return _oauth_error(
             request,
             "Google tidak dapat memverifikasi akunmu. Silakan coba lagi.",
