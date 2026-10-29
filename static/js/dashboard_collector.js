@@ -44,8 +44,6 @@ function displayNewPickupSection({ showLoading = false, showError = false, showE
   newPickupGridContainer.classList.toggle('hidden', !showGrid);
 }
 
-const now = new Date();
-
 // Formatting tanggal
 function formatDate(date) {
   return new Intl.DateTimeFormat("id-ID", {
@@ -55,6 +53,15 @@ function formatDate(date) {
     timeZone: "Asia/Jakarta",
   }).format(new Date(date));
 }
+
+const todayDate = new Intl.DateTimeFormat("en-CA", {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  timeZone: "Asia/Jakarta",
+}).format(new Date());
+const today = formatDate(todayDate);
+const now = new Date();
 
 function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (character) => ({
@@ -67,22 +74,11 @@ function escapeHtml(value) {
 }
 
 function getTodaysPickups(pickupData) {
-  const parts = new Intl.DateTimeFormat("id-ID", {
-    timeZone: "Asia/Jakarta",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-  }).formatToParts(new Date());
+  return pickupData.filter((pickup) => {
+    const scheduledDate = formatDate(pickup.fields.scheduled_date);
 
-  const dateParts = Object.fromEntries(
-    parts.map(({ type, value }) => [type, value])
-  );
-
-  const today = `${dateParts.year}-${dateParts.month}-${dateParts.day}`;
-
-  return pickupData.filter(
-    (pickup) => pickup.fields.scheduled_date === today
-  );
+    return scheduledDate === today;
+  });
 }
 
 function getActivePickups(pickupData) {
