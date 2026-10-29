@@ -22,21 +22,21 @@
     {% endif %}
 
     <section class="grid gap-4 sm:grid-cols-3" aria-label="Ringkasan setoran">
-      <div class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+      <div class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm" style="background-color: #E7E2CE;">
         <p class="text-sm text-text-body">Total pengajuan</p>
         <p class="mt-2 text-3xl font-bold text-text-primary">{{ total_submissions }}</p>
       </div>
-      <div class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+      <div class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm" style="background-color: #E7E2CE;">
         <p class="text-sm text-text-body">Total berat terverifikasi</p>
         <p class="mt-2 text-3xl font-bold text-text-primary">{{ total_actual_weight|floatformat:2 }} <span class="text-base font-medium">kg</span></p>
       </div>
-      <div class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+      <div class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm" style="background-color: #E7E2CE;">
         <p class="text-sm text-text-body">Perkiraan insentif terverifikasi</p>
         {% if unpriced_verified_count %}
           <p class="mt-2 text-2xl font-bold text-text-primary">Belum tersedia</p>
           <p class="mt-1 text-xs text-text-body">Tarif {{ unpriced_verified_count }} pengajuan belum diatur.</p>
         {% else %}
-          <p class="mt-2 text-3xl font-bold text-text-primary">Rp {{ total_actual_reward|floatformat:0 }}</p>
+          <p class="mt-2 text-3xl font-bold text-text-primary">Rp {{ total_actual_reward|floatformat:2 }}</p>
         {% endif %}
         <p class="mt-1 text-xs text-text-body">{{ verified_count }} pengajuan selesai ditimbang</p>
       </div>

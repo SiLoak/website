@@ -1,7 +1,9 @@
 from django.contrib import admin, messages
 from django.utils import timezone
+from django.db import transaction
 
 from .models import CollectionPoint, Submission, SubmissionItem, WasteType
+from wallet.services import credit_wallet, record_donation
 
 
 @admin.register(WasteType)
@@ -42,17 +44,36 @@ def verify_submissions(modeladmin, request, queryset):
     incomplete_count = 0
 
     for submission in pending_submissions:
-        items = submission.items.all()
-        if not items.exists() or items.filter(actual_weight__isnull=True).exists():
-            incomplete_count += 1
-            continue
-        submission.status = Submission.Status.VERIFIED
-        submission.verified_at = timezone.now()
-        submission.verified_by = request.user
-        submission.save(
-            update_fields=["status", "verified_at", "verified_by", "updated_at"]
-        )
-        verified_count += 1
+        with transaction.atomic():
+            submission = (Submission.objects.select_for_update().get(pk=submission.pk))
+
+            if submission.status != Submission.Status.PENDING:
+                continue
+
+            items = submission.items.all()
+
+            if not items.exists() or items.filter(actual_weight__isnull=True).exists() or items.filter(unit_rate_snapshot__isnull=True).exists():
+                incomplete_count += 1
+                continue
+
+            actual_reward = submission.actual_reward
+
+            if (submission.incentive_allocation == Submission.IncentiveAllocation.WALLET and (actual_reward is None or actual_reward <= 0)):
+                incomplete_count += 1
+                continue
+            submission.status = Submission.Status.VERIFIED
+            submission.verified_at = timezone.now()
+            submission.verified_by = request.user
+            submission.save(
+                update_fields=["status", "verified_at", "verified_by", "updated_at"]
+            )
+
+            if submission.incentive_allocation == Submission.IncentiveAllocation.WALLET:
+                credit_wallet(user=submission.user, amount=actual_reward, description=f"Insentif setoran #{submission.pk}", reference=f"waste_submission:{submission.pk}")
+
+            elif submission.incentive_allocation == Submission.IncentiveAllocation.DONATION:
+                record_donation(user=submission.user, amount=actual_reward, description=f"Donasi insentif setoran #{submission.pk}", reference=f"waste_submission_donation:{submission.pk}")
+            verified_count += 1
 
     if verified_count:
         modeladmin.message_user(
@@ -66,7 +87,6 @@ def verify_submissions(modeladmin, request, queryset):
             f"{incomplete_count} pengajuan dilewati karena hasil timbang belum lengkap.",
             messages.WARNING,
         )
-
 
 @admin.register(Submission)
 class SubmissionAdmin(admin.ModelAdmin):

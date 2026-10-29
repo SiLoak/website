@@ -17,6 +17,7 @@ class WalletTransaction(models.Model):
         EARNING = "earning", "Insentif masuk"
         WITHDRAWAL = "withdrawal", "Penarikan"
         DONATION = "donation", "Donasi"
+        REFUND = "refund", "Pengembalian Dana"
     class Status(models.TextChoices):
         PENDING = "pending", "Diproses"
         SUCCESS = "success", "Berhasil"
@@ -40,6 +41,9 @@ class WithdrawalRequest(models.Model):
     account_number = models.CharField(max_length=40)
     account_holder = models.CharField(max_length=100)
     amount = models.DecimalField(max_digits=14, decimal_places=2)
+    transfer_fee = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    service_fee = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
+    total_deduction = models.DecimalField(max_digits=14, decimal_places=2, default=Decimal("0.00"))
     status = models.CharField(max_length=12, choices=[("processing","Diproses"),("success","Berhasil"),("failed","Gagal")], default="processing")
     created_at = models.DateTimeField(auto_now_add=True)
     class Meta:
