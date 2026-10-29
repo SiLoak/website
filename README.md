@@ -182,6 +182,16 @@ The endpoints are `GET /auth/google/login/` to begin sign-in and `GET /auth/goog
 
 API akan digunakan sebagai sumber data eksternal untuk fitur lokasi, sementara data utama seperti pengguna, transaksi sampah, titik pengumpulan, pickup, dan insentif akan dikelola melalui database aplikasi.
 
+## Testing Modul Setor & Pickup
+
+```bash
+pip install -r requirements-dev.txt
+coverage run manage.py test waste pickup main
+coverage report
+```
+
+Cakupan test modul Setor (`waste`), Pickup (`pickup`), serta `main.security` dan `main.htmx` di atas 90%. Test berada di `waste/tests/`, `pickup/tests/`, dan `main/test_security.py`.
+
 ## Seed Data Waste
 
 Migration waste mengisi katalog jenis sampah dari `waste.json` dan titik pengumpulan dari `dropoff.json` saat `python manage.py migrate` dijalankan. Untuk menyinkronkan ulang database setelah salah satu file JSON diperbarui, jalankan:

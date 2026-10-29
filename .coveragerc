@@ -1,0 +1,18 @@
+[run]
+source =
+    waste
+    pickup
+    main.security
+    main.htmx
+omit =
+    */migrations/*
+    */tests/*
+    */test_*.py
+    main/asgi.py
+    main/wsgi.py
+    main/settings.py
+    waste/management/*
+
+[report]
+show_missing = true
+skip_covered = false

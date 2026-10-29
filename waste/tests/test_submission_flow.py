@@ -17,7 +17,7 @@ class WasteSubmissionFlowTests(TestCase):
             username="other", email="other@example.com", password="secret"
         )
         self.waste_type = WasteType.objects.create(
-            name="Kardus", rate_per_kg=Decimal("5000.00")
+            name="Kardus Lama", rate_per_kg=Decimal("5000.00")
         )
         self.point = CollectionPoint.objects.create(
             name="Depo Pasar Minggu",
@@ -75,7 +75,7 @@ class WasteSubmissionFlowTests(TestCase):
 
         page = self.client.get(reverse("waste:new"))
         self.assertEqual(page.status_code, 200)
-        self.assertContains(page, "Kardus — Rp 5.000/kg")
+        self.assertContains(page, "Kardus Lama — Rp 5.000/kg")
         self.assertContains(page, "Depo Pasar Minggu — Jl. Raya Pasar Minggu No. 14")
         selected_point_id = page.context["form"]["collection_point"].value()
         selected_point = CollectionPoint.objects.get(pk=selected_point_id)
@@ -258,7 +258,7 @@ class WasteSubmissionFlowTests(TestCase):
             reverse("waste:detail", kwargs={"submission_id": submission.pk})
         )
         self.assertEqual(detail.status_code, 200)
-        self.assertContains(detail, "Perkiraan: 2.50 kg")
+        self.assertContains(detail, "Perkiraan: 2,50 kg")
 
     def test_admin_records_actual_weight_then_verifies_only_complete_submissions(self):
         User = get_user_model()
@@ -313,4 +313,4 @@ class WasteSubmissionFlowTests(TestCase):
         )
         self.assertEqual(detail.status_code, 200)
         self.assertContains(detail, "Berat aktual")
-        self.assertContains(detail, "2.25 kg")
+        self.assertContains(detail, "2,25 kg")
