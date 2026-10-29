@@ -160,9 +160,14 @@ def _get_or_create_user(claims):
     User = get_user_model()
     subject = claims["sub"]
     email = claims["email"].strip()
+    picture = claims.get("picture")
+    picture_url = picture.strip() if isinstance(picture, str) else ""
 
     linked = GoogleIdentity.objects.select_related("user").filter(subject=subject).first()
     if linked:
+        if picture_url and linked.picture_url != picture_url:
+            linked.picture_url = picture_url
+            linked.save(update_fields=["picture_url"])
         return linked.user
 
     with transaction.atomic():
@@ -187,7 +192,11 @@ def _get_or_create_user(claims):
             user.set_unusable_password()
             user.save()
 
-        GoogleIdentity.objects.create(user=user, subject=subject)
+        GoogleIdentity.objects.create(
+            user=user,
+            subject=subject,
+            picture_url=picture_url,
+        )
     return user
 
 

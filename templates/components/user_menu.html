@@ -1,0 +1,108 @@
+<div class="relative shrink-0" data-user-menu>
+  <button
+    id="user-menu-trigger"
+    class="inline-flex max-w-full items-center gap-2 rounded-full p-1.5 pr-2 text-white transition-colors hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/60"
+    type="button"
+    aria-label="Buka menu akun"
+    aria-expanded="false"
+    aria-controls="user-menu-panel"
+    data-user-menu-trigger
+  >
+    {% if request.user.google_identity.picture_url %}
+      <img
+        class="h-9 w-9 shrink-0 rounded-full border border-white/30 object-cover"
+        src="{{ request.user.google_identity.picture_url }}"
+        alt=""
+        aria-hidden="true"
+        referrerpolicy="no-referrer"
+      />
+    {% else %}
+      <span
+        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-white/15 text-sm font-semibold"
+        aria-hidden="true"
+      >{{ request.user.first_name|default:request.user.username|first|upper }}</span>
+    {% endif %}
+    <span class="hidden max-w-[48px] truncate text-sm font-medium min-[360px]:inline sm:max-w-40">
+      {{ request.user.get_full_name|default:request.user.username }}
+    </span>
+    <svg
+      class="h-4 w-4 shrink-0 transition-transform"
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path fill-rule="evenodd" d="M5.22 7.47a.75.75 0 0 1 1.06 0L10 11.19l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+    </svg>
+  </button>
+
+  <div
+    id="user-menu-panel"
+    class="absolute right-0 top-full z-[60] mt-2 w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl border border-slate-200 bg-white py-2 text-slate-900 shadow-lg"
+    data-user-menu-panel
+    hidden
+  >
+    <div class="flex items-center gap-3 px-4 py-3">
+      {% if request.user.google_identity.picture_url %}
+        <img
+          class="h-10 w-10 shrink-0 rounded-full object-cover"
+          src="{{ request.user.google_identity.picture_url }}"
+          alt=""
+          aria-hidden="true"
+          referrerpolicy="no-referrer"
+        />
+      {% else %}
+        <span
+          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-slate-100 text-sm font-semibold text-slate-700"
+          aria-hidden="true"
+        >{{ request.user.first_name|default:request.user.username|first|upper }}</span>
+      {% endif %}
+      <span class="min-w-0">
+        <span class="block truncate text-sm font-semibold">{{ request.user.get_full_name|default:request.user.username }}</span>
+        {% if request.user.email %}<span class="block truncate text-xs text-slate-500">{{ request.user.email }}</span>{% endif %}
+      </span>
+    </div>
+
+    <nav class="border-t border-slate-100 py-2" aria-label="Menu akun">
+      <a class="block px-4 py-2 text-sm hover:bg-slate-50" href="{% url 'dashboard' %}">Dashboard</a>
+      <a class="block px-4 py-2 text-sm hover:bg-slate-50" href="{% url 'profile' %}">Profil</a>
+      <a class="block px-4 py-2 text-sm hover:bg-slate-50" href="{% url 'wallet:index' %}">Dompet</a>
+      <a class="block px-4 py-2 text-sm hover:bg-slate-50" href="{% url 'waste:submissions' %}">Riwayat aktivitas</a>
+    </nav>
+
+    <form class="border-t border-slate-100 pt-2" method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button class="block w-full px-4 py-2 text-left text-sm font-medium text-red-700 hover:bg-red-50" type="submit">Keluar</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const menu = document.querySelector("[data-user-menu]");
+    if (!menu) return;
+
+    const trigger = menu.querySelector("[data-user-menu-trigger]");
+    const panel = menu.querySelector("[data-user-menu-panel]");
+    if (!trigger || !panel) return;
+
+    const setOpen = (open) => {
+      panel.hidden = !open;
+      trigger.setAttribute("aria-expanded", String(open));
+    };
+
+    trigger.addEventListener("click", () => {
+      setOpen(trigger.getAttribute("aria-expanded") !== "true");
+    });
+
+    document.addEventListener("click", (event) => {
+      if (!menu.contains(event.target)) setOpen(false);
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && trigger.getAttribute("aria-expanded") === "true") {
+        setOpen(false);
+        trigger.focus();
+      }
+    });
+  })();
+</script>
