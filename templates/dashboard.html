@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load l10n %}
 {% block title %}Beranda Pengguna · SiLoak{% endblock %}
 {% block content %}
 <!-- Stitch screen: 02f763421a334e57a821381245a3719c -->
@@ -9,12 +10,12 @@
 <!-- 1. Greeting Section -->
 <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-space-sm mb-6">
 <div>
-<h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Halo, Budi!</h1>
+<h1 class="font-headline-xl text-headline-xl text-text-primary tracking-tight font-bold">Halo, {{ dashboard_name }}!</h1>
 <p class="font-body-lg text-body-lg text-text-body mt-1">Siap setor barang bekas hari ini?</p>
 </div>
 <div class="inline-flex items-center gap-space-xs bg-surface-card px-space-md py-2 rounded-full shadow-sm text-text-body font-label-md text-label-md">
-<span class="w-2 h-2 rounded-full bg-status-success-text animate-pulse"></span>
-<span>Wilayah aktif: <strong class="text-text-primary font-semibold">Pasar Minggu, Jakarta Selatan</strong></span>
+<span class="w-2 h-2 rounded-full {% if latest_activity_location %}bg-status-success-text{% else %}bg-text-body/30{% endif %}"></span>
+<span>Aktivitas terakhir: <strong class="text-text-primary font-semibold">{% if latest_activity_location %}{{ latest_activity_location }}{% else %}Belum ada aktivitas{% endif %}</strong></span>
 </div>
 </div>
 <!-- 2. Key Numbers (4 Metric Cards) -->
@@ -25,14 +26,14 @@
 <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[22px]">account_balance_wallet</span>
 </div>
-<span class="font-label-sm text-label-sm text-text-body/70 bg-surface-soft px-2 py-0.5 rounded-full">Siap ditarik</span>
+<span class="font-label-sm text-label-sm {% if wallet_balance %}text-status-success-text bg-status-success-bg{% else %}text-text-body/70 bg-surface-soft{% endif %} px-2 py-0.5 rounded-full">{% if wallet_balance %}Siap ditarik{% else %}Belum ada saldo{% endif %}</span>
 </div>
 <div class="mt-4">
 <span class="font-label-md text-label-md text-text-body">Saldo insentif</span>
-<div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">Rp 145.000</div>
+<div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">Rp {{ wallet_balance_display }}</div>
 </div>
 <div class="mt-4 pt-3 bg-surface-soft/40 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
-<a class="font-label-md text-label-md text-primary-container font-semibold inline-flex items-center gap-1 group" data-path="dompet" href="/wallet/">
+<a class="font-label-md text-label-md text-primary-container font-semibold inline-flex items-center gap-1 group" data-path="dompet" href="{% url 'wallet:index' %}">
             Lihat dompet
             <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
 </a>
@@ -44,11 +45,11 @@
 <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[22px]">scale</span>
 </div>
-<span class="font-label-sm text-label-sm text-status-success-text bg-status-success-bg px-2 py-0.5 rounded-full font-medium">+4,2 kg mgg ini</span>
+<span class="font-label-sm text-label-sm text-status-success-text bg-status-success-bg px-2 py-0.5 rounded-full font-medium">{{ weekly_actual_weight|floatformat:1 }} kg minggu ini</span>
 </div>
 <div class="mt-4">
 <span class="font-label-md text-label-md text-text-body">Total berat disetor</span>
-<div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">22,5 kg</div>
+<div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">{{ total_actual_weight|floatformat:1 }} kg</div>
 </div>
 <div class="mt-4 pt-3 bg-surface-soft/40 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
 <span class="font-label-sm text-label-sm text-text-body flex items-center gap-1">
@@ -63,16 +64,16 @@
 <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[22px]">inventory_2</span>
 </div>
-<span class="font-label-sm text-label-sm text-text-body/70 bg-surface-soft px-2 py-0.5 rounded-full">Oktober 2026</span>
+<span class="font-label-sm text-label-sm text-text-body/70 bg-surface-soft px-2 py-0.5 rounded-full">{{ current_month|date:"F Y" }}</span>
 </div>
 <div class="mt-4">
-<span class="font-label-md text-label-md text-text-body">Setoran bulan ini</span>
-<div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">8</div>
+<span class="font-label-md text-label-md text-text-body">Aktivitas setor bulan ini</span>
+<div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">{{ month_activity_count }}</div>
 </div>
 <div class="mt-4 pt-3 bg-surface-soft/40 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
 <span class="font-label-sm text-label-sm text-text-body flex items-center gap-1">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[15px] text-status-success-text">check_circle</span>
-            3 sudah ditimbang
+            {{ month_completed_count }} selesai diproses
           </span>
 </div>
 </div>
@@ -82,15 +83,15 @@
 <div class="w-10 h-10 rounded-full bg-primary-container/10 flex items-center justify-center text-primary-container">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[22px]">local_shipping</span>
 </div>
-<span class="w-2.5 h-2.5 rounded-full bg-status-warning-text animate-ping"></span>
+{% if active_pickup_count %}<span class="w-2.5 h-2.5 rounded-full bg-status-warning-text animate-ping"></span>{% else %}<span class="w-2.5 h-2.5 rounded-full bg-text-body/30"></span>{% endif %}
 </div>
 <div class="mt-4">
 <span class="font-label-md text-label-md text-text-body">Pick up aktif</span>
 <div class="font-metric-display text-metric-display text-text-primary font-bold tracking-tight tabular-nums mt-0.5">{{ active_pickup_count }}</div>
 </div>
-<div class="mt-4 pt-3 bg-status-warning-bg/50 -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
-<span class="font-label-sm text-label-sm text-status-warning-text font-medium flex items-center gap-1.5">
-<span class="w-1.5 h-1.5 rounded-full bg-status-warning-text"></span>
+<div class="mt-4 pt-3 {% if active_pickup %}bg-status-warning-bg/50{% else %}bg-surface-soft{% endif %} -mx-space-lg -mb-space-lg px-space-lg py-2.5 rounded-b-xl">
+<span class="font-label-sm text-label-sm {% if active_pickup %}text-status-warning-text{% else %}text-text-body{% endif %} font-medium flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full {% if active_pickup %}bg-status-warning-text{% else %}bg-text-body/40{% endif %}"></span>
             {% if active_pickup %}{{ active_pickup.get_status_display }}{% else %}Tidak ada pickup aktif{% endif %}
           </span>
 </div>
@@ -104,7 +105,7 @@
 </div>
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
 <!-- Action Card A: Antar Sendiri -->
-<a class="bg-surface-card rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-surface-soft/30 transition-all cursor-pointer group flex flex-col justify-between h-full" data-path="setor-loak" href="/waste/dropoff/">
+<a class="bg-surface-card rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-surface-soft/30 transition-all cursor-pointer group flex flex-col justify-between h-full" data-path="setor-loak" href="{% url 'waste:dropoff' %}">
 <div>
 <div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary-container flex items-center justify-center transition-colors group-hover:bg-primary-container group-hover:text-on-primary">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[24px]">directions_walk</span>
@@ -114,7 +115,7 @@
 </div>
 <div class="mt-5 pt-3 flex items-center justify-between">
 <span class="font-label-md text-label-md font-semibold text-primary-container group-hover:underline">Mulai setor →</span>
-<span class="font-label-sm text-label-sm text-text-body/60">Gratis biaya</span>
+<span class="font-label-sm text-label-sm text-text-body/60">Pilih jenis barang</span>
 </div>
 </a>
 <!-- Action Card B: Minta Dijemput -->
@@ -128,11 +129,11 @@
 </div>
 <div class="mt-5 pt-3 flex items-center justify-between">
 <span class="font-label-md text-label-md font-semibold text-primary-container group-hover:underline">Jemput sekarang →</span>
-<span class="font-label-sm text-label-sm text-text-body/60">Min. 5 kg</span>
+<span class="font-label-sm text-label-sm text-text-body/60">Pilih jadwal</span>
 </div>
 </a>
 <!-- Action Card C: Cari Titik Pengumpulan -->
-<a class="bg-surface-card rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-surface-soft/30 transition-all cursor-pointer group flex flex-col justify-between h-full" data-path="titik-pengumpulan" href="/location/">
+<a class="bg-surface-card rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-surface-soft/30 transition-all cursor-pointer group flex flex-col justify-between h-full" data-path="titik-pengumpulan" href="{% url 'location:list' %}">
 <div>
 <div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary-container flex items-center justify-center transition-colors group-hover:bg-primary-container group-hover:text-on-primary">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[24px]">location_on</span>
@@ -142,11 +143,11 @@
 </div>
 <div class="mt-5 pt-3 flex items-center justify-between">
 <span class="font-label-md text-label-md font-semibold text-primary-container group-hover:underline">Cek peta →</span>
-<span class="font-label-sm text-label-sm text-text-body/60">8 drop point</span>
+<span class="font-label-sm text-label-sm text-text-body/60">{{ active_collection_point_count }} titik tersedia</span>
 </div>
 </a>
 <!-- Action Card D: Donasikan Insentif -->
-<a class="bg-surface-card rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-surface-soft/30 transition-all cursor-pointer group flex flex-col justify-between h-full" data-path="donasi" href="/wallet/">
+<a class="bg-surface-card rounded-xl p-5 shadow-sm hover:shadow-md hover:bg-surface-soft/30 transition-all cursor-pointer group flex flex-col justify-between h-full" data-path="donasi" href="{% url 'wallet:donate' %}">
 <div>
 <div class="w-12 h-12 rounded-full bg-primary-container/10 text-primary-container flex items-center justify-center transition-colors group-hover:bg-primary-container group-hover:text-on-primary">
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[24px]">volunteer_activism</span>
@@ -156,7 +157,7 @@
 </div>
 <div class="mt-5 pt-3 flex items-center justify-between">
 <span class="font-label-md text-label-md font-semibold text-primary-container group-hover:underline">Donasi →</span>
-<span class="font-label-sm text-label-sm text-text-body/60">Panti &amp; Yayasan</span>
+<span class="font-label-sm text-label-sm text-text-body/60">Atur nominal donasi</span>
 </div>
 </a>
 </div>
@@ -191,7 +192,7 @@
 <h3 class="font-headline-md text-headline-md text-text-primary font-semibold">Aktivitas terbaru</h3>
 <p class="font-label-sm text-label-sm text-text-body mt-0.5">Setoran dan pickup terbaru</p>
 </div>
-<span class="font-label-sm text-label-sm text-text-body bg-surface-soft px-2.5 py-1 rounded-full font-medium">5 transaksi terakhir</span>
+<span class="font-label-sm text-label-sm text-text-body bg-surface-soft px-2.5 py-1 rounded-full font-medium">{{ dashboard_activity_count }} aktivitas terbaru</span>
 </div>
 <!-- List of 5 rows -->
 <div class="flex flex-col">
@@ -225,12 +226,12 @@
 <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[24px]">forest</span>
 </div>
 <div>
-<h4 class="font-headline-sm text-headline-sm text-text-primary font-semibold">Dampak Lingkungan Kamu</h4>
-<p class="font-label-sm text-label-sm text-text-body mt-0.5">Setoran 22,5 kg kamu setara dengan mengurangi <strong class="text-text-primary font-medium">31,5 kg emisi CO2</strong> dan menyelamatkan <strong class="text-text-primary font-medium">2 pohon</strong>.</p>
+<h4 class="font-headline-sm text-headline-sm text-text-primary font-semibold">Kontribusi Setoranmu</h4>
+<p class="font-label-sm text-label-sm text-text-body mt-0.5"><strong class="text-text-primary font-medium">{{ total_completed_count }} setoran selesai</strong> dengan total berat aktual <strong class="text-text-primary font-medium">{{ total_actual_weight|floatformat:1 }} kg</strong> tercatat.</p>
 </div>
 </div>
 <a class="whitespace-nowrap px-4 py-2 rounded-lg bg-surface-card text-text-primary font-label-md text-label-md font-semibold hover:bg-surface-card/80 transition-colors shadow-sm" data-path="riwayat" href="{% url 'waste:submissions' %}">
-        Rincian Dampak
+        Lihat riwayat
       </a>
 </div>
 </div>
