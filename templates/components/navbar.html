@@ -1,38 +1,100 @@
 {% load static %}
 <header class="sticky top-0 z-50 w-full bg-siloak-navy shadow-sm">
-    <nav class="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6" aria-label="Navigasi utama">
-        <a class="flex shrink-0 items-center gap-2.5 text-white" href="{% url 'landing_page' %}" aria-label="SiLoak, beranda">
-            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15">♻</span>
-            <span class="text-xl font-bold tracking-tight">SiLoak</span>
-        </a>
+  <nav
+    class="mx-auto flex h-16 max-w-[1200px] items-center justify-between px-4 sm:px-6"
+    aria-label="Navigasi utama"
+  >
+    <a
+      class="flex shrink-0 items-center gap-2.5 text-white"
+      href="{% url 'landing_page' %}"
+      aria-label="SiLoak, beranda"
+    >
+      <span
+        class="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15"
+        >♻</span
+      >
+      <span class="text-xl font-bold tracking-tight">SiLoak</span>
+    </a>
 
-        {% if public %}
-            <div class="hidden items-center gap-1 md:flex">
-                <a class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white" href="{% url 'landing_page' %}">Beranda</a>
-                <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#cara-kerja">Cara Kerja</a>
-                <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#titik-pengumpulan">Titik Pengumpulan</a>
-                <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#manfaat">Manfaat</a>
-            </div>
-            <div class="flex items-center gap-3">
-                {% if landing and request.user.is_authenticated %}
-                    <a class="rounded-lg bg-[#dce6ff] px-3 py-2 text-sm font-semibold text-[#142653]" href="{% url 'dashboard' %}">Ke Dashboard</a>
-                {% else %}
-                    <a class="px-3 py-2 text-sm text-white" href="{% url 'auth_page' %}">Masuk</a>
-                    <a class="rounded-lg bg-[#dce6ff] px-3 py-2 text-sm font-semibold text-[#142653]" href="{% url 'auth_page' %}">Daftar Sekarang</a>
-                {% endif %}
-            </div>
-        {% else %}
-            <div class="hidden items-center gap-1 md:flex">
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'dashboard' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'dashboard' %}">Beranda</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'waste' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/waste/new/">Setor Loak</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'location' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="/location/">Titik Pengumpulan</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'wallet' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'wallet:index' %}">Dompet</a>
-                <a class="rounded-lg px-3 py-2 text-sm {% if active_item == 'history' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}" href="{% url 'waste:submissions' %}">Riwayat</a>
-            </div>
-            <div class="flex items-center gap-3">
-                <a class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white" href="/waste/new/">+ Setor Loak</a>
-                <a class="hidden text-sm text-white sm:block" href="/profile/">{{ request.user.get_full_name|default:request.user.username }}</a>
-            </div>
-        {% endif %}
-    </nav>
+    {% if public %}
+    <div class="hidden items-center gap-1 md:flex">
+      <a
+        class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white"
+        href="{% url 'landing_page' %}"
+        >Beranda</a
+      >
+      <a
+        class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10"
+        href="/#cara-kerja"
+        >Cara Kerja</a
+      >
+      <a
+        class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10"
+        href="/#titik-pengumpulan"
+        >Titik Pengumpulan</a
+      >
+      <a
+        class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10"
+        href="/#manfaat"
+        >Manfaat</a
+      >
+    </div>
+    <div class="flex items-center gap-3">
+      {% if landing and request.user.is_authenticated %}
+      <a
+        class="rounded-lg bg-[#dce6ff] px-3 py-2 text-sm font-semibold text-[#142653]"
+        href="{% url 'dashboard' %}"
+        >Ke Dashboard</a
+      >
+      {% else %}
+      <a class="px-3 py-2 text-sm text-white" href="{% url 'auth_page' %}"
+        >Masuk</a
+      >
+      <a
+        class="rounded-lg bg-[#dce6ff] px-3 py-2 text-sm font-semibold text-[#142653]"
+        href="{% url 'auth_page' %}"
+        >Daftar Sekarang</a
+      >
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="hidden items-center gap-1 md:flex">
+      <a
+        class="rounded-lg px-3 py-2 text-sm {% if active_item == 'dashboard' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}"
+        href="{% url 'dashboard' %}"
+        >Beranda</a
+      >
+      <a
+        class="rounded-lg px-3 py-2 text-sm {% if active_item == 'waste' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}"
+        href="/waste/new/"
+        >Setor Loak</a
+      >
+      <a
+        class="rounded-lg px-3 py-2 text-sm {% if active_item == 'location' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}"
+        href="/location/"
+        >Titik Pengumpulan</a
+      >
+      <a
+        class="rounded-lg px-3 py-2 text-sm {% if active_item == 'wallet' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}"
+        href="{% url 'wallet:index' %}"
+        >Dompet</a
+      >
+      <a
+        class="rounded-lg px-3 py-2 text-sm {% if active_item == 'history' %}bg-siloak-blue font-semibold text-white{% else %}text-white/90 hover:bg-white/10{% endif %}"
+        href="{% url 'waste:submissions' %}"
+        >Riwayat</a
+      >
+    </div>
+    <div class="flex items-center gap-3">
+      <a
+        class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white"
+        href="/waste/new/"
+        >+ Setor Loak</a
+      >
+      <a class="hidden text-sm text-white sm:block" href="/profile/"
+        >{{ request.user.get_full_name|default:request.user.username }}</a
+      >
+    </div>
+    {% endif %}
+  </nav>
 </header>

@@ -1,55 +1,71 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}{% if editing %}Ubah Pengajuan{% else %}Setor Loak{% endif %} · SiLoak{% endblock %}
-{% block extra_head %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}">
+{% extends "base.html" %} {% load static %} {% block title %}{% if editing %}Ubah Pengajuan{% else %}Setor Loak{% endif %} · SiLoak{% endblock %} {% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;600;700&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{% static 'js/leaflet-maps.js' %}"></script>
-{% endblock %}
-
-{% block content %}
-{% include "components/navbar.html" with active_item="waste" %}
+{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="waste" %}
 <main class="waste-page">
   <div class="waste-shell">
     <nav class="waste-breadcrumb" aria-label="Breadcrumb">
-      <a href="{% url 'dashboard' %}">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Beranda</a>
+      <a href="{% url 'dashboard' %}"
+        >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Beranda</a
+      >
       <span aria-hidden="true">/</span>
       <span>{% if editing %}Ubah pengajuan{% else %}Setor Loak{% endif %}</span>
     </nav>
     <div class="waste-heading">
       <h1>{% if editing %}Ubah pengajuan{% else %}Setor Loak{% endif %}</h1>
-      <p>Pilih barang bekasmu, lalu tentukan mau diantar sendiri atau dijemput petugas.</p>
+      <p>
+        Pilih barang bekasmu, lalu tentukan mau diantar sendiri atau dijemput
+        petugas.
+      </p>
     </div>
 
     {% if messages %}
-      <div class="space-y-2" aria-live="polite">
-        {% for message in messages %}
-          <div class="waste-alert">{{ message }}</div>
-        {% endfor %}
-      </div>
+    <div class="space-y-2" aria-live="polite">
+      {% for message in messages %}
+      <div class="waste-alert">{{ message }}</div>
+      {% endfor %}
+    </div>
     {% endif %}
 
-    <form id="waste-submission-form" method="post" novalidate data-editing="{% if editing %}true{% else %}false{% endif %}" data-selected-point="{{ form.collection_point.value|default:'' }}">
-      {% csrf_token %}
-      {% if form.errors or pickup_form.errors or formset.total_error_count or formset.non_form_errors %}
-        <div class="waste-alert" role="alert">
-          <p>Pengajuan belum tersimpan. Perbaiki kesalahan berikut:</p>
-          <ul>
-            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-            {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
-            {% for error in pickup_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-            {% for field in pickup_form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
-            {% for error in formset.non_form_errors %}<li>{{ error }}</li>{% endfor %}
-            {% for item_form in formset %}
-              {% for error in item_form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
-              {% for field in item_form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
-            {% endfor %}
-          </ul>
-        </div>
+    <form
+      id="waste-submission-form"
+      method="post"
+      novalidate
+      data-editing="{% if editing %}true{% else %}false{% endif %}"
+      data-selected-point="{{ form.collection_point.value|default:'' }}"
+    >
+      {% csrf_token %} {% if form.errors or pickup_form.errors or formset.total_error_count or formset.non_form_errors %}
+      <div class="waste-alert" role="alert">
+        <p>Pengajuan belum tersimpan. Perbaiki kesalahan berikut:</p>
+        <ul>
+          {% for error in form.non_field_errors %}
+          <li>{{ error }}</li>
+          {% endfor %} {% for field in form %}{% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+          {% endfor %}{% endfor %} {% for error in pickup_form.non_field_errors %}
+          <li>{{ error }}</li>
+          {% endfor %} {% for field in pickup_form %}{% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+          {% endfor %}{% endfor %} {% for error in formset.non_form_errors %}
+          <li>{{ error }}</li>
+          {% endfor %} {% for item_form in formset %} {% for error in item_form.non_field_errors %}
+          <li>{{ error }}</li>
+          {% endfor %} {% for field in item_form %}{% for error in field.errors %}
+          <li>{{ field.label }}: {{ error }}</li>
+          {% endfor %}{% endfor %} {% endfor %}
+        </ul>
+      </div>
       {% endif %}
 
       <div class="waste-grid">
@@ -60,68 +76,144 @@
                 <span class="waste-step">1</span>
                 <div>
                   <h2 id="waste-items-heading">Barang yang disetor</h2>
-                  <p>Tentukan estimasi berat awal untuk kalkulasi insentif sementara.</p>
+                  <p>
+                    Tentukan estimasi berat awal untuk kalkulasi insentif
+                    sementara.
+                  </p>
                 </div>
               </div>
-              <span class="waste-capacity !float-none !m-0">Maksimal 6 jenis</span>
+              <span class="waste-capacity !float-none !m-0"
+                >Maksimal 6 jenis</span
+              >
             </div>
 
             {{ formset.management_form }}
             <div id="item-forms" class="waste-row-list">
               {% for item_form in formset %}
-                <div class="waste-item-row" data-item-form data-snapshot-rate="{{ item_form.instance.unit_rate_snapshot|default_if_none:'' }}" data-initial-waste-type="{{ item_form.waste_type.value|default:'' }}">
-                  {{ item_form.id }}<span class="waste-hidden-field">{{ item_form.DELETE }}</span>
-                  {% if item_form.non_field_errors %}<div class="waste-field-error">{{ item_form.non_field_errors|join:", " }}</div>{% endif %}
-                  <div class="waste-item-grid">
-                    <div>
-                      <label class="waste-label" for="{{ item_form.waste_type.id_for_label }}">Jenis barang</label>
-                      {{ item_form.waste_type }}
-                      {% if item_form.waste_type.errors %}<p class="waste-field-error">{{ item_form.waste_type.errors|join:", " }}</p>{% endif %}
-                      <p class="waste-rate-note" data-item-rate-note>Tarif resmi: <strong>Menunggu pilihan</strong></p>
-                    </div>
-                    <div>
-                      <label class="waste-label" for="{{ item_form.estimated_weight.id_for_label }}">Perkiraan berat</label>
-                      {{ item_form.estimated_weight }}
-                      {% if item_form.estimated_weight.errors %}<p class="waste-field-error">{{ item_form.estimated_weight.errors|join:", " }}</p>{% endif %}
-                      <p class="waste-rate-note">Min. 0,01 kg</p>
-                    </div>
-                    <div class="waste-subtotal" aria-live="polite">
-                      <span>Subtotal</span>
-                      <strong data-item-subtotal>Rp 0</strong>
-                    </div>
-                    <button type="button" data-remove-item class="waste-icon-button" aria-label="Hapus jenis sampah">
-                      <span class="font-symbols text-[19px] leading-none" aria-hidden="true">delete</span>
-                    </button>
-                  </div>
+              <div
+                class="waste-item-row"
+                data-item-form
+                data-snapshot-rate="{{ item_form.instance.unit_rate_snapshot|default_if_none:'' }}"
+                data-initial-waste-type="{{ item_form.waste_type.value|default:'' }}"
+              >
+                {{ item_form.id }}<span class="waste-hidden-field"
+                  >{{ item_form.DELETE }}</span
+                >
+                {% if item_form.non_field_errors %}
+                <div class="waste-field-error">
+                  {{ item_form.non_field_errors|join:", " }}
                 </div>
+                {% endif %}
+                <div class="waste-item-grid">
+                  <div>
+                    <label
+                      class="waste-label"
+                      for="{{ item_form.waste_type.id_for_label }}"
+                      >Jenis barang</label
+                    >
+                    {{ item_form.waste_type }} {% if item_form.waste_type.errors %}
+                    <p class="waste-field-error">
+                      {{ item_form.waste_type.errors|join:", " }}
+                    </p>
+                    {% endif %}
+                    <p class="waste-rate-note" data-item-rate-note>
+                      Tarif resmi: <strong>Menunggu pilihan</strong>
+                    </p>
+                  </div>
+                  <div>
+                    <label
+                      class="waste-label"
+                      for="{{ item_form.estimated_weight.id_for_label }}"
+                      >Perkiraan berat</label
+                    >
+                    {{ item_form.estimated_weight }} {% if item_form.estimated_weight.errors %}
+                    <p class="waste-field-error">
+                      {{ item_form.estimated_weight.errors|join:", " }}
+                    </p>
+                    {% endif %}
+                    <p class="waste-rate-note">Min. 0,01 kg</p>
+                  </div>
+                  <div class="waste-subtotal" aria-live="polite">
+                    <span>Subtotal</span>
+                    <strong data-item-subtotal>Rp 0</strong>
+                  </div>
+                  <button
+                    type="button"
+                    data-remove-item
+                    class="waste-icon-button"
+                    aria-label="Hapus jenis sampah"
+                  >
+                    <span
+                      class="font-symbols text-[19px] leading-none"
+                      aria-hidden="true"
+                      >delete</span
+                    >
+                  </button>
+                </div>
+              </div>
               {% endfor %}
             </div>
             <template id="empty-item-form">
-              <div class="waste-item-row" data-item-form data-snapshot-rate="" data-initial-waste-type="">
-                {{ formset.empty_form.id }}<span class="waste-hidden-field">{{ formset.empty_form.DELETE }}</span>
+              <div
+                class="waste-item-row"
+                data-item-form
+                data-snapshot-rate=""
+                data-initial-waste-type=""
+              >
+                {{ formset.empty_form.id }}<span class="waste-hidden-field"
+                  >{{ formset.empty_form.DELETE }}</span
+                >
                 <div class="waste-item-grid">
                   <div>
-                    <label class="waste-label" for="{{ formset.empty_form.waste_type.id_for_label }}">Jenis barang</label>
+                    <label
+                      class="waste-label"
+                      for="{{ formset.empty_form.waste_type.id_for_label }}"
+                      >Jenis barang</label
+                    >
                     {{ formset.empty_form.waste_type }}
-                    <p class="waste-rate-note" data-item-rate-note>Tarif resmi: <strong>Menunggu pilihan</strong></p>
+                    <p class="waste-rate-note" data-item-rate-note>
+                      Tarif resmi: <strong>Menunggu pilihan</strong>
+                    </p>
                   </div>
                   <div>
-                    <label class="waste-label" for="{{ formset.empty_form.estimated_weight.id_for_label }}">Perkiraan berat</label>
+                    <label
+                      class="waste-label"
+                      for="{{ formset.empty_form.estimated_weight.id_for_label }}"
+                      >Perkiraan berat</label
+                    >
                     {{ formset.empty_form.estimated_weight }}
                     <p class="waste-rate-note">Min. 0,01 kg</p>
                   </div>
-                  <div class="waste-subtotal"><span>Subtotal</span><strong data-item-subtotal>Rp 0</strong></div>
-                  <button type="button" data-remove-item class="waste-icon-button" aria-label="Hapus jenis sampah">
-                    <span class="font-symbols text-[19px] leading-none" aria-hidden="true">delete</span>
+                  <div class="waste-subtotal">
+                    <span>Subtotal</span
+                    ><strong data-item-subtotal>Rp 0</strong>
+                  </div>
+                  <button
+                    type="button"
+                    data-remove-item
+                    class="waste-icon-button"
+                    aria-label="Hapus jenis sampah"
+                  >
+                    <span
+                      class="font-symbols text-[19px] leading-none"
+                      aria-hidden="true"
+                      >delete</span
+                    >
                   </button>
                 </div>
               </div>
             </template>
             <button id="add-item" class="waste-add-row" type="button">
-              <span class="font-symbols text-[18px] leading-none" aria-hidden="true">add_circle</span>
+              <span
+                class="font-symbols text-[18px] leading-none"
+                aria-hidden="true"
+                >add_circle</span
+              >
               Tambah jenis barang
             </button>
-            <span id="item-capacity" class="waste-capacity">Maksimal 6 kategori per transaksi</span>
+            <span id="item-capacity" class="waste-capacity"
+              >Maksimal 6 kategori per transaksi</span
+            >
           </section>
 
           <section class="waste-card" aria-labelledby="waste-method-heading">
@@ -130,91 +222,221 @@
                 <span class="waste-step">2</span>
                 <div>
                   <h2 id="waste-method-heading">Cara menyetor</h2>
-                  <p>Pilih metode penyaluran yang paling nyaman untukmu hari ini.</p>
+                  <p>
+                    Pilih metode penyaluran yang paling nyaman untukmu hari ini.
+                  </p>
                 </div>
               </div>
             </div>
-            <div class="waste-methods" role="radiogroup" aria-labelledby="waste-method-heading">
-              <label class="waste-method-option group is-selected" data-method-card>
-                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="antar_sendiri" data-delivery-mode {% if request.POST.delivery_method != 'minta_dijemput' and request.GET.delivery_method != 'minta_dijemput' %}checked{% endif %}>
+            <div
+              class="waste-methods"
+              role="radiogroup"
+              aria-labelledby="waste-method-heading"
+            >
+              <label
+                class="waste-method-option group is-selected"
+                data-method-card
+              >
+                <input
+                  class="waste-choice-radio"
+                  type="radio"
+                  name="{{ form.delivery_method.html_name }}"
+                  value="antar_sendiri"
+                  data-delivery-mode
+                  {% if request.POST.delivery_method != "minta_dijemput" and request.GET.delivery_method != "minta_dijemput" %}checked{% endif %}
+                />
                 <div class="waste-method-top">
-                  <span class="waste-icon-box">{% include "components/lucide_icon.html" with name="bike" icon_class="h-5 w-5" only %}</span>
-                  <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
-                  <span class="waste-radio-mark group-[.is-selected]:hidden" aria-hidden="true"></span>
+                  <span class="waste-icon-box"
+                    >{% include "components/lucide_icon.html" with name="bike" icon_class="h-5 w-5" only %}</span
+                  >
+                  <span
+                    class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex"
+                    >{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span
+                  >
+                  <span
+                    class="waste-radio-mark group-[.is-selected]:hidden"
+                    aria-hidden="true"
+                  ></span>
                 </div>
                 <h3>Antar sendiri</h3>
-                <p>Bawa barangmu ke titik pengumpulan terdekat tanpa biaya kurir.</p>
-                <div class="waste-method-foot">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Kamu akan memilih titik pengumpulan.</div>
+                <p>
+                  Bawa barangmu ke titik pengumpulan terdekat tanpa biaya kurir.
+                </p>
+                <div class="waste-method-foot">
+                  {% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}Kamu akan memilih titik
+                  pengumpulan.
+                </div>
               </label>
-              <label class="waste-method-option group is-inactive" data-method-card>
-                <input class="waste-choice-radio" type="radio" name="{{ form.delivery_method.html_name }}" value="minta_dijemput" data-delivery-mode {% if request.POST.delivery_method == 'minta_dijemput' or request.GET.delivery_method == 'minta_dijemput' %}checked{% endif %}{% if editing %} disabled{% endif %}>
+              <label
+                class="waste-method-option group is-inactive"
+                data-method-card
+              >
+                <input
+                  class="waste-choice-radio"
+                  type="radio"
+                  name="{{ form.delivery_method.html_name }}"
+                  value="minta_dijemput" data-delivery-mode {% if request.POST.delivery_method == "minta_dijemput" or request.GET.delivery_method == "minta_dijemput" %}checked{% endif %}{% if editing %} disabled{% endif %}
+                />
                 <div class="waste-method-top">
-                  <span class="waste-icon-box"><span class="font-symbols text-[20px] leading-none" aria-hidden="true">local_shipping</span></span>
-                  <span class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
-                  <span class="waste-radio-mark group-[.is-selected]:hidden" aria-hidden="true"></span>
+                  <span class="waste-icon-box"
+                    ><span
+                      class="font-symbols text-[20px] leading-none"
+                      aria-hidden="true"
+                      >local_shipping</span
+                    ></span
+                  >
+                  <span
+                    class="hidden absolute top-[19px] right-[19px] min-h-5 items-center justify-center gap-1 rounded-full bg-[#1b367e] px-2 py-[3px] font-mono text-[10px] font-bold leading-[14px] text-white group-[.is-selected]:inline-flex"
+                    >{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span
+                  >
+                  <span
+                    class="waste-radio-mark group-[.is-selected]:hidden"
+                    aria-hidden="true"
+                  ></span>
                 </div>
                 <h3>Minta dijemput</h3>
-                <p>Petugas datang mengambil barang di rumahmu sesuai waktu luangmu.</p>
-                <div class="waste-method-foot">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3.5 w-3.5" only %}Kamu akan memilih alamat dan jadwal penjemputan.</div>
+                <p>
+                  Petugas datang mengambil barang di rumahmu sesuai waktu
+                  luangmu.
+                </p>
+                <div class="waste-method-foot">
+                  {% include "components/lucide_icon.html" with name="clock" icon_class="h-3.5 w-3.5" only %}Kamu akan memilih alamat dan
+                  jadwal penjemputan.
+                </div>
               </label>
             </div>
           </section>
 
-          <section class="waste-card" data-self-only aria-labelledby="waste-point-heading">
+          <section
+            class="waste-card"
+            data-self-only
+            aria-labelledby="waste-point-heading"
+          >
             <div class="waste-card-head">
               <div class="waste-card-title">
                 <span class="waste-step">3</span>
                 <div>
                   <h2 id="waste-point-heading">Titik pengumpulan</h2>
-                  <p>Tersedia bank sampah dan depo binaan terdekat dari lokasimu saat ini.</p>
+                  <p>
+                    Tersedia bank sampah dan depo binaan terdekat dari lokasimu
+                    saat ini.
+                  </p>
                 </div>
               </div>
-              <span class="waste-pill">{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}<span data-gps-state>GPS belum aktif</span></span>
+              <span class="waste-pill"
+                >{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}<span data-gps-state
+                  >GPS belum aktif</span
+                ></span
+              >
             </div>
             <div class="waste-location-toolbar">
               <label class="waste-search-wrap">
                 {% include "components/lucide_icon.html" with name="search" icon_class="waste-search-icon h-4 w-4" only %}
-                <input id="point-search" type="search" placeholder="Cari nama atau alamat titik" autocomplete="off" aria-label="Cari titik pengumpulan">
+                <input
+                  id="point-search"
+                  type="search"
+                  placeholder="Cari nama atau alamat titik"
+                  autocomplete="off"
+                  aria-label="Cari titik pengumpulan"
+                />
               </label>
-              <button id="find-nearest" class="waste-nearest" type="button">{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Cari terdekat</button>
+              <button id="find-nearest" class="waste-nearest" type="button">
+                {% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Cari terdekat
+              </button>
               <div class="waste-radius" role="group" aria-label="Filter jarak">
-                <button type="button" data-radius="2" aria-pressed="false">2 km</button>
-                <button type="button" data-radius="5" aria-pressed="true">5 km</button>
-                <button type="button" data-radius="10" aria-pressed="false">10 km</button>
+                <button type="button" data-radius="2" aria-pressed="false">
+                  2 km
+                </button>
+                <button type="button" data-radius="5" aria-pressed="true">
+                  5 km
+                </button>
+                <button type="button" data-radius="10" aria-pressed="false">
+                  10 km
+                </button>
               </div>
             </div>
             <div class="waste-point-split">
               <div>
                 <div id="point-list" class="waste-point-list">
                   {% for point in form.collection_point.field.queryset %}
-                    <button type="button" class="waste-point-card{% if form.collection_point.value|stringformat:'s' == point.pk|stringformat:'s' %} is-selected{% endif %}" data-point-card data-point-id="{{ point.pk }}" data-point-name="{{ point.name }}" data-point-address="{{ point.address }}" data-point-hours="{{ point.operating_hours }}" data-lat="{{ point.latitude|default_if_none:'' }}" data-lng="{{ point.longitude|default_if_none:'' }}" aria-pressed="{% if form.collection_point.value|stringformat:'s' == point.pk|stringformat:'s' %}true{% else %}false{% endif %}">
-                      <span class="waste-point-name">
-                        <span>{{ point.name }}</span>
-                        <span class="waste-point-check">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %}</span>
-                      </span>
-                      <span class="waste-point-address">{{ point.address }}</span>
-                      <span class="waste-point-meta"><span class="waste-open-tag">Buka</span><span class="waste-distance" data-distance-label>Jarak belum tersedia</span></span>
-                      <span class="waste-point-hours">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}Jam layanan: {{ point.operating_hours|default:"Hubungi titik pengumpulan" }}</span>
-                    </button>
+                  <button
+                    type="button"
+                    class="waste-point-card{% if form.collection_point.value|stringformat:'s' == point.pk|stringformat:'s' %} is-selected{% endif %}"
+                    data-point-card
+                    data-point-id="{{ point.pk }}"
+                    data-point-name="{{ point.name }}"
+                    data-point-address="{{ point.address }}"
+                    data-point-hours="{{ point.operating_hours }}"
+                    data-lat="{{ point.latitude|default_if_none:'' }}"
+                    data-lng="{{ point.longitude|default_if_none:'' }}"
+                    aria-pressed="{% if form.collection_point.value|stringformat:'s' == point.pk|stringformat:'s' %}true{% else %}false{% endif %}"
+                  >
+                    <span class="waste-point-name">
+                      <span>{{ point.name }}</span>
+                      <span class="waste-point-check"
+                        >{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %}</span
+                      >
+                    </span>
+                    <span class="waste-point-address">{{ point.address }}</span>
+                    <span class="waste-point-meta"
+                      ><span class="waste-open-tag">Buka</span
+                      ><span class="waste-distance" data-distance-label
+                        >Jarak belum tersedia</span
+                      ></span
+                    >
+                    <span class="waste-point-hours"
+                      >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}Jam layanan: {{ point.operating_hours|default:"Hubungi titik pengumpulan" }}</span
+                    >
+                  </button>
                   {% empty %}
-                    <div class="waste-point-empty">Belum ada titik pengumpulan aktif yang tersedia.</div>
+                  <div class="waste-point-empty">
+                    Belum ada titik pengumpulan aktif yang tersedia.
+                  </div>
                   {% endfor %}
                 </div>
-                <p id="point-no-results" class="waste-point-empty" hidden>Tidak ada titik pengumpulan yang sesuai dengan pencarianmu.</p>
-                <p id="radius-note" class="waste-filter-note" aria-live="polite" hidden></p>
+                <p id="point-no-results" class="waste-point-empty" hidden>
+                  Tidak ada titik pengumpulan yang sesuai dengan pencarianmu.
+                </p>
+                <p
+                  id="radius-note"
+                  class="waste-filter-note"
+                  aria-live="polite"
+                  hidden
+                ></p>
                 <div class="waste-hidden-field" aria-hidden="true">
                   {{ form.collection_point }}
                 </div>
-                {% if form.collection_point.errors %}<p class="waste-selection-error">{{ form.collection_point.errors|join:", " }}</p>{% endif %}
+                {% if form.collection_point.errors %}
+                <p class="waste-selection-error">
+                  {{ form.collection_point.errors|join:", " }}
+                </p>
+                {% endif %}
               </div>
               <div class="waste-map" aria-label="Peta titik pengumpulan">
-                <div id="waste-point-map" class="leaflet-map" role="region" aria-label="Pilih titik pengumpulan di peta"></div>
-                <button class="waste-map-recenter" type="button" data-map-recenter>{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Pusatkan</button>
+                <div
+                  id="waste-point-map"
+                  class="leaflet-map"
+                  role="region"
+                  aria-label="Pilih titik pengumpulan di peta"
+                ></div>
+                <button
+                  class="waste-map-recenter"
+                  type="button"
+                  data-map-recenter
+                >
+                  {% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Pusatkan
+                </button>
               </div>
             </div>
           </section>
 
-          <section class="waste-card" data-pickup-only aria-labelledby="pickup-address-heading"{% if request.POST.delivery_method != 'minta_dijemput' and request.GET.delivery_method != 'minta_dijemput' %} hidden{% endif %}>
+          <section
+            class="waste-card"
+            data-pickup-only
+            aria-labelledby="pickup-address-heading"
+                  {% if request.POST.delivery_method != "minta_dijemput" and request.GET.delivery_method != "minta_dijemput" %}
+            hidden{% endif %}
+          >
             <div class="waste-card-head">
               <div class="waste-card-title">
                 <span class="waste-step">3</span>
@@ -223,32 +445,70 @@
                   <p>Tentukan lokasi penjemputan barang bekas oleh petugas.</p>
                 </div>
               </div>
-              <span class="waste-pill">{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}Alamat</span>
+              <span class="waste-pill"
+                >{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}Alamat</span
+              >
             </div>
             <div class="waste-pickup-address">
               <div class="waste-pickup-search">
-                <input class="waste-address-control" type="text" value="Pilih alamat penjemputan" disabled aria-label="Alamat penjemputan">
-                <button class="waste-nearest" type="button" disabled>{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Pakai lokasi saya</button>
+                <input
+                  class="waste-address-control"
+                  type="text"
+                  value="Pilih alamat penjemputan"
+                  disabled
+                  aria-label="Alamat penjemputan"
+                />
+                <button class="waste-nearest" type="button" disabled>
+                  {% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Pakai lokasi
+                  saya
+                </button>
               </div>
-              <div class="waste-pickup-map" aria-label="Pratinjau peta penjemputan">
-                <div id="pickup-preview-map" class="leaflet-map" role="region" aria-label="Peta pratinjau lokasi penjemputan" data-latitude="{{ pickup_latitude|default_if_none:'' }}" data-longitude="{{ pickup_longitude|default_if_none:'' }}"></div>
+              <div
+                class="waste-pickup-map"
+                aria-label="Pratinjau peta penjemputan"
+              >
+                <div
+                  id="pickup-preview-map"
+                  class="leaflet-map"
+                  role="region"
+                  aria-label="Peta pratinjau lokasi penjemputan"
+                  data-latitude="{{ pickup_latitude|default_if_none:'' }}"
+                  data-longitude="{{ pickup_longitude|default_if_none:'' }}"
+                ></div>
               </div>
               {{ pickup_form.latitude }}{{ pickup_form.longitude }}
               <div class="waste-address-grid">
                 <div>
-                  <label for="{{ pickup_form.address_detail.id_for_label }}">Detail alamat & patokan</label>
-                  {{ pickup_form.address_detail }}
-                  {% if pickup_form.address_detail.errors %}<p class="waste-field-error">{{ pickup_form.address_detail.errors|join:", " }}</p>{% endif %}
+                  <label for="{{ pickup_form.address_detail.id_for_label }}"
+                    >Detail alamat & patokan</label
+                  >
+                  {{ pickup_form.address_detail }} {% if pickup_form.address_detail.errors %}
+                  <p class="waste-field-error">
+                    {{ pickup_form.address_detail.errors|join:", " }}
+                  </p>
+                  {% endif %}
                 </div>
                 <div>
-                  <label for="{{ pickup_form.contact_phone.id_for_label }}">Nomor HP yang bisa dihubungi</label>
-                  {{ pickup_form.contact_phone }}
-                  {% if pickup_form.contact_phone.errors %}<p class="waste-field-error">{{ pickup_form.contact_phone.errors|join:", " }}</p>{% endif %}
+                  <label for="{{ pickup_form.contact_phone.id_for_label }}"
+                    >Nomor HP yang bisa dihubungi</label
+                  >
+                  {{ pickup_form.contact_phone }} {% if pickup_form.contact_phone.errors %}
+                  <p class="waste-field-error">
+                    {{ pickup_form.contact_phone.errors|join:", " }}
+                  </p>
+                  {% endif %}
+                </div>
               </div>
             </div>
           </section>
 
-          <section class="waste-card" data-pickup-only aria-labelledby="pickup-schedule-heading"{% if request.POST.delivery_method != 'minta_dijemput' and request.GET.delivery_method != 'minta_dijemput' %} hidden{% endif %}>
+          <section
+            class="waste-card"
+            data-pickup-only
+            aria-labelledby="pickup-schedule-heading"
+                  {% if request.POST.delivery_method != "minta_dijemput" and request.GET.delivery_method != "minta_dijemput" %}
+            hidden{% endif %}
+          >
             <div class="waste-card-head">
               <div class="waste-card-title">
                 <span class="waste-step">4</span>
@@ -261,28 +521,91 @@
             {% with date_option=pickup_form.pickup_date_option.value|default:"today" selected_slot=pickup_form.time_slot.value|default:"" %}
             <div class="pt-[18px]">
               <span class="waste-label">Pilih tanggal</span>
-              <input type="hidden" id="pickup-date-option" name="{{ pickup_form.pickup_date_option.html_name }}" value="{{ date_option }}">
+              <input
+                type="hidden"
+                id="pickup-date-option"
+                name="{{ pickup_form.pickup_date_option.html_name }}"
+                value="{{ date_option }}"
+              />
               <div class="waste-dates">
-                <button class="waste-date-button{% if date_option == 'today' %} is-active{% endif %}" type="button" data-date-option="today" aria-pressed="{% if date_option == 'today' %}true{% else %}false{% endif %}">Hari ini</button>
-                <button class="waste-date-button{% if date_option == 'tomorrow' %} is-active{% endif %}" type="button" data-date-option="tomorrow" aria-pressed="{% if date_option == 'tomorrow' %}true{% else %}false{% endif %}">Besok</button>
-                <button class="waste-date-button{% if date_option == 'day_after' %} is-active{% endif %}" type="button" data-date-option="day_after" aria-pressed="{% if date_option == 'day_after' %}true{% else %}false{% endif %}">Lusa</button>
-                <button class="waste-date-button{% if date_option == 'custom' %} is-active{% endif %}" type="button" data-date-option="custom" aria-pressed="{% if date_option == 'custom' %}true{% else %}false{% endif %}">Pilih tanggal lain</button>
+                <button
+                  class="waste-date-button{% if date_option == 'today' %} is-active{% endif %}"
+                  type="button"
+                  data-date-option="today"
+                  aria-pressed="{% if date_option == 'today' %}true{% else %}false{% endif %}"
+                >
+                  Hari ini
+                </button>
+                <button
+                  class="waste-date-button{% if date_option == 'tomorrow' %} is-active{% endif %}"
+                  type="button"
+                  data-date-option="tomorrow"
+                  aria-pressed="{% if date_option == 'tomorrow' %}true{% else %}false{% endif %}"
+                >
+                  Besok
+                </button>
+                <button
+                  class="waste-date-button{% if date_option == 'day_after' %} is-active{% endif %}"
+                  type="button"
+                  data-date-option="day_after"
+                  aria-pressed="{% if date_option == 'day_after' %}true{% else %}false{% endif %}"
+                >
+                  Lusa
+                </button>
+                <button
+                  class="waste-date-button{% if date_option == 'custom' %} is-active{% endif %}"
+                  type="button"
+                  data-date-option="custom"
+                  aria-pressed="{% if date_option == 'custom' %}true{% else %}false{% endif %}"
+                >
+                  Pilih tanggal lain
+                </button>
               </div>
-              <div data-custom-date-wrap{% if date_option != 'custom' %} hidden{% endif %}>
-                <label class="waste-label mt-4" for="{{ pickup_form.custom_date.id_for_label }}">Tanggal lain</label>
-                {{ pickup_form.custom_date }}
-                {% if pickup_form.custom_date.errors %}<p class="waste-field-error">{{ pickup_form.custom_date.errors|join:", " }}</p>{% endif %}
+              <div
+                  data-custom-date-wrap{% if date_option != "custom" %}
+                hidden{% endif %}
+              >
+                <label
+                  class="waste-label mt-4"
+                  for="{{ pickup_form.custom_date.id_for_label }}"
+                  >Tanggal lain</label
+                >
+                {{ pickup_form.custom_date }} {% if pickup_form.custom_date.errors %}
+                <p class="waste-field-error">
+                  {{ pickup_form.custom_date.errors|join:", " }}
+                </p>
+                {% endif %}
               </div>
-              {% if pickup_form.pickup_date_option.errors %}<p class="waste-field-error">{{ pickup_form.pickup_date_option.errors|join:", " }}</p>{% endif %}
+              {% if pickup_form.pickup_date_option.errors %}
+              <p class="waste-field-error">
+                {{ pickup_form.pickup_date_option.errors|join:", " }}
+              </p>
+              {% endif %}
 
               <span class="waste-label mt-4">Pilih rentang waktu</span>
-              <input type="hidden" id="pickup-time-slot" name="{{ pickup_form.time_slot.html_name }}" value="{{ selected_slot }}">
+              <input
+                type="hidden"
+                id="pickup-time-slot"
+                name="{{ pickup_form.time_slot.html_name }}"
+                value="{{ selected_slot }}"
+              />
               <div class="waste-time-slots">
                 {% for value, label in pickup_form.time_slot.field.choices %}
-                  <button class="waste-time-button{% if selected_slot == value %} is-active{% endif %}" type="button" data-time-slot="{{ value }}" aria-pressed="{% if selected_slot == value %}true{% else %}false{% endif %}">{{ label }}</button>
+                <button
+                  class="waste-time-button{% if selected_slot == value %} is-active{% endif %}"
+                  type="button"
+                  data-time-slot="{{ value }}"
+                  aria-pressed="{% if selected_slot == value %}true{% else %}false{% endif %}"
+                >
+                  {{ label }}
+                </button>
                 {% endfor %}
               </div>
-              {% if pickup_form.time_slot.errors %}<p class="waste-field-error">{{ pickup_form.time_slot.errors|join:", " }}</p>{% endif %}
+              {% if pickup_form.time_slot.errors %}
+              <p class="waste-field-error">
+                {{ pickup_form.time_slot.errors|join:", " }}
+              </p>
+              {% endif %}
             </div>
             {% endwith %}
           </section>
@@ -297,73 +620,175 @@
                 </div>
               </div>
             </div>
-            <div class="waste-incentives" role="radiogroup" aria-labelledby="waste-incentive-heading">
-              <label class="waste-incentive-card is-selected" data-incentive-card>
-                <input class="waste-choice-radio" type="radio" name="{{ incentive_form.incentive_allocation.html_name }}" value="wallet" data-incentive-choice {% if incentive_form.incentive_allocation.value != 'donation' %}checked{% endif %}>
+            <div
+              class="waste-incentives"
+              role="radiogroup"
+              aria-labelledby="waste-incentive-heading"
+            >
+              <label
+                class="waste-incentive-card is-selected"
+                data-incentive-card
+              >
+                <input
+                  class="waste-choice-radio"
+                  type="radio"
+                  name="{{ incentive_form.incentive_allocation.html_name }}"
+                  value="wallet"
+                  data-incentive-choice
+                  {% if incentive_form.incentive_allocation.value != "donation" %}checked{% endif %}
+                />
                 <span class="waste-incentive-top">
-                  <span class="waste-icon-box"><span class="font-symbols text-[20px] leading-none" aria-hidden="true">account_balance_wallet</span></span>
-                  <span class="waste-selected-tag">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
+                  <span class="waste-icon-box"
+                    ><span
+                      class="font-symbols text-[20px] leading-none"
+                      aria-hidden="true"
+                      >account_balance_wallet</span
+                    ></span
+                  >
+                  <span class="waste-selected-tag"
+                    >{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span
+                  >
                   <span class="waste-radio-mark" aria-hidden="true"></span>
                 </span>
                 <h3>Terima insentif</h3>
-                <p>Masuk ke saldo dompetmu dan dapat ditarik kapan saja ke rekening bank atau e-wallet.</p>
-                <span class="waste-incentive-foot">{% include "components/lucide_icon.html" with name="check" icon_class="h-3.5 w-3.5" only %}Bebas biaya admin penarikan pertama</span>
+                <p>
+                  Masuk ke saldo dompetmu dan dapat ditarik kapan saja ke
+                  rekening bank atau e-wallet.
+                </p>
+                <span class="waste-incentive-foot"
+                  >{% include "components/lucide_icon.html" with name="check" icon_class="h-3.5 w-3.5" only %}Bebas biaya admin penarikan
+                  pertama</span
+                >
               </label>
               <label class="waste-incentive-card" data-incentive-card>
-                <input class="waste-choice-radio" type="radio" name="{{ incentive_form.incentive_allocation.html_name }}" value="donation" data-incentive-choice {% if incentive_form.incentive_allocation.value == 'donation' %}checked{% endif %}>
+                <input
+                  class="waste-choice-radio"
+                  type="radio"
+                  name="{{ incentive_form.incentive_allocation.html_name }}"
+                  value="donation"
+                  data-incentive-choice
+                  {% if incentive_form.incentive_allocation.value == "donation" %}checked{% endif %}
+                />
                 <span class="waste-incentive-top">
-                  <span class="waste-icon-box">{% include "components/lucide_icon.html" with name="heart" icon_class="h-5 w-5" only %}</span>
-                  <span class="waste-selected-tag">{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span>
+                  <span class="waste-icon-box"
+                    >{% include "components/lucide_icon.html" with name="heart" icon_class="h-5 w-5" only %}</span
+                  >
+                  <span class="waste-selected-tag"
+                    >{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %} Dipilih</span
+                  >
                   <span class="waste-radio-mark" aria-hidden="true"></span>
                 </span>
                 <h3>Donasikan</h3>
-                <p>Salurkan untuk kebaikan program penghijauan dan anak pemulung melalui yayasan mitra terverifikasi SiLoak.</p>
-                <span class="waste-incentive-foot">{% include "components/lucide_icon.html" with name="heart" icon_class="h-3.5 w-3.5" only %}Dapatkan sertifikat digital dampak hijau</span>
+                <p>
+                  Salurkan untuk kebaikan program penghijauan dan anak pemulung
+                  melalui yayasan mitra terverifikasi SiLoak.
+                </p>
+                <span class="waste-incentive-foot"
+                  >{% include "components/lucide_icon.html" with name="heart" icon_class="h-3.5 w-3.5" only %}Dapatkan sertifikat digital
+                  dampak hijau</span
+                >
               </label>
             </div>
-            {% if incentive_form.incentive_allocation.errors %}<p class="waste-field-error">{{ incentive_form.incentive_allocation.errors|join:", " }}</p>{% endif %}
+            {% if incentive_form.incentive_allocation.errors %}
+            <p class="waste-field-error">
+              {{ incentive_form.incentive_allocation.errors|join:", " }}
+            </p>
+            {% endif %}
           </section>
 
           {% if editing %}
-            <div><a class="waste-history-link" href="{% url 'waste:detail' submission.pk %}">Kembali ke rincian pengajuan</a></div>
+          <div>
+            <a
+              class="waste-history-link"
+              href="{% url 'waste:detail' submission.pk %}"
+              >Kembali ke rincian pengajuan</a
+            >
+          </div>
           {% else %}
-            <div><a class="waste-history-link" href="{% url 'waste:submissions' %}">Lihat riwayat setoran</a></div>
+          <div>
+            <a class="waste-history-link" href="{% url 'waste:submissions' %}"
+              >Lihat riwayat setoran</a
+            >
+          </div>
           {% endif %}
         </div>
 
         <aside class="waste-summary-wrap" aria-label="Ringkasan setoran">
           <div class="waste-summary">
             <div class="waste-summary-heading">
-              <div><h2>Ringkasan setoran</h2><p>Periksa kembali rincian setoran sebelum mengajukan.</p></div>
+              <div>
+                <h2>Ringkasan setoran</h2>
+                <p>Periksa kembali rincian setoran sebelum mengajukan.</p>
+              </div>
               <span class="waste-summary-dot"></span>
             </div>
             <div class="waste-summary-section">
               <p class="waste-summary-label">Rincian barang</p>
-              <div id="summary-items" class="waste-summary-items"><p class="waste-summary-empty" data-summary-empty>Belum ada barang yang dipilih.</p></div>
-              <div class="waste-total-weight"><span>Total perkiraan berat:</span><strong data-total-weight>0 kg</strong></div>
+              <div id="summary-items" class="waste-summary-items">
+                <p class="waste-summary-empty" data-summary-empty>
+                  Belum ada barang yang dipilih.
+                </p>
+              </div>
+              <div class="waste-total-weight">
+                <span>Total perkiraan berat:</span
+                ><strong data-total-weight>0 kg</strong>
+              </div>
               <div class="waste-incentive-estimate">
                 <span>Perkiraan insentif</span>
                 <strong data-total-reward>Menunggu tarif</strong>
-                <small>{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %}<span data-summary-incentive>akan masuk ke saldo Dompet</span></small>
+                <small
+                  >{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %}<span data-summary-incentive
+                    >akan masuk ke saldo Dompet</span
+                  ></small
+                >
               </div>
             </div>
             <div class="waste-summary-detail">
-              <span class="waste-summary-detail-icon">{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}</span>
-              <div><strong data-summary-method>Cara menyetor: Antar sendiri</strong><span data-summary-method-note>Tidak ada biaya penjemputan</span></div>
+              <span class="waste-summary-detail-icon"
+                >{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}</span
+              >
+              <div>
+                <strong data-summary-method>Cara menyetor: Antar sendiri</strong
+                ><span data-summary-method-note
+                  >Tidak ada biaya penjemputan</span
+                >
+              </div>
             </div>
             <div class="waste-summary-detail" data-summary-point-row>
-              <span class="waste-summary-detail-icon">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}</span>
-              <div><strong data-summary-point>Titik pengumpulan belum dipilih</strong><span data-summary-point-meta>Pilih titik untuk melihat alamat dan jam layanan.</span></div>
+              <span class="waste-summary-detail-icon"
+                >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}</span
+              >
+              <div>
+                <strong data-summary-point
+                  >Titik pengumpulan belum dipilih</strong
+                ><span data-summary-point-meta
+                  >Pilih titik untuk melihat alamat dan jam layanan.</span
+                >
+              </div>
             </div>
             <div class="waste-summary-detail" data-summary-pickup-row hidden>
-              <span class="waste-summary-detail-icon">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}</span>
-              <div><strong data-summary-pickup-address>Alamat penjemputan belum diisi</strong><span data-summary-pickup-schedule>Jadwal belum dipilih</span></div>
+              <span class="waste-summary-detail-icon"
+                >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3.5 w-3.5" only %}</span
+              >
+              <div>
+                <strong data-summary-pickup-address
+                  >Alamat penjemputan belum diisi</strong
+                ><span data-summary-pickup-schedule>Jadwal belum dipilih</span>
+              </div>
             </div>
             <button id="submit-waste" class="waste-submit" type="submit">
-              <span data-submit-label>{% if editing %}Simpan perubahan{% else %}Buat pengajuan{% endif %}</span>
-              <span data-submit-arrow>{% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-4 w-4" only %}</span>
+              <span data-submit-label
+                >{% if editing %}Simpan perubahan{% else %}Buat pengajuan{% endif %}</span
+              >
+              <span data-submit-arrow
+                >{% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-4 w-4" only %}</span
+              >
             </button>
-            <a class="waste-cancel" href="{% if editing %}{% url 'waste:detail' submission.pk %}{% else %}{% url 'waste:submissions' %}{% endif %}">Batal</a>
+            <a
+              class="waste-cancel"
+              href="{% if editing %}{% url 'waste:detail' submission.pk %}{% else %}{% url 'waste:submissions' %}{% endif %}"
+              >Batal</a
+            >
           </div>
         </aside>
       </div>
@@ -383,14 +808,22 @@
     const emptyTemplate = document.getElementById("empty-item-form");
     const maxForms = Number(maxFormsInput && maxFormsInput.value) || 6;
     const collectionSelect = document.getElementById("id_collection_point");
-    const pointCards = Array.from(document.querySelectorAll("[data-point-card]"));
+    const pointCards = Array.from(
+      document.querySelectorAll("[data-point-card]"),
+    );
     const pointMarkers = new Map();
-    const radiusButtons = Array.from(document.querySelectorAll("[data-radius]"));
+    const radiusButtons = Array.from(
+      document.querySelectorAll("[data-radius]"),
+    );
     const pointSearch = document.getElementById("point-search");
     const radiusNote = document.getElementById("radius-note");
     const gpsState = document.querySelector("[data-gps-state]");
-    const deliveryInputs = Array.from(document.querySelectorAll("[data-delivery-mode]"));
-    const methodCards = Array.from(document.querySelectorAll("[data-method-card]"));
+    const deliveryInputs = Array.from(
+      document.querySelectorAll("[data-delivery-mode]"),
+    );
+    const methodCards = Array.from(
+      document.querySelectorAll("[data-method-card]"),
+    );
     const submitButton = document.getElementById("submit-waste");
     const submitLabel = submitButton.querySelector("[data-submit-label]");
     const submitArrow = submitButton.querySelector("[data-submit-arrow]");
@@ -404,7 +837,8 @@
       latitude: card.dataset.lat,
       longitude: card.dataset.lng,
     }));
-    const mapState = window.SiloakMaps && SiloakMaps.createMap(mapElement, mapPoints);
+    const mapState =
+      window.SiloakMaps && SiloakMaps.createMap(mapElement, mapPoints);
     const collectionMap = mapState && mapState.map;
     if (mapState) {
       mapState.markers.forEach((marker, id) => {
@@ -420,8 +854,12 @@
 
     const pickupDateInput = document.getElementById("pickup-date-option");
     const pickupTimeInput = document.getElementById("pickup-time-slot");
-    const dateButtons = Array.from(document.querySelectorAll("[data-date-option]"));
-    const timeButtons = Array.from(document.querySelectorAll("[data-time-slot]"));
+    const dateButtons = Array.from(
+      document.querySelectorAll("[data-date-option]"),
+    );
+    const timeButtons = Array.from(
+      document.querySelectorAll("[data-time-slot]"),
+    );
     const customDateWrap = document.querySelector("[data-custom-date-wrap]");
     const addressInput = document.getElementById("id_address_detail");
     const customDateInput = document.getElementById("id_custom_date");
@@ -431,14 +869,21 @@
       pickupLatInput.value = latitude.toFixed(6);
       pickupLngInput.value = longitude.toFixed(6);
       if (pickupMarker) pickupMarker.setLatLng([latitude, longitude]);
-      else pickupMarker = L.marker([latitude, longitude]).addTo(pickupMap).bindPopup("Lokasi penjemputan");
+      else
+        pickupMarker = L.marker([latitude, longitude])
+          .addTo(pickupMap)
+          .bindPopup("Lokasi penjemputan");
       if (center) pickupMap.setView([latitude, longitude], 16);
     }
 
     if (pickupPreview && window.L) {
       const latitude = Number(pickupPreview.dataset.latitude);
       const longitude = Number(pickupPreview.dataset.longitude);
-      const hasCoordinates = Number.isFinite(latitude) && Number.isFinite(longitude) && pickupPreview.dataset.latitude && pickupPreview.dataset.longitude;
+      const hasCoordinates =
+        Number.isFinite(latitude) &&
+        Number.isFinite(longitude) &&
+        pickupPreview.dataset.latitude &&
+        pickupPreview.dataset.longitude;
       const pickupMapState = SiloakMaps.createMap(pickupPreview, [], {
         center: hasCoordinates ? [latitude, longitude] : [-6.4025, 106.7942],
         zoom: hasCoordinates ? 15 : 11,
@@ -446,14 +891,21 @@
       pickupMap = pickupMapState ? pickupMapState.map : null;
       if (pickupMap) {
         if (hasCoordinates) setPickupLocation(latitude, longitude, false);
-        pickupMap.on("click", (event) => setPickupLocation(event.latlng.lat, event.latlng.lng, false));
+        pickupMap.on("click", (event) =>
+          setPickupLocation(event.latlng.lat, event.latlng.lng, false),
+        );
       }
     }
     let currentRadius = 5;
     let userPosition = null;
 
     function currency(value) {
-      return "Rp " + new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(value);
+      return (
+        "Rp " +
+        new Intl.NumberFormat("id-ID", { maximumFractionDigits: 0 }).format(
+          value,
+        )
+      );
     }
 
     function selectedMethod() {
@@ -463,21 +915,32 @@
 
     function updateMode() {
       const pickup = selectedMethod() === "minta_dijemput";
-      document.querySelectorAll("[data-self-only]").forEach((section) => { section.hidden = pickup; });
-      document.querySelectorAll("[data-pickup-only]").forEach((section) => { section.hidden = !pickup; });
+      document.querySelectorAll("[data-self-only]").forEach((section) => {
+        section.hidden = pickup;
+      });
+      document.querySelectorAll("[data-pickup-only]").forEach((section) => {
+        section.hidden = !pickup;
+      });
       methodCards.forEach((card) => {
         const input = card.querySelector("[data-delivery-mode]");
         card.classList.toggle("is-selected", Boolean(input && input.checked));
         card.classList.toggle("is-inactive", Boolean(input && !input.checked));
       });
-      document.querySelector("[data-incentive-step]").textContent = pickup ? "5" : "4";
-      document.querySelector("[data-summary-method]").textContent = pickup ? "Cara menyetor: Minta dijemput" : "Cara menyetor: Antar sendiri";
-      document.querySelector("[data-summary-method-note]").textContent = "Tidak ada biaya penjemputan";
+      document.querySelector("[data-incentive-step]").textContent = pickup
+        ? "5"
+        : "4";
+      document.querySelector("[data-summary-method]").textContent = pickup
+        ? "Cara menyetor: Minta dijemput"
+        : "Cara menyetor: Antar sendiri";
+      document.querySelector("[data-summary-method-note]").textContent =
+        "Tidak ada biaya penjemputan";
       document.querySelector("[data-summary-point-row]").hidden = pickup;
       document.querySelector("[data-summary-pickup-row]").hidden = !pickup;
       submitLabel.textContent = pickup
         ? "Ajukan penjemputan"
-        : (form.dataset.editing === "true" ? "Simpan perubahan" : "Buat pengajuan");
+        : form.dataset.editing === "true"
+          ? "Simpan perubahan"
+          : "Buat pengajuan";
       if (pickup) updatePickupSummary();
       window.setTimeout(() => {
         if (pickup && pickupMap) pickupMap.invalidateSize();
@@ -485,7 +948,9 @@
       }, 0);
     }
 
-    deliveryInputs.forEach((input) => input.addEventListener("change", updateMode));
+    deliveryInputs.forEach((input) =>
+      input.addEventListener("change", updateMode),
+    );
 
     function rateFromOption(option) {
       if (!option || !option.value) return null;
@@ -493,7 +958,12 @@
       const marker = " — Rp ";
       const markerIndex = label.lastIndexOf(marker);
       if (markerIndex < 0 || !label.endsWith("/kg")) return null;
-      const numeric = label.slice(markerIndex + marker.length, -3).split(".").join("").split(",").join("");
+      const numeric = label
+        .slice(markerIndex + marker.length, -3)
+        .split(".")
+        .join("")
+        .split(",")
+        .join("");
       const parsed = Number(numeric);
       return Number.isFinite(parsed) ? parsed : null;
     }
@@ -520,19 +990,39 @@
       const weight = Number(weightInput && weightInput.value) || 0;
       const label = labelFromOption(option);
       const currentType = select ? select.value : "";
-      const snapshotRate = row.dataset.initialWasteType === currentType ? Number(row.dataset.snapshotRate) : NaN;
-      const rate = Number.isFinite(snapshotRate) && row.dataset.snapshotRate !== "" ? snapshotRate : rateFromOption(option);
+      const snapshotRate =
+        row.dataset.initialWasteType === currentType
+          ? Number(row.dataset.snapshotRate)
+          : NaN;
+      const rate =
+        Number.isFinite(snapshotRate) && row.dataset.snapshotRate !== ""
+          ? snapshotRate
+          : rateFromOption(option);
       const subtotal = row.querySelector("[data-item-subtotal]");
       const rateNote = row.querySelector("[data-item-rate-note] strong");
-      if (subtotal) subtotal.textContent = rate === null ? "—" : currency(weight * rate);
-      if (rateNote) rateNote.textContent = rate === null ? (label ? "Menunggu konfirmasi" : "Menunggu pilihan") : currency(rate) + " / kg";
-      return { label, weight, rate, subtotal: rate === null ? null : weight * rate };
+      if (subtotal)
+        subtotal.textContent = rate === null ? "—" : currency(weight * rate);
+      if (rateNote)
+        rateNote.textContent =
+          rate === null
+            ? label
+              ? "Menunggu konfirmasi"
+              : "Menunggu pilihan"
+            : currency(rate) + " / kg";
+      return {
+        label,
+        weight,
+        rate,
+        subtotal: rate === null ? null : weight * rate,
+      };
     }
 
     function updateSummaryItems() {
       const summary = document.getElementById("summary-items");
       const empty = summary.querySelector("[data-summary-empty]");
-      summary.querySelectorAll("[data-generated-summary-item]").forEach((item) => item.remove());
+      summary
+        .querySelectorAll("[data-generated-summary-item]")
+        .forEach((item) => item.remove());
       let totalWeight = 0;
       let totalReward = 0;
       let completeReward = true;
@@ -552,35 +1042,52 @@
         const name = document.createElement("strong");
         name.textContent = item.label;
         const info = document.createElement("span");
-        info.textContent = item.weight.toLocaleString("id-ID", { maximumFractionDigits: 2 }) + " kg × " + (item.rate === null ? "tarif menunggu konfirmasi" : currency(item.rate));
+        info.textContent =
+          item.weight.toLocaleString("id-ID", { maximumFractionDigits: 2 }) +
+          " kg × " +
+          (item.rate === null
+            ? "tarif menunggu konfirmasi"
+            : currency(item.rate));
         left.append(name, info);
         const amount = document.createElement("b");
-        amount.textContent = item.subtotal === null ? "—" : currency(item.subtotal);
+        amount.textContent =
+          item.subtotal === null ? "—" : currency(item.subtotal);
         wrapper.append(left, amount);
         summary.append(wrapper);
       });
       if (empty) empty.hidden = visibleCount > 0;
-      document.querySelector("[data-total-weight]").textContent = totalWeight.toLocaleString("id-ID", { maximumFractionDigits: 2 }) + " kg";
-      document.querySelector("[data-total-reward]").textContent = completeReward && visibleCount ? currency(totalReward) : "Menunggu tarif";
+      document.querySelector("[data-total-weight]").textContent =
+        totalWeight.toLocaleString("id-ID", { maximumFractionDigits: 2 }) +
+        " kg";
+      document.querySelector("[data-total-reward]").textContent =
+        completeReward && visibleCount
+          ? currency(totalReward)
+          : "Menunggu tarif";
     }
 
     function syncItemControls() {
       const visible = activeItemRows();
       addItemButton.disabled = visible.length >= maxForms;
-      addItemButton.setAttribute("aria-disabled", String(addItemButton.disabled));
+      addItemButton.setAttribute(
+        "aria-disabled",
+        String(addItemButton.disabled),
+      );
       addItemButton.classList.toggle("opacity-50", addItemButton.disabled);
       itemRows().forEach((row) => {
         const button = row.querySelector("[data-remove-item]");
-        if (button) button.hidden = visible.length <= 1 && row.dataset.deleted !== "true";
+        if (button)
+          button.hidden = visible.length <= 1 && row.dataset.deleted !== "true";
       });
       updateSummaryItems();
     }
 
     itemContainer.addEventListener("input", (event) => {
-      if (event.target.matches('input[name$="-estimated_weight"]')) updateSummaryItems();
+      if (event.target.matches('input[name$="-estimated_weight"]'))
+        updateSummaryItems();
     });
     itemContainer.addEventListener("change", (event) => {
-      if (event.target.matches('select[name$="-waste_type"]')) updateSummaryItems();
+      if (event.target.matches('select[name$="-waste_type"]'))
+        updateSummaryItems();
     });
     itemContainer.addEventListener("click", (event) => {
       const button = event.target.closest("[data-remove-item]");
@@ -596,7 +1103,10 @@
       if (activeItemRows().length >= maxForms) return;
       const index = Number(totalForms.value);
       const wrapper = document.createElement("div");
-      wrapper.innerHTML = emptyTemplate.innerHTML.replaceAll("__prefix__", String(index));
+      wrapper.innerHTML = emptyTemplate.innerHTML.replaceAll(
+        "__prefix__",
+        String(index),
+      );
       const row = wrapper.firstElementChild;
       itemContainer.append(row);
       totalForms.value = String(index + 1);
@@ -612,12 +1122,15 @@
     syncItemControls();
 
     function haversine(lat1, lng1, lat2, lng2) {
-      const radians = (value) => value * Math.PI / 180;
+      const radians = (value) => (value * Math.PI) / 180;
       const dLat = radians(lat2 - lat1);
       const dLng = radians(lng2 - lng1);
-      const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(radians(lat1)) * Math.cos(radians(lat2)) *
-        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(radians(lat1)) *
+          Math.cos(radians(lat2)) *
+          Math.sin(dLng / 2) *
+          Math.sin(dLng / 2);
       return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
     }
 
@@ -625,7 +1138,13 @@
       if (!userPosition) return null;
       const lat = Number(card.dataset.lat);
       const lng = Number(card.dataset.lng);
-      if (!Number.isFinite(lat) || !Number.isFinite(lng) || !card.dataset.lat || !card.dataset.lng) return null;
+      if (
+        !Number.isFinite(lat) ||
+        !Number.isFinite(lng) ||
+        !card.dataset.lat ||
+        !card.dataset.lng
+      )
+        return null;
       return haversine(userPosition.latitude, userPosition.longitude, lat, lng);
     }
 
@@ -633,9 +1152,15 @@
       const query = pointSearch.value.trim().toLocaleLowerCase("id");
       let visible = 0;
       let unknownDistances = 0;
-      const missingPointCoordinates = pointCards.filter((card) => !card.dataset.lat || !card.dataset.lng).length;
+      const missingPointCoordinates = pointCards.filter(
+        (card) => !card.dataset.lat || !card.dataset.lng,
+      ).length;
       pointCards.forEach((card) => {
-        const text = (card.dataset.pointName + " " + card.dataset.pointAddress).toLocaleLowerCase("id");
+        const text = (
+          card.dataset.pointName +
+          " " +
+          card.dataset.pointAddress
+        ).toLocaleLowerCase("id");
         const distance = distanceFor(card);
         const matchesText = !query || text.includes(query);
         const matchesRadius = distance === null || distance <= currentRadius;
@@ -644,23 +1169,33 @@
         if (distance === null && matchesText) unknownDistances += 1;
         card.dataset.distanceKm = distance === null ? "" : String(distance);
         const distanceLabel = card.querySelector("[data-distance-label]");
-        if (distanceLabel) distanceLabel.textContent = distance === null ? "Jarak belum tersedia" : distance.toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " km dari kamu";
+        if (distanceLabel)
+          distanceLabel.textContent =
+            distance === null
+              ? "Jarak belum tersedia"
+              : distance.toLocaleString("id-ID", { maximumFractionDigits: 1 }) +
+                " km dari kamu";
       });
       pointMarkers.forEach((marker, id) => {
         const card = pointCards.find((item) => item.dataset.pointId === id);
         if (!card || card.hidden) marker.removeFrom(collectionMap);
-        else if (collectionMap && !collectionMap.hasLayer(marker)) marker.addTo(collectionMap);
+        else if (collectionMap && !collectionMap.hasLayer(marker))
+          marker.addTo(collectionMap);
       });
       document.getElementById("point-no-results").hidden = visible > 0;
       if (unknownDistances && userPosition) {
-        radiusNote.textContent = missingPointCoordinates > 0 && missingPointCoordinates === pointCards.length
-          ? "Koordinat titik pengumpulan belum diatur; pencarian terdekat dan filter jarak belum tersedia."
-          : "Jarak beberapa titik belum tersedia karena koordinatnya belum diatur.";
+        radiusNote.textContent =
+          missingPointCoordinates > 0 &&
+          missingPointCoordinates === pointCards.length
+            ? "Koordinat titik pengumpulan belum diatur; pencarian terdekat dan filter jarak belum tersedia."
+            : "Jarak beberapa titik belum tersedia karena koordinatnya belum diatur.";
         radiusNote.hidden = false;
       } else if (!userPosition) {
-        radiusNote.textContent = missingPointCoordinates > 0 && missingPointCoordinates === pointCards.length
-          ? "Aktifkan lokasi; pencarian jarak juga memerlukan koordinat titik pengumpulan."
-          : "Aktifkan lokasi untuk menyaring titik berdasarkan jarak.";
+        radiusNote.textContent =
+          missingPointCoordinates > 0 &&
+          missingPointCoordinates === pointCards.length
+            ? "Aktifkan lokasi; pencarian jarak juga memerlukan koordinat titik pengumpulan."
+            : "Aktifkan lokasi untuk menyaring titik berdasarkan jarak.";
         radiusNote.hidden = false;
       } else {
         radiusNote.hidden = true;
@@ -680,85 +1215,151 @@
       if (marker && collectionMap) {
         if (mapState) mapState.selectPoint(id, { center: true });
       }
-      document.querySelector("[data-summary-point]").textContent = card.dataset.pointName;
+      document.querySelector("[data-summary-point]").textContent =
+        card.dataset.pointName;
       const distance = distanceFor(card);
-      const distanceText = distance === null ? "" : " · " + distance.toLocaleString("id-ID", { maximumFractionDigits: 1 }) + " km dari kamu";
+      const distanceText =
+        distance === null
+          ? ""
+          : " · " +
+            distance.toLocaleString("id-ID", { maximumFractionDigits: 1 }) +
+            " km dari kamu";
       const hours = card.dataset.pointHours || "Jam layanan belum tersedia";
-      document.querySelector("[data-summary-point-meta]").textContent = card.dataset.pointAddress + " (" + hours + ")" + distanceText;
-      if (document.activeElement !== card) card.setAttribute("aria-pressed", "true");
+      document.querySelector("[data-summary-point-meta]").textContent =
+        card.dataset.pointAddress + " (" + hours + ")" + distanceText;
+      if (document.activeElement !== card)
+        card.setAttribute("aria-pressed", "true");
     }
 
     pointCards.forEach((card) => {
       card.addEventListener("click", () => selectPoint(card.dataset.pointId));
     });
-    if (collectionSelect && collectionSelect.value) selectPoint(collectionSelect.value || selectedPointId);
+    if (collectionSelect && collectionSelect.value)
+      selectPoint(collectionSelect.value || selectedPointId);
     pointSearch.addEventListener("input", applyPointFilters);
-    radiusButtons.forEach((button) => button.addEventListener("click", () => {
-      currentRadius = Number(button.dataset.radius);
-      radiusButtons.forEach((item) => item.setAttribute("aria-pressed", String(item === button)));
-      applyPointFilters();
-    }));
+    radiusButtons.forEach((button) =>
+      button.addEventListener("click", () => {
+        currentRadius = Number(button.dataset.radius);
+        radiusButtons.forEach((item) =>
+          item.setAttribute("aria-pressed", String(item === button)),
+        );
+        applyPointFilters();
+      }),
+    );
 
     document.getElementById("find-nearest").addEventListener("click", () => {
       if (!navigator.geolocation) {
         gpsState.textContent = "GPS tidak tersedia";
-        radiusNote.textContent = "Browser ini tidak menyediakan lokasi. Cari titik berdasarkan nama atau alamat.";
+        radiusNote.textContent =
+          "Browser ini tidak menyediakan lokasi. Cari titik berdasarkan nama atau alamat.";
         radiusNote.hidden = false;
         return;
       }
       gpsState.textContent = "Mencari lokasi…";
-      navigator.geolocation.getCurrentPosition((position) => {
-        userPosition = { latitude: position.coords.latitude, longitude: position.coords.longitude };
-        gpsState.textContent = "GPS Aktif";
-        const withCoordinates = pointCards.filter((card) => distanceFor(card) !== null);
-        withCoordinates.sort((a, b) => distanceFor(a) - distanceFor(b));
-        if (withCoordinates.length) selectPoint(withCoordinates[0].dataset.pointId);
-        applyPointFilters();
-      }, () => {
-        gpsState.textContent = "GPS belum aktif";
-        radiusNote.textContent = "Lokasi tidak dapat diakses. Kamu tetap bisa mencari dan memilih titik secara manual.";
-        radiusNote.hidden = false;
-      }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 });
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          userPosition = {
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+          };
+          gpsState.textContent = "GPS Aktif";
+          const withCoordinates = pointCards.filter(
+            (card) => distanceFor(card) !== null,
+          );
+          withCoordinates.sort((a, b) => distanceFor(a) - distanceFor(b));
+          if (withCoordinates.length)
+            selectPoint(withCoordinates[0].dataset.pointId);
+          applyPointFilters();
+        },
+        () => {
+          gpsState.textContent = "GPS belum aktif";
+          radiusNote.textContent =
+            "Lokasi tidak dapat diakses. Kamu tetap bisa mencari dan memilih titik secara manual.";
+          radiusNote.hidden = false;
+        },
+        { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+      );
     });
 
-    document.querySelector("[data-map-recenter]").addEventListener("click", () => {
-      if (collectionSelect && collectionSelect.value) selectPoint(collectionSelect.value);
-      else if (collectionMap && pointMarkers.size) collectionMap.fitBounds(Array.from(pointMarkers.values()).map((marker) => marker.getLatLng()), { padding: [24, 24] });
-    });
+    document
+      .querySelector("[data-map-recenter]")
+      .addEventListener("click", () => {
+        if (collectionSelect && collectionSelect.value)
+          selectPoint(collectionSelect.value);
+        else if (collectionMap && pointMarkers.size)
+          collectionMap.fitBounds(
+            Array.from(pointMarkers.values()).map((marker) =>
+              marker.getLatLng(),
+            ),
+            { padding: [24, 24] },
+          );
+      });
 
-    const incentiveInputs = Array.from(document.querySelectorAll("[data-incentive-choice]"));
-    const incentiveCards = Array.from(document.querySelectorAll("[data-incentive-card]"));
+    const incentiveInputs = Array.from(
+      document.querySelectorAll("[data-incentive-choice]"),
+    );
+    const incentiveCards = Array.from(
+      document.querySelectorAll("[data-incentive-card]"),
+    );
     function updateIncentive() {
       incentiveCards.forEach((card) => {
         const input = card.querySelector("[data-incentive-choice]");
         card.classList.toggle("is-selected", Boolean(input && input.checked));
       });
       const selected = incentiveInputs.find((input) => input.checked);
-      document.querySelector("[data-summary-incentive]").textContent = selected && selected.value === "donation" ? "akan didonasikan melalui mitra SiLoak" : "akan masuk ke saldo Dompet";
+      document.querySelector("[data-summary-incentive]").textContent =
+        selected && selected.value === "donation"
+          ? "akan didonasikan melalui mitra SiLoak"
+          : "akan masuk ke saldo Dompet";
     }
-    incentiveInputs.forEach((input) => input.addEventListener("change", updateIncentive));
+    incentiveInputs.forEach((input) =>
+      input.addEventListener("change", updateIncentive),
+    );
     updateIncentive();
 
     function updatePickupSummary() {
       const addressEl = document.querySelector("[data-summary-pickup-address]");
-      const scheduleEl = document.querySelector("[data-summary-pickup-schedule]");
-      if (!pickupDateInput || !pickupTimeInput || !addressEl || !scheduleEl) return;
+      const scheduleEl = document.querySelector(
+        "[data-summary-pickup-schedule]",
+      );
+      if (!pickupDateInput || !pickupTimeInput || !addressEl || !scheduleEl)
+        return;
       const address = addressInput ? addressInput.value.trim() : "";
       let dateText = "";
       if (pickupDateInput.value === "custom") {
         if (customDateInput && customDateInput.value) {
-          dateText = new Date(customDateInput.value + "T00:00:00").toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" });
+          dateText = new Date(
+            customDateInput.value + "T00:00:00",
+          ).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          });
         }
       } else {
-        const activeDate = dateButtons.find((button) => button.dataset.dateOption === pickupDateInput.value);
+        const activeDate = dateButtons.find(
+          (button) => button.dataset.dateOption === pickupDateInput.value,
+        );
         dateText = activeDate ? activeDate.textContent.trim() : "";
       }
-      const activeTime = timeButtons.find((button) => button.dataset.timeSlot === pickupTimeInput.value);
-      const schedule = [dateText, activeTime ? activeTime.textContent.trim() : ""].filter(Boolean).join(", ");
-      addressEl.textContent = address ? (address.length > 60 ? address.slice(0, 57) + "…" : address) : "Alamat penjemputan belum diisi";
+      const activeTime = timeButtons.find(
+        (button) => button.dataset.timeSlot === pickupTimeInput.value,
+      );
+      const schedule = [
+        dateText,
+        activeTime ? activeTime.textContent.trim() : "",
+      ]
+        .filter(Boolean)
+        .join(", ");
+      addressEl.textContent = address
+        ? address.length > 60
+          ? address.slice(0, 57) + "…"
+          : address
+        : "Alamat penjemputan belum diisi";
       scheduleEl.textContent = schedule || "Jadwal belum dipilih";
       if (selectedMethod() === "minta_dijemput") {
-        document.querySelector("[data-summary-method-note]").textContent = schedule ? "Dijemput " + schedule : "Jadwal penjemputan belum diatur";
+        document.querySelector("[data-summary-method-note]").textContent =
+          schedule ? "Dijemput " + schedule : "Jadwal penjemputan belum diatur";
       }
     }
 
@@ -774,22 +1375,31 @@
         button.classList.toggle("is-active", active);
         button.setAttribute("aria-pressed", String(active));
       });
-      if (customDateWrap) customDateWrap.hidden = pickupDateInput.value !== "custom";
+      if (customDateWrap)
+        customDateWrap.hidden = pickupDateInput.value !== "custom";
       updatePickupSummary();
     }
 
-    dateButtons.forEach((button) => button.addEventListener("click", () => {
-      pickupDateInput.value = button.dataset.dateOption;
-      updateSchedule();
-    }));
-    timeButtons.forEach((button) => button.addEventListener("click", () => {
-      pickupTimeInput.value = button.dataset.timeSlot;
-      updateSchedule();
-    }));
-    if (addressInput) addressInput.addEventListener("input", updatePickupSummary);
-    if (customDateInput) customDateInput.addEventListener("input", updatePickupSummary);
+    dateButtons.forEach((button) =>
+      button.addEventListener("click", () => {
+        pickupDateInput.value = button.dataset.dateOption;
+        updateSchedule();
+      }),
+    );
+    timeButtons.forEach((button) =>
+      button.addEventListener("click", () => {
+        pickupTimeInput.value = button.dataset.timeSlot;
+        updateSchedule();
+      }),
+    );
+    if (addressInput)
+      addressInput.addEventListener("input", updatePickupSummary);
+    if (customDateInput)
+      customDateInput.addEventListener("input", updatePickupSummary);
 
-    const useLocationButton = document.querySelector("[data-pickup-use-location]");
+    const useLocationButton = document.querySelector(
+      "[data-pickup-use-location]",
+    );
     const locationNote = document.querySelector("[data-pickup-location-note]");
     function showLocationNote(message) {
       if (!locationNote) return;
@@ -799,16 +1409,28 @@
     if (useLocationButton) {
       useLocationButton.addEventListener("click", () => {
         if (!navigator.geolocation) {
-          showLocationNote("Browser ini tidak menyediakan lokasi. Klik peta untuk menandai lokasimu.");
+          showLocationNote(
+            "Browser ini tidak menyediakan lokasi. Klik peta untuk menandai lokasimu.",
+          );
           return;
         }
         showLocationNote("Mencari lokasi…");
-        navigator.geolocation.getCurrentPosition((position) => {
-          setPickupLocation(position.coords.latitude, position.coords.longitude, true);
-          showLocationNote("");
-        }, () => {
-          showLocationNote("Lokasi tidak dapat diakses. Klik peta untuk menandai lokasimu.");
-        }, { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 });
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            setPickupLocation(
+              position.coords.latitude,
+              position.coords.longitude,
+              true,
+            );
+            showLocationNote("");
+          },
+          () => {
+            showLocationNote(
+              "Lokasi tidak dapat diakses. Klik peta untuk menandai lokasimu.",
+            );
+          },
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 300000 },
+        );
       });
     }
 

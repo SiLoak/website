@@ -1,219 +1,481 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}Titik Pengumpulan · SiLoak{% endblock %}
-{% block extra_head %}
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}">
+{% extends "base.html" %} {% load static %} {% block title %}Titik Pengumpulan ·
+SiLoak{% endblock %} {% block extra_head %}
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{% static 'js/leaflet-maps.js' %}"></script>
-{% endblock %}
-{% block content %}
-{% include "components/navbar.html" with active_item="location" %}
-<main id="main-content" class="w-full min-h-screen bg-page-bg"><div class="flex flex-col w-full">
-<div class="max-w-[1200px] w-full mx-auto px-margin-mobile lg:px-margin py-space-lg flex flex-col gap-space-lg">
-<!-- 1. PAGE HEADER -->
-<header class="flex flex-col gap-space-xs">
-<div class="flex items-center gap-space-sm text-label-sm font-label-sm text-text-body/75">
-<a class="hover:text-primary transition-colors" href="/dashboard/">Beranda</a>
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[14px]">chevron_right</span>
-<span class="text-text-primary font-medium">Titik Pengumpulan</span>
-</div>
-<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-space-xs">
-<div>
-<h1 class="font-headline-lg text-headline-lg text-text-primary tracking-tight font-semibold">Titik Pengumpulan</h1>
-<p class="font-body-md text-body-md text-text-body/90 mt-1">Temukan titik pengumpulan terdekat, lihat jam buka dan jenis barang yang diterima.</p>
-</div>
-<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm self-start sm:self-auto">
-<span class="w-2 h-2 rounded-full bg-status-success-text animate-pulse"></span>
-<span>5 Lokasi Aktif di Sekitarmu</span>
-</div>
-</div>
-</header>
-<!-- 2. SEARCH & FILTER BAR -->
-<section class="bg-surface-card rounded-xl border border-border-slate p-space-md lg:p-5 shadow-sm">
-<!-- Top Row -->
-<div class="flex flex-col sm:flex-row items-center gap-space-sm">
-<div class="relative w-full flex-1">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] absolute left-3.5 top-1/2 -translate-y-1/2 text-text-body/60 text-[20px]">search</span>
-<input class="w-full h-11 pl-11 pr-4 bg-surface-card rounded-lg border border-border-slate font-body-md text-body-md text-text-primary placeholder:text-text-body/50 focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all" placeholder="Cari berdasarkan alamat atau nama tempat" type="text" value="Pasar Minggu, Jakarta Selatan">
-</div>
-<button id="location-find-nearest" data-find-nearest="location-map" data-find-nearest-status="location-nearest-status" class="w-full sm:w-auto h-11 px-4 rounded-lg border border-primary-container text-primary-container bg-surface-card hover:bg-surface-soft font-label-lg text-label-lg flex items-center justify-center gap-2 transition-colors shrink-0" type="button">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[19px]">my_location</span>
-<span>Cari yang terdekat</span>
-</button>
-</div>
-<!-- Bottom Row (Filters) -->
-<div class="flex flex-wrap items-center justify-between gap-3 pt-3.5 mt-3 border-t border-border-slate">
-<div class="flex flex-wrap items-center gap-2.5">
-<!-- Distance Segmented Control -->
-<div class="flex items-center bg-surface-soft p-0.5 rounded-lg border border-border-slate text-label-sm font-label-sm">
-<button class="px-3 py-1 rounded-md text-text-body hover:text-text-primary transition-colors" type="button">2 km</button>
-<button class="px-3 py-1 rounded-md bg-primary-container text-on-primary font-medium shadow-xs" type="button">5 km</button>
-<button class="px-3 py-1 rounded-md text-text-body hover:text-text-primary transition-colors" type="button">10 km</button>
-</div>
-<!-- Open Now Toggle Chip -->
-<button class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border font-label-sm text-label-sm hover:brightness-95 transition-all" type="button">
-<span class="w-1.5 h-1.5 rounded-full bg-status-success-text"></span>
-<span>Buka sekarang</span>
-</button>
-<!-- Waste Type Dropdown -->
-<div class="relative">
-<button class="h-8 px-3 rounded-lg border border-border-slate bg-surface-card font-label-sm text-label-sm text-text-body flex items-center gap-1.5 hover:bg-surface-soft transition-colors" type="button">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70">recycling</span>
-<span>Jenis barang</span>
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70">expand_more</span>
-</button>
-</div>
-<!-- Sort Dropdown -->
-<div class="relative">
-<button class="h-8 px-3 rounded-lg border border-border-slate bg-surface-card font-label-sm text-label-sm text-text-body flex items-center gap-1.5 hover:bg-surface-soft transition-colors" type="button">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70">sort</span>
-<span>Urutkan: Terdekat</span>
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70">expand_more</span>
-</button>
-</div>
-</div>
-<!-- Reset Button -->
-<button class="font-label-sm text-label-sm text-primary-container font-medium hover:underline flex items-center gap-1" type="button">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[15px]">refresh</span>
-<span>Atur ulang</span>
-</button>
-</div>
-</section>
-<!-- 3. SPLIT VIEW CONTAINER (List + Interactive Canvas Map) -->
-<section class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg h-auto lg:h-[640px] items-start">
-<!-- LEFT SIDE: Locations List (Col-span-5) -->
-<div class="lg:col-span-5 flex flex-col h-full w-full min-w-0">
-<div class="flex items-center justify-between mb-2.5 px-0.5">
-<span class="font-label-md text-label-md text-text-body/80 font-medium">5 titik pengumpulan dalam 5 km</span>
-<span class="font-label-sm text-label-sm text-primary-container font-medium">Diperbarui 10 mnt lalu</span>
-</div>
-<div class="flex flex-col gap-3 overflow-y-auto lg:h-[596px] pr-1.5 scroll-smooth focus:outline-none">
-<!-- Card 1: Selected (Pasar Minggu) -->
-<article class="bg-[#FEF2F2]/60 rounded-xl p-4 border-2 border-primary-container shadow-sm relative cursor-pointer transition-all hover:shadow-md">
-<div class="flex items-start justify-between gap-2 mb-1.5">
-<div class="flex flex-col">
-<span class="font-headline-sm text-headline-sm text-text-primary font-semibold leading-snug">Titik Pengumpulan Pasar Minggu</span>
-<span class="font-body-sm text-body-sm text-text-body/80 mt-0.5">Jl. Raya Pasar Minggu No. 14, Jakarta Selatan</span>
-</div>
-<div class="flex items-center gap-1.5 shrink-0">
-<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm">Buka</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-card text-primary-container border border-primary-container text-label-sm font-label-sm font-semibold">Dipilih</span>
-</div>
-</div>
-<div class="flex flex-wrap items-center gap-y-1 gap-x-3 text-body-sm font-body-sm text-text-body mt-2.5 mb-3">
-<div class="flex items-center gap-1 text-primary-container font-medium">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px]">distance</span>
-<span>1,2 km dari kamu</span>
-</div>
-<span class="text-border-slate">•</span>
-<div class="flex items-center gap-1 text-text-body/90">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70">schedule</span>
-<span>Buka sampai 17.00</span>
-</div>
-</div>
-<div class="flex flex-wrap gap-1.5 items-center pt-2.5 border-t border-primary-container/15">
-<span class="text-[11px] font-label-sm text-text-body/70 mr-1">Diterima:</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kardus</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Plastik</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kertas</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Logam</span>
-</div>
-</article>
-<!-- Card 2: Tebet -->
-<article class="bg-surface-card rounded-xl p-4 border border-border-slate hover:border-primary-container shadow-xs cursor-pointer transition-all hover:shadow-sm group">
-<div class="flex items-start justify-between gap-2 mb-1">
-<h3 class="font-headline-sm text-headline-sm text-text-primary font-semibold group-hover:text-primary-container transition-colors">Titik Pengumpulan Tebet</h3>
-<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm shrink-0">Buka</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body/80 mb-2">Jl. Tebet Raya No. 42, Jakarta Selatan</p>
-<div class="flex items-center gap-2 text-body-sm font-body-sm text-text-body mb-3">
-<span class="font-medium text-text-primary">2,4 km dari kamu</span>
-<span class="text-border-slate">•</span>
-<span class="text-text-body/80">Buka sampai 16.00</span>
-</div>
-<div class="flex flex-wrap gap-1.5">
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kardus</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Plastik</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kaca</span>
-</div>
-</article>
-<!-- Card 3: Lenteng Agung -->
-<article class="bg-surface-card rounded-xl p-4 border border-border-slate hover:border-primary-container shadow-xs cursor-pointer transition-all hover:shadow-sm group">
-<div class="flex items-start justify-between gap-2 mb-1">
-<h3 class="font-headline-sm text-headline-sm text-text-primary font-semibold group-hover:text-primary-container transition-colors">Titik Pengumpulan Lenteng Agung</h3>
-<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm shrink-0">Buka</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body/80 mb-2">Jl. Lenteng Agung Raya No. 8, Jakarta Selatan</p>
-<div class="flex items-center gap-2 text-body-sm font-body-sm text-text-body mb-3">
-<span class="font-medium text-text-primary">3,1 km dari kamu</span>
-<span class="text-border-slate">•</span>
-<span class="text-text-body/80">Buka sampai 17.00</span>
-</div>
-<div class="flex flex-wrap gap-1.5">
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kardus</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Logam</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Elektronik</span>
-</div>
-</article>
-<!-- Card 4: Cilandak (Closed) -->
-<article class="bg-surface-card rounded-xl p-4 border border-border-slate opacity-90 hover:opacity-100 hover:border-primary-container shadow-xs cursor-pointer transition-all">
-<div class="flex items-start justify-between gap-2 mb-1">
-<h3 class="font-headline-sm text-headline-sm text-text-primary font-semibold">Titik Pengumpulan Cilandak</h3>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body/75 border border-border-slate text-label-sm font-label-sm shrink-0">Tutup</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body/80 mb-2">Jl. Cilandak KKO No. 19, Jakarta Selatan</p>
-<div class="flex items-center gap-2 text-body-sm font-body-sm text-text-body/75 mb-3">
-<span>4,0 km dari kamu</span>
-<span class="text-border-slate">•</span>
-<span>Buka lagi besok 08.00</span>
-</div>
-<div class="flex flex-wrap gap-1.5">
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kardus</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Plastik</span>
-</div>
-</article>
-<!-- Card 5: Kebayoran Baru -->
-<article class="bg-surface-card rounded-xl p-4 border border-border-slate hover:border-primary-container shadow-xs cursor-pointer transition-all hover:shadow-sm group">
-<div class="flex items-start justify-between gap-2 mb-1">
-<h3 class="font-headline-sm text-headline-sm text-text-primary font-semibold group-hover:text-primary-container transition-colors">Titik Pengumpulan Kebayoran Baru</h3>
-<span class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm shrink-0">Buka</span>
-</div>
-<p class="font-body-sm text-body-sm text-text-body/80 mb-2">Jl. Kebayoran Baru No. 55, Jakarta Selatan</p>
-<div class="flex items-center gap-2 text-body-sm font-body-sm text-text-body mb-3">
-<span class="font-medium text-text-primary">4,6 km dari kamu</span>
-<span class="text-border-slate">•</span>
-<span class="text-text-body/80">Buka sampai 18.00</span>
-</div>
-<div class="flex flex-wrap gap-1.5">
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kardus</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Plastik</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Kertas</span>
-<span class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]">Minyak Jelantah</span>
-</div>
-</article>
-</div>
-</div>
-{{ map_points|json_script:"location-map-points" }}
-<div id="location-map" data-leaflet-map data-points="location-map-points" role="region" aria-label="Peta titik pengumpulan" class="leaflet-map lg:col-span-7 h-[520px] lg:h-[640px] w-full rounded-xl border border-border-slate overflow-hidden shadow-sm"></div>
-<span id="location-nearest-status" class="text-xs leading-5 text-text-body" role="status" aria-live="polite"></span>
-</section>
-<!-- HELPFUL CIVIC NOTICE -->
-<div class="rounded-xl bg-surface-card border border-border-slate p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-body-sm font-body-sm">
-<div class="flex items-center gap-3">
-<div class="w-8 h-8 rounded-lg bg-status-warning-bg border border-status-warning-border flex items-center justify-center shrink-0">
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-status-warning-text text-[20px]">info</span>
-</div>
-<p class="text-text-body">
-<strong class="text-text-primary font-medium">Tips Setor Mandiri:</strong> Pisahkan barang menurut kategori (kertas, kardus, plastik) agar proses penimbangan di titik pengumpulan berlangsung lebih cepat.
-        </p>
-</div>
-<a class="text-primary-container hover:underline font-label-sm text-label-sm font-medium whitespace-nowrap self-end sm:self-auto flex items-center gap-1" href="/waste/new/">
-<span>Panduan pemilahan</span>
-<span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[15px]">arrow_outward</span>
-</a>
-</div>
-</div>
-</div></main>
-{% include "components/footer.html" %}
-{% endblock %}
+{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="location" %}
+<main id="main-content" class="w-full min-h-screen bg-page-bg">
+  <div class="flex flex-col w-full">
+    <div
+      class="max-w-[1200px] w-full mx-auto px-margin-mobile lg:px-margin py-space-lg flex flex-col gap-space-lg"
+    >
+
+      <header class="flex flex-col gap-space-xs">
+        <div
+          class="flex items-center gap-space-sm text-label-sm font-label-sm text-text-body/75"
+        >
+          <a class="hover:text-primary transition-colors" href="/dashboard/"
+            >Beranda</a
+          >
+          <span
+            class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[14px]"
+            >chevron_right</span
+          >
+          <span class="text-text-primary font-medium">Titik Pengumpulan</span>
+        </div>
+        <div
+          class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-space-xs"
+        >
+          <div>
+            <h1
+              class="font-headline-lg text-headline-lg text-text-primary tracking-tight font-semibold"
+            >
+              Titik Pengumpulan
+            </h1>
+            <p class="font-body-md text-body-md text-text-body/90 mt-1">
+              Temukan titik pengumpulan terdekat, lihat jam buka dan jenis
+              barang yang diterima.
+            </p>
+          </div>
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm self-start sm:self-auto"
+          >
+            <span
+              class="w-2 h-2 rounded-full bg-status-success-text animate-pulse"
+            ></span>
+            <span>5 Lokasi Aktif di Sekitarmu</span>
+          </div>
+        </div>
+      </header>
+
+      <section
+        class="bg-surface-card rounded-xl border border-border-slate p-space-md lg:p-5 shadow-sm"
+      >
+
+        <div class="flex flex-col sm:flex-row items-center gap-space-sm">
+          <div class="relative w-full flex-1">
+            <span
+              class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] absolute left-3.5 top-1/2 -translate-y-1/2 text-text-body/60 text-[20px]"
+              >search</span
+            >
+            <input
+              class="w-full h-11 pl-11 pr-4 bg-surface-card rounded-lg border border-border-slate font-body-md text-body-md text-text-primary placeholder:text-text-body/50 focus:outline-none focus:border-primary-container focus:ring-2 focus:ring-primary-container/20 transition-all"
+              placeholder="Cari berdasarkan alamat atau nama tempat"
+              type="text"
+              value="Pasar Minggu, Jakarta Selatan"
+            />
+          </div>
+          <button
+            id="location-find-nearest"
+            data-find-nearest="location-map"
+            data-find-nearest-status="location-nearest-status"
+            class="w-full sm:w-auto h-11 px-4 rounded-lg border border-primary-container text-primary-container bg-surface-card hover:bg-surface-soft font-label-lg text-label-lg flex items-center justify-center gap-2 transition-colors shrink-0"
+            type="button"
+          >
+            <span
+              class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[19px]"
+              >my_location</span
+            >
+            <span>Cari yang terdekat</span>
+          </button>
+        </div>
+
+        <div
+          class="flex flex-wrap items-center justify-between gap-3 pt-3.5 mt-3 border-t border-border-slate"
+        >
+          <div class="flex flex-wrap items-center gap-2.5">
+
+            <div
+              class="flex items-center bg-surface-soft p-0.5 rounded-lg border border-border-slate text-label-sm font-label-sm"
+            >
+              <button
+                class="px-3 py-1 rounded-md text-text-body hover:text-text-primary transition-colors"
+                type="button"
+              >
+                2 km
+              </button>
+              <button
+                class="px-3 py-1 rounded-md bg-primary-container text-on-primary font-medium shadow-xs"
+                type="button"
+              >
+                5 km
+              </button>
+              <button
+                class="px-3 py-1 rounded-md text-text-body hover:text-text-primary transition-colors"
+                type="button"
+              >
+                10 km
+              </button>
+            </div>
+
+            <button
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border font-label-sm text-label-sm hover:brightness-95 transition-all"
+              type="button"
+            >
+              <span
+                class="w-1.5 h-1.5 rounded-full bg-status-success-text"
+              ></span>
+              <span>Buka sekarang</span>
+            </button>
+
+            <div class="relative">
+              <button
+                class="h-8 px-3 rounded-lg border border-border-slate bg-surface-card font-label-sm text-label-sm text-text-body flex items-center gap-1.5 hover:bg-surface-soft transition-colors"
+                type="button"
+              >
+                <span
+                  class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70"
+                  >recycling</span
+                >
+                <span>Jenis barang</span>
+                <span
+                  class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70"
+                  >expand_more</span
+                >
+              </button>
+            </div>
+
+            <div class="relative">
+              <button
+                class="h-8 px-3 rounded-lg border border-border-slate bg-surface-card font-label-sm text-label-sm text-text-body flex items-center gap-1.5 hover:bg-surface-soft transition-colors"
+                type="button"
+              >
+                <span
+                  class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70"
+                  >sort</span
+                >
+                <span>Urutkan: Terdekat</span>
+                <span
+                  class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70"
+                  >expand_more</span
+                >
+              </button>
+            </div>
+          </div>
+
+          <button
+            class="font-label-sm text-label-sm text-primary-container font-medium hover:underline flex items-center gap-1"
+            type="button"
+          >
+            <span
+              class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[15px]"
+              >refresh</span
+            >
+            <span>Atur ulang</span>
+          </button>
+        </div>
+      </section>
+
+      <section
+        class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg h-auto lg:h-[640px] items-start"
+      >
+
+        <div class="lg:col-span-5 flex flex-col h-full w-full min-w-0">
+          <div class="flex items-center justify-between mb-2.5 px-0.5">
+            <span
+              class="font-label-md text-label-md text-text-body/80 font-medium"
+              >5 titik pengumpulan dalam 5 km</span
+            >
+            <span
+              class="font-label-sm text-label-sm text-primary-container font-medium"
+              >Diperbarui 10 mnt lalu</span
+            >
+          </div>
+          <div
+            class="flex flex-col gap-3 overflow-y-auto lg:h-[596px] pr-1.5 scroll-smooth focus:outline-none"
+          >
+
+            <article
+              class="bg-[#FEF2F2]/60 rounded-xl p-4 border-2 border-primary-container shadow-sm relative cursor-pointer transition-all hover:shadow-md"
+            >
+              <div class="flex items-start justify-between gap-2 mb-1.5">
+                <div class="flex flex-col">
+                  <span
+                    class="font-headline-sm text-headline-sm text-text-primary font-semibold leading-snug"
+                    >Titik Pengumpulan Pasar Minggu</span
+                  >
+                  <span
+                    class="font-body-sm text-body-sm text-text-body/80 mt-0.5"
+                    >Jl. Raya Pasar Minggu No. 14, Jakarta Selatan</span
+                  >
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                  <span
+                    class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm"
+                    >Buka</span
+                  >
+                  <span
+                    class="px-2 py-0.5 rounded-full bg-surface-card text-primary-container border border-primary-container text-label-sm font-label-sm font-semibold"
+                    >Dipilih</span
+                  >
+                </div>
+              </div>
+              <div
+                class="flex flex-wrap items-center gap-y-1 gap-x-3 text-body-sm font-body-sm text-text-body mt-2.5 mb-3"
+              >
+                <div
+                  class="flex items-center gap-1 text-primary-container font-medium"
+                >
+                  <span
+                    class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px]"
+                    >distance</span
+                  >
+                  <span>1,2 km dari kamu</span>
+                </div>
+                <span class="text-border-slate">•</span>
+                <div class="flex items-center gap-1 text-text-body/90">
+                  <span
+                    class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] text-text-body/70"
+                    >schedule</span
+                  >
+                  <span>Buka sampai 17.00</span>
+                </div>
+              </div>
+              <div
+                class="flex flex-wrap gap-1.5 items-center pt-2.5 border-t border-primary-container/15"
+              >
+                <span class="text-[11px] font-label-sm text-text-body/70 mr-1"
+                  >Diterima:</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kardus</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Plastik</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kertas</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Logam</span
+                >
+              </div>
+            </article>
+
+            <article
+              class="bg-surface-card rounded-xl p-4 border border-border-slate hover:border-primary-container shadow-xs cursor-pointer transition-all hover:shadow-sm group"
+            >
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3
+                  class="font-headline-sm text-headline-sm text-text-primary font-semibold group-hover:text-primary-container transition-colors"
+                >
+                  Titik Pengumpulan Tebet
+                </h3>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm shrink-0"
+                  >Buka</span
+                >
+              </div>
+              <p class="font-body-sm text-body-sm text-text-body/80 mb-2">
+                Jl. Tebet Raya No. 42, Jakarta Selatan
+              </p>
+              <div
+                class="flex items-center gap-2 text-body-sm font-body-sm text-text-body mb-3"
+              >
+                <span class="font-medium text-text-primary"
+                  >2,4 km dari kamu</span
+                >
+                <span class="text-border-slate">•</span>
+                <span class="text-text-body/80">Buka sampai 16.00</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kardus</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Plastik</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kaca</span
+                >
+              </div>
+            </article>
+
+            <article
+              class="bg-surface-card rounded-xl p-4 border border-border-slate hover:border-primary-container shadow-xs cursor-pointer transition-all hover:shadow-sm group"
+            >
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3
+                  class="font-headline-sm text-headline-sm text-text-primary font-semibold group-hover:text-primary-container transition-colors"
+                >
+                  Titik Pengumpulan Lenteng Agung
+                </h3>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm shrink-0"
+                  >Buka</span
+                >
+              </div>
+              <p class="font-body-sm text-body-sm text-text-body/80 mb-2">
+                Jl. Lenteng Agung Raya No. 8, Jakarta Selatan
+              </p>
+              <div
+                class="flex items-center gap-2 text-body-sm font-body-sm text-text-body mb-3"
+              >
+                <span class="font-medium text-text-primary"
+                  >3,1 km dari kamu</span
+                >
+                <span class="text-border-slate">•</span>
+                <span class="text-text-body/80">Buka sampai 17.00</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kardus</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Logam</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Elektronik</span
+                >
+              </div>
+            </article>
+
+            <article
+              class="bg-surface-card rounded-xl p-4 border border-border-slate opacity-90 hover:opacity-100 hover:border-primary-container shadow-xs cursor-pointer transition-all"
+            >
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3
+                  class="font-headline-sm text-headline-sm text-text-primary font-semibold"
+                >
+                  Titik Pengumpulan Cilandak
+                </h3>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body/75 border border-border-slate text-label-sm font-label-sm shrink-0"
+                  >Tutup</span
+                >
+              </div>
+              <p class="font-body-sm text-body-sm text-text-body/80 mb-2">
+                Jl. Cilandak KKO No. 19, Jakarta Selatan
+              </p>
+              <div
+                class="flex items-center gap-2 text-body-sm font-body-sm text-text-body/75 mb-3"
+              >
+                <span>4,0 km dari kamu</span>
+                <span class="text-border-slate">•</span>
+                <span>Buka lagi besok 08.00</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kardus</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Plastik</span
+                >
+              </div>
+            </article>
+
+            <article
+              class="bg-surface-card rounded-xl p-4 border border-border-slate hover:border-primary-container shadow-xs cursor-pointer transition-all hover:shadow-sm group"
+            >
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h3
+                  class="font-headline-sm text-headline-sm text-text-primary font-semibold group-hover:text-primary-container transition-colors"
+                >
+                  Titik Pengumpulan Kebayoran Baru
+                </h3>
+                <span
+                  class="px-2 py-0.5 rounded-full bg-status-success-bg text-status-success-text border border-status-success-border text-label-sm font-label-sm shrink-0"
+                  >Buka</span
+                >
+              </div>
+              <p class="font-body-sm text-body-sm text-text-body/80 mb-2">
+                Jl. Kebayoran Baru No. 55, Jakarta Selatan
+              </p>
+              <div
+                class="flex items-center gap-2 text-body-sm font-body-sm text-text-body mb-3"
+              >
+                <span class="font-medium text-text-primary"
+                  >4,6 km dari kamu</span
+                >
+                <span class="text-border-slate">•</span>
+                <span class="text-text-body/80">Buka sampai 18.00</span>
+              </div>
+              <div class="flex flex-wrap gap-1.5">
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kardus</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Plastik</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Kertas</span
+                >
+                <span
+                  class="px-2 py-0.5 rounded-full bg-surface-soft text-text-body font-label-sm text-[12px]"
+                  >Minyak Jelantah</span
+                >
+              </div>
+            </article>
+          </div>
+        </div>
+        {{ map_points|json_script:"location-map-points" }}
+        <div
+          id="location-map"
+          data-leaflet-map
+          data-points="location-map-points"
+          role="region"
+          aria-label="Peta titik pengumpulan"
+          class="leaflet-map lg:col-span-7 h-[520px] lg:h-[640px] w-full rounded-xl border border-border-slate overflow-hidden shadow-sm"
+        ></div>
+        <span
+          id="location-nearest-status"
+          class="text-xs leading-5 text-text-body"
+          role="status"
+          aria-live="polite"
+        ></span>
+      </section>
+
+      <div
+        class="rounded-xl bg-surface-card border border-border-slate p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-body-sm font-body-sm"
+      >
+        <div class="flex items-center gap-3">
+          <div
+            class="w-8 h-8 rounded-lg bg-status-warning-bg border border-status-warning-border flex items-center justify-center shrink-0"
+          >
+            <span
+              class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-status-warning-text text-[20px]"
+              >info</span
+            >
+          </div>
+          <p class="text-text-body">
+            <strong class="text-text-primary font-medium"
+              >Tips Setor Mandiri:</strong
+            >
+            Pisahkan barang menurut kategori (kertas, kardus, plastik) agar
+            proses penimbangan di titik pengumpulan berlangsung lebih cepat.
+          </p>
+        </div>
+        <a
+          class="text-primary-container hover:underline font-label-sm text-label-sm font-medium whitespace-nowrap self-end sm:self-auto flex items-center gap-1"
+          href="/waste/new/"
+        >
+          <span>Panduan pemilahan</span>
+          <span
+            class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[15px]"
+            >arrow_outward</span
+          >
+        </a>
+      </div>
+    </div>
+  </div>
+</main>
+{% include "components/footer.html" %} {% endblock %}

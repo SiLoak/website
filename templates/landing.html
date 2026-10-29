@@ -1,94 +1,219 @@
-{% extends "base.html" %}
-{% load static %}
-{% block title %}SiLoak · Kelola Barang Bekas{% endblock %}
-{% block extra_head %}
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}">
+{% extends "base.html" %} {% load static %} {% block title %}SiLoak · Kelola
+Barang Bekas{% endblock %} {% block extra_head %}
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;500;700&family=Inter:wght@600&display=swap"
+  rel="stylesheet"
+/>
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
+<link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{% static 'js/leaflet-maps.js' %}"></script>
-{% endblock %}
-{% block content %}
-<a class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white" href="#main-content">Lewati ke konten utama</a>
+{% endblock %} {% block content %}
+<a
+  class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white"
+  href="#main-content"
+  >Lewati ke konten utama</a
+>
 {% include "components/navbar.html" with public=True landing=True %}
 
-<main id="main-content" class="bg-[#f8fafc] pt-16 text-[#0f172a] max-[760px]:pt-8">
-  <section aria-labelledby="landing-title" class="bg-[#f8fafc] px-[72px] py-16 max-lg:px-10 max-[760px]:px-6 max-[760px]:pb-14 max-[760px]:pt-10 max-[420px]:px-5">
-    <div class="mx-auto grid w-full max-w-[1200px] grid-cols-2 items-center gap-12 max-lg:gap-8 max-[760px]:grid-cols-1 max-[760px]:gap-8">
+<main
+  id="main-content"
+  class="bg-[#f8fafc] pt-16 text-[#0f172a] max-[760px]:pt-8"
+>
+  <section
+    aria-labelledby="landing-title"
+    class="bg-[#f8fafc] px-[72px] py-16 max-lg:px-10 max-[760px]:px-6 max-[760px]:pb-14 max-[760px]:pt-10 max-[420px]:px-5"
+  >
+    <div
+      class="mx-auto grid w-full max-w-[1200px] grid-cols-2 items-center gap-12 max-lg:gap-8 max-[760px]:grid-cols-1 max-[760px]:gap-8"
+    >
       <div class="min-w-0">
-        <h1 id="landing-title" class="pt-4 text-[36px] font-bold leading-[44px] tracking-[-0.9px] max-lg:text-[32px] max-lg:leading-10 max-[420px]:text-[29px] max-[420px]:leading-9">
+        <h1
+          id="landing-title"
+          class="pt-4 text-[36px] font-bold leading-[44px] tracking-[-0.9px] max-lg:text-[32px] max-lg:leading-10 max-[420px]:text-[29px] max-[420px]:leading-9"
+        >
           <span class="block">Ubah barang bekasmu jadi</span>
-          <span class="block"><u class="decoration-[1px] underline-offset-2">insentif</u>.</span>
+          <span class="block"
+            ><u class="decoration-[1px] underline-offset-2">insentif</u>.</span
+          >
         </h1>
-        <p class="!font-['Roboto_Mono',monospace] w-full max-w-[545px] pt-4 text-base leading-6 text-[#334155]">
-          SiLoak menghubungkan kamu dengan titik pengumpulan terdekat dan layanan <em>pick-up</em>. <strong>Setor</strong> barang bekasmu, dapatkan <strong>insentif</strong> sesuai berat, atau <strong>donasikan</strong> untuk kebaikan.
+        <p
+          class="!font-['Roboto_Mono',monospace] w-full max-w-[545px] pt-4 text-base leading-6 text-[#334155]"
+        >
+          SiLoak menghubungkan kamu dengan titik pengumpulan terdekat dan
+          layanan <em>pick-up</em>. <strong>Setor</strong> barang bekasmu,
+          dapatkan <strong>insentif</strong> sesuai berat, atau
+          <strong>donasikan</strong> untuk kebaikan.
         </p>
         <div class="flex flex-wrap items-center gap-4 pt-8">
-          <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-6 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-[background-color,color,box-shadow] duration-150 hover:bg-[#2f436f] hover:text-white" href="/waste/new/">
+          <a
+            class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-6 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-[background-color,color,box-shadow] duration-150 hover:bg-[#2f436f] hover:text-white"
+            href="/waste/new/"
+          >
             <span>Mulai Setor Loak</span>
             {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-3 w-3" only %}
           </a>
-          <a class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-center text-sm font-medium leading-5 text-[#0f172a] transition-colors duration-150 hover:bg-[#eff4ff]" href="#titik-pengumpulan">
+          <a
+            class="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-white px-5 py-3 text-center text-sm font-medium leading-5 text-[#0f172a] transition-colors duration-150 hover:bg-[#eff4ff]"
+            href="#titik-pengumpulan"
+          >
             {% include "components/lucide_icon.html" with name="map-pin" icon_class="h-4 w-4" only %}
             <span>Cari Titik Terdekat</span>
           </a>
         </div>
-        <ul aria-label="Keunggulan layanan" class="mt-8 flex w-full list-none flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#e2e8f0] pt-6 text-[13px] font-medium leading-[18px] text-[#0f172a] max-lg:gap-x-[18px]">
-          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">{% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span>Ditimbang petugas</span></li>
-          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">{% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span>Insentif sesuai berat</span></li>
-          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">{% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span>Bisa didonasikan</span></li>
+        <ul
+          aria-label="Keunggulan layanan"
+          class="mt-8 flex w-full list-none flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#e2e8f0] pt-6 text-[13px] font-medium leading-[18px] text-[#0f172a] max-lg:gap-x-[18px]"
+        >
+          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">
+            {% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span
+              >Ditimbang petugas</span
+            >
+          </li>
+          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">
+            {% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span
+              >Insentif sesuai berat</span
+            >
+          </li>
+          <li class="inline-flex items-center gap-1.5 whitespace-nowrap">
+            {% include "components/lucide_icon.html" with name="check" icon_class="h-[13px] w-[13px] text-green-700" only %}<span
+              >Bisa didonasikan</span
+            >
+          </li>
         </ul>
       </div>
 
-      <figure class="relative h-[400px] min-w-0 overflow-hidden rounded-xl bg-white shadow-md max-[760px]:h-[min(400px,72vw)]">
-        <img class="h-full w-full max-w-none rotate-180 scale-y-[-1] object-cover" src="{% static 'images/landing/hero-pickup.png' %}" alt="Tangan membawa kantong barang bekas menuju tempat sampah daur ulang">
-        <div aria-hidden="true" class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
-        <figcaption class="absolute bottom-[19px] left-5 flex max-w-[320px] items-center gap-4 rounded-xl bg-[#f5f4f0]/95 p-4 shadow-xl backdrop-blur-sm max-[760px]:bottom-3 max-[760px]:left-3 max-[760px]:gap-2 max-[760px]:p-3 max-[420px]:right-2 max-[420px]:max-w-none">
+      <figure
+        class="relative h-[400px] min-w-0 overflow-hidden rounded-xl bg-white shadow-md max-[760px]:h-[min(400px,72vw)]"
+      >
+        <img
+          class="h-full w-full max-w-none rotate-180 scale-y-[-1] object-cover"
+          src="{% static 'images/landing/hero-pickup.png' %}"
+          alt="Tangan membawa kantong barang bekas menuju tempat sampah daur ulang"
+        />
+        <div
+          aria-hidden="true"
+          class="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"
+        ></div>
+        <figcaption
+          class="absolute bottom-[19px] left-5 flex max-w-[320px] items-center gap-4 rounded-xl bg-[#f5f4f0]/95 p-4 shadow-xl backdrop-blur-sm max-[760px]:bottom-3 max-[760px]:left-3 max-[760px]:gap-2 max-[760px]:p-3 max-[420px]:right-2 max-[420px]:max-w-none"
+        >
           <div class="flex flex-col">
-            <span class="text-xs font-medium leading-4 text-[#3b507d]">Insentif masuk</span>
-            <strong class="mt-0.5 whitespace-nowrap text-lg font-semibold leading-[26px]">Rp 72.000</strong>
+            <span class="text-xs font-medium leading-4 text-[#3b507d]"
+              >Insentif masuk</span
+            >
+            <strong
+              class="mt-0.5 whitespace-nowrap text-lg font-semibold leading-[26px]"
+              >Rp 72.000</strong
+            >
           </div>
-          <span class="!font-['Roboto_Mono',monospace] inline-flex shrink-0 items-center gap-1 rounded-full bg-[#ecfdf5] px-2.5 py-1 text-xs font-medium leading-4 text-green-700 whitespace-nowrap max-[420px]:px-[7px] max-[420px]:text-[10px]">
-            <i aria-hidden="true" class="h-1.5 w-1.5 rounded-full bg-green-700"></i>Sudah ditimbang
+          <span
+            class="!font-['Roboto_Mono',monospace] inline-flex shrink-0 items-center gap-1 rounded-full bg-[#ecfdf5] px-2.5 py-1 text-xs font-medium leading-4 text-green-700 whitespace-nowrap max-[420px]:px-[7px] max-[420px]:text-[10px]"
+          >
+            <i
+              aria-hidden="true"
+              class="h-1.5 w-1.5 rounded-full bg-green-700"
+            ></i
+            >Sudah ditimbang
           </span>
         </figcaption>
       </figure>
     </div>
   </section>
 
-  <section id="cara-kerja" aria-labelledby="ways-title" class="bg-gradient-to-b from-[#f8fafc] to-[#3b507d] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12">
-    <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-12 px-8 max-[760px]:gap-8 max-[760px]:px-0">
+  <section
+    id="cara-kerja"
+    aria-labelledby="ways-title"
+    class="bg-gradient-to-b from-[#f8fafc] to-[#3b507d] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12"
+  >
+    <div
+      class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-12 px-8 max-[760px]:gap-8 max-[760px]:px-0"
+    >
       <header class="flex max-w-2xl flex-col items-center text-center">
-        <h2 id="ways-title" class="text-[28px] font-semibold leading-9 tracking-[-0.42px] max-[760px]:text-2xl max-[760px]:leading-8"><u class="decoration-[1px] underline-offset-2">Dua</u> cara mudah untuk mulai</h2>
-        <p class="!font-['Roboto_Mono',monospace] pt-2 text-base leading-6 text-[#334155] max-[760px]:text-sm max-[760px]:leading-[22px]">Pilih metode yang paling nyaman dengan <strong class="font-bold">jadwal</strong> dan <strong class="font-bold">rutinitas</strong> harianmu.</p>
+        <h2
+          id="ways-title"
+          class="text-[28px] font-semibold leading-9 tracking-[-0.42px] max-[760px]:text-2xl max-[760px]:leading-8"
+        >
+          <u class="decoration-[1px] underline-offset-2">Dua</u> cara mudah
+          untuk mulai
+        </h2>
+        <p
+          class="!font-['Roboto_Mono',monospace] pt-2 text-base leading-6 text-[#334155] max-[760px]:text-sm max-[760px]:leading-[22px]"
+        >
+          Pilih metode yang paling nyaman dengan
+          <strong class="font-bold">jadwal</strong> dan
+          <strong class="font-bold">rutinitas</strong> harianmu.
+        </p>
       </header>
-      <div class="grid w-full max-w-[896px] grid-cols-2 gap-8 max-[760px]:max-w-[480px] max-[760px]:grid-cols-1 max-[760px]:gap-5">
-        <article class="flex flex-col justify-between bg-white p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_2px_rgba(0,0,0,0.25)]">
+      <div
+        class="grid w-full max-w-[896px] grid-cols-2 gap-8 max-[760px]:max-w-[480px] max-[760px]:grid-cols-1 max-[760px]:gap-5"
+      >
+        <article
+          class="flex flex-col justify-between bg-white p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_2px_rgba(0,0,0,0.25)]"
+        >
           <div>
-            <div aria-hidden="true" class="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7e2ce] text-[#3b507d]">
+            <div
+              aria-hidden="true"
+              class="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7e2ce] text-[#3b507d]"
+            >
               {% include "components/lucide_icon.html" with name="building-2" icon_class="h-5 w-5" only %}
             </div>
-            <h3 class="pt-4 text-xl font-semibold leading-7 tracking-[-0.2px]">Setor Loak</h3>
-            <p class="!font-['Roboto_Mono',monospace] pt-[7px] pb-[9px] text-sm leading-[22.75px] text-[#334155]">Bawa barang bekasmu ke titik pengumpulan terdekat. Petugas akan menimbangnya dan insentifmu langsung dihitung.</p>
-            <span class="!font-['Roboto_Mono',monospace] mt-[7px] inline-flex whitespace-nowrap bg-[#e7e2ce] px-3 py-1 text-xs font-medium leading-4 text-[#334155]">Bebas biaya admin <b class="px-1">•</b> Buka setiap hari</span>
+            <h3 class="pt-4 text-xl font-semibold leading-7 tracking-[-0.2px]">
+              Setor Loak
+            </h3>
+            <p
+              class="!font-['Roboto_Mono',monospace] pt-[7px] pb-[9px] text-sm leading-[22.75px] text-[#334155]"
+            >
+              Bawa barang bekasmu ke titik pengumpulan terdekat. Petugas akan
+              menimbangnya dan insentifmu langsung dihitung.
+            </p>
+            <span
+              class="!font-['Roboto_Mono',monospace] mt-[7px] inline-flex whitespace-nowrap bg-[#e7e2ce] px-3 py-1 text-xs font-medium leading-4 text-[#334155]"
+              >Bebas biaya admin <b class="px-1">•</b> Buka setiap hari</span
+            >
           </div>
-          <a class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="{% url 'waste:new' %}">
+          <a
+            class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white"
+            href="{% url 'waste:new' %}"
+          >
             <span>Setor Loak</span>
             {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[11px] w-[11px]" only %}
           </a>
         </article>
-        <article class="flex flex-col justify-between bg-white p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_2px_rgba(0,0,0,0.25)]">
+        <article
+          class="flex flex-col justify-between bg-white p-8 shadow-[0_1px_1px_rgba(0,0,0,0.05),0_4px_2px_rgba(0,0,0,0.25)]"
+        >
           <div>
-            <div aria-hidden="true" class="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7e2ce] text-[#3b507d]">
+            <div
+              aria-hidden="true"
+              class="flex h-12 w-12 items-center justify-center rounded-full bg-[#e7e2ce] text-[#3b507d]"
+            >
               {% include "components/lucide_icon.html" with name="bike" icon_class="h-5 w-5" only %}
             </div>
-            <h3 class="pt-4 text-xl font-semibold leading-7 tracking-[-0.2px]">Pick up Loak</h3>
-            <p class="!font-['Roboto_Mono',monospace] pt-[7px] pb-[9px] text-sm leading-[22.75px] text-[#334155]">Tidak sempat datang? Minta petugas menjemput dari rumahmu dan pantau statusnya sampai barang ditimbang.</p>
-            <span class="!font-['Roboto_Mono',monospace] mt-[7px] inline-flex whitespace-nowrap bg-[#e7e2ce] px-3 py-1 text-xs font-medium leading-4 text-[#334155]">Jadwal fleksibel <b class="px-1">•</b> Tracking kurir real-time</span>
+            <h3 class="pt-4 text-xl font-semibold leading-7 tracking-[-0.2px]">
+              Pick up Loak
+            </h3>
+            <p
+              class="!font-['Roboto_Mono',monospace] pt-[7px] pb-[9px] text-sm leading-[22.75px] text-[#334155]"
+            >
+              Tidak sempat datang? Minta petugas menjemput dari rumahmu dan
+              pantau statusnya sampai barang ditimbang.
+            </p>
+            <span
+              class="!font-['Roboto_Mono',monospace] mt-[7px] inline-flex whitespace-nowrap bg-[#e7e2ce] px-3 py-1 text-xs font-medium leading-4 text-[#334155]"
+              >Jadwal fleksibel <b class="px-1">•</b> Tracking kurir
+              real-time</span
+            >
           </div>
-          <a class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="{% url 'pickup:show_pickup_list' %}">
+          <a
+            class="mt-8 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white"
+            href="{% url 'pickup:show_pickup_list' %}"
+          >
             <span>Minta Pick up</span>
             {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[11px] w-[11px]" only %}
           </a>
@@ -97,144 +222,436 @@
     </div>
   </section>
 
-  <section id="titik-pengumpulan" aria-labelledby="locations-title" class="bg-[#3b507d] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12">
-    <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 px-8 max-[760px]:gap-8 max-[760px]:px-0">
-      <header class="flex max-w-2xl flex-col items-center text-center text-white">
-        <h2 id="locations-title" class="text-[28px] font-semibold leading-9 tracking-[-0.42px] max-[760px]:text-2xl max-[760px]:leading-8">Temukan <u class="decoration-[1px] underline-offset-2">titik pengumpulan</u> terdekat</h2>
-        <p class="!font-['Roboto_Mono',monospace] pt-2 text-base leading-6 text-white max-[760px]:text-sm max-[760px]:leading-[22px]">Cari berdasarkan <strong class="font-bold">lokasi</strong>, lihat <strong class="font-bold">jam buka</strong> dan <strong class="font-bold">layanan</strong> yang tersedia.</p>
+  <section
+    id="titik-pengumpulan"
+    aria-labelledby="locations-title"
+    class="bg-[#3b507d] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12"
+  >
+    <div
+      class="mx-auto flex w-full max-w-[1200px] flex-col items-center gap-10 px-8 max-[760px]:gap-8 max-[760px]:px-0"
+    >
+      <header
+        class="flex max-w-2xl flex-col items-center text-center text-white"
+      >
+        <h2
+          id="locations-title"
+          class="text-[28px] font-semibold leading-9 tracking-[-0.42px] max-[760px]:text-2xl max-[760px]:leading-8"
+        >
+          Temukan
+          <u class="decoration-[1px] underline-offset-2">titik pengumpulan</u>
+          terdekat
+        </h2>
+        <p
+          class="!font-['Roboto_Mono',monospace] pt-2 text-base leading-6 text-white max-[760px]:text-sm max-[760px]:leading-[22px]"
+        >
+          Cari berdasarkan <strong class="font-bold">lokasi</strong>, lihat
+          <strong class="font-bold">jam buka</strong> dan
+          <strong class="font-bold">layanan</strong> yang tersedia.
+        </p>
       </header>
 
-      <div class="box-border w-full rounded-xl bg-white p-8 shadow-sm max-[760px]:p-4">
-        <form action="#titik-pengumpulan" method="get" class="flex items-center gap-4 max-[1000px]:flex-wrap max-[760px]:items-stretch max-[760px]:gap-2.5">
-          <label class="relative flex min-w-0 flex-1 items-center max-[1000px]:basis-full">
+      <div
+        class="box-border w-full rounded-xl bg-white p-8 shadow-sm max-[760px]:p-4"
+      >
+        <form
+          action="#titik-pengumpulan"
+          method="get"
+          class="flex items-center gap-4 max-[1000px]:flex-wrap max-[760px]:items-stretch max-[760px]:gap-2.5"
+        >
+          <label
+            class="relative flex min-w-0 flex-1 items-center max-[1000px]:basis-full"
+          >
             {% include "components/lucide_icon.html" with name="search" icon_class="absolute left-[14px] z-10 h-[18px] w-[18px] text-[#64748b]" only %}
-            <input type="text" value="Tebet Timur, Jakarta Selatan" aria-label="Cari lokasi atau titik pengumpulan" class="!m-0 !h-11 !min-w-0 !w-full !rounded-lg !border-0 !bg-[#eff4ff] !py-0 !pl-11 !pr-4 !text-sm !leading-5 !text-[#0f172a] placeholder:text-[#64748b] focus:!outline focus:!outline-2 focus:!outline-[#3b507d]/20">
+            <input
+              type="text"
+              value="Tebet Timur, Jakarta Selatan"
+              aria-label="Cari lokasi atau titik pengumpulan"
+              class="!m-0 !h-11 !min-w-0 !w-full !rounded-lg !border-0 !bg-[#eff4ff] !py-0 !pl-11 !pr-4 !text-sm !leading-5 !text-[#0f172a] placeholder:text-[#64748b] focus:!outline focus:!outline-2 focus:!outline-[#3b507d]/20"
+            />
           </label>
-          <div aria-label="Jarak pencarian" class="inline-flex shrink-0 items-center gap-2 max-[760px]:flex-1 max-[760px]:justify-between">
-            <button type="button" class="min-h-[34px] rounded-[7px] bg-[#3b507d] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-white max-[760px]:flex-1 max-[760px]:px-2">2 km</button>
-            <button type="button" class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2">5 km</button>
-            <button type="button" class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2">10 km</button>
+          <div
+            aria-label="Jarak pencarian"
+            class="inline-flex shrink-0 items-center gap-2 max-[760px]:flex-1 max-[760px]:justify-between"
+          >
+            <button
+              type="button"
+              class="min-h-[34px] rounded-[7px] bg-[#3b507d] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-white max-[760px]:flex-1 max-[760px]:px-2"
+            >
+              2 km
+            </button>
+            <button
+              type="button"
+              class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2"
+            >
+              5 km
+            </button>
+            <button
+              type="button"
+              class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2"
+            >
+              10 km
+            </button>
           </div>
-          <button id="landing-find-nearest" data-find-nearest="landing-map" data-find-nearest-status="landing-nearest-status" type="button" class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white max-[760px]:flex-1">
+          <button
+            id="landing-find-nearest"
+            data-find-nearest="landing-map"
+            data-find-nearest-status="landing-nearest-status"
+            type="button"
+            class="inline-flex min-h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#3b507d] px-5 py-3 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white max-[760px]:flex-1"
+          >
             {% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}<span>Cari yang terdekat</span>
           </button>
-          <span id="landing-nearest-status" class="text-xs leading-5 text-[#334155]" role="status" aria-live="polite"></span>
+          <span
+            id="landing-nearest-status"
+            class="text-xs leading-5 text-[#334155]"
+            role="status"
+            aria-live="polite"
+          ></span>
         </form>
 
-        <div class="mt-6 grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] items-start gap-6 max-[760px]:grid-cols-1">
-          <div role="list" aria-label="Titik pengumpulan terdekat" class="relative h-[480px] max-h-[480px] overflow-y-auto pr-1 max-[760px]:flex max-[760px]:h-[420px] max-[760px]:max-h-[420px] max-[760px]:flex-col max-[760px]:gap-2">
-            <article role="listitem" class="absolute inset-x-0 top-0 flex flex-col gap-2 rounded-xl bg-[#e7e2ce] p-4 max-[760px]:static max-[760px]:shrink-0">
+        <div
+          class="mt-6 grid grid-cols-[minmax(0,5fr)_minmax(0,7fr)] items-start gap-6 max-[760px]:grid-cols-1"
+        >
+          <div
+            role="list"
+            aria-label="Titik pengumpulan terdekat"
+            class="relative h-[480px] max-h-[480px] overflow-y-auto pr-1 max-[760px]:flex max-[760px]:h-[420px] max-[760px]:max-h-[420px] max-[760px]:flex-col max-[760px]:gap-2"
+          >
+            <article
+              role="listitem"
+              class="absolute inset-x-0 top-0 flex flex-col gap-2 rounded-xl bg-[#e7e2ce] p-4 max-[760px]:static max-[760px]:shrink-0"
+            >
               <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold leading-[26px] max-[420px]:text-base">TPST SiLoak Tebet Timur</h3><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700">Buka</span>
+                <h3
+                  class="text-lg font-semibold leading-[26px] max-[420px]:text-base"
+                >
+                  TPST SiLoak Tebet Timur
+                </h3>
+                <span
+                  class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700"
+                  >Buka</span
+                >
               </div>
-              <p class="text-[13px] leading-[18px] text-[#334155]">Jl. Tebet Timur Dalam Raya No. 42, Jakarta Selatan</p>
-              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]">
-                <span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}1,2 km dari kamu</span><b class="!font-['Inter',sans-serif]">•</b><span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.00 - 17.00 WIB</span>
+              <p class="text-[13px] leading-[18px] text-[#334155]">
+                Jl. Tebet Timur Dalam Raya No. 42, Jakarta Selatan
+              </p>
+              <div
+                class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]"
+              >
+                <span class="inline-flex items-center gap-1"
+                  >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}1,2 km dari kamu</span
+                ><b class="!font-['Inter',sans-serif]">•</b
+                ><span class="inline-flex items-center gap-1"
+                  >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.00 - 17.00 WIB</span
+                >
               </div>
               <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
-                <span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">Kardus</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">Plastik</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">Logam</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white">E-Waste</span>
+                <span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
+                  >Kardus</span
+                ><span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
+                  >Plastik</span
+                ><span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
+                  >Logam</span
+                ><span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
+                  >E-Waste</span
+                >
               </div>
-              <div class="flex items-center justify-end gap-1 pt-4 text-[13px] font-semibold leading-[18px] text-[#112250]">Pilih Titik Ini {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[9px] w-[9px]" only %}</div>
+              <div
+                class="flex items-center justify-end gap-1 pt-4 text-[13px] font-semibold leading-[18px] text-[#112250]"
+              >
+                Pilih Titik Ini {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[9px] w-[9px]" only %}
+              </div>
             </article>
-            <article role="listitem" class="absolute inset-x-0 top-[204px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0">
+            <article
+              role="listitem"
+              class="absolute inset-x-0 top-[204px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0"
+            >
               <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold leading-[26px] max-[420px]:text-base">Bank Sampah Melati Indah</h3><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700">Buka</span>
+                <h3
+                  class="text-lg font-semibold leading-[26px] max-[420px]:text-base"
+                >
+                  Bank Sampah Melati Indah
+                </h3>
+                <span
+                  class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700"
+                  >Buka</span
+                >
               </div>
-              <p class="text-[13px] leading-[18px] text-[#334155]">Jl. Pancoran Barat III No. 15, Jakarta Selatan</p>
-              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]">
-                <span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}2,4 km dari kamu</span><b class="!font-['Inter',sans-serif]">•</b><span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.30 - 16.00 WIB</span>
+              <p class="text-[13px] leading-[18px] text-[#334155]">
+                Jl. Pancoran Barat III No. 15, Jakarta Selatan
+              </p>
+              <div
+                class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]"
+              >
+                <span class="inline-flex items-center gap-1"
+                  >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}2,4 km dari kamu</span
+                ><b class="!font-['Inter',sans-serif]">•</b
+                ><span class="inline-flex items-center gap-1"
+                  >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.30 - 16.00 WIB</span
+                >
               </div>
               <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
-                <span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Kardus</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Kertas</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Plastik</span>
+                <span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
+                  >Kardus</span
+                ><span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
+                  >Kertas</span
+                ><span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
+                  >Plastik</span
+                >
               </div>
             </article>
-            <article role="listitem" class="absolute inset-x-0 top-[364px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0">
+            <article
+              role="listitem"
+              class="absolute inset-x-0 top-[364px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0"
+            >
               <div class="flex items-center justify-between gap-2">
-                <h3 class="text-lg font-semibold leading-[26px] max-[420px]:text-base">Pusat Daur Ulang Manggarai</h3><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700">Buka</span>
+                <h3
+                  class="text-lg font-semibold leading-[26px] max-[420px]:text-base"
+                >
+                  Pusat Daur Ulang Manggarai
+                </h3>
+                <span
+                  class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700"
+                  >Buka</span
+                >
               </div>
-              <p class="text-[13px] leading-[18px] text-[#334155]">Jl. Manggarai Utara No. 8, Jakarta Selatan</p>
-              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]">
-                <span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}3,8 km dari kamu</span><b class="!font-['Inter',sans-serif]">•</b><span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}09.00 - 18.00 WIB</span>
+              <p class="text-[13px] leading-[18px] text-[#334155]">
+                Jl. Manggarai Utara No. 8, Jakarta Selatan
+              </p>
+              <div
+                class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]"
+              >
+                <span class="inline-flex items-center gap-1"
+                  >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}3,8 km dari kamu</span
+                ><b class="!font-['Inter',sans-serif]">•</b
+                ><span class="inline-flex items-center gap-1"
+                  >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}09.00 - 18.00 WIB</span
+                >
               </div>
               <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
-                <span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Semua Kategori</span><span class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]">Layanan Timbang Cepat</span>
+                <span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
+                  >Semua Kategori</span
+                ><span
+                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
+                  >Layanan Timbang Cepat</span
+                >
               </div>
             </article>
           </div>
           {{ map_points|json_script:"landing-map-points" }}
-          <div id="landing-map" data-leaflet-map data-points="landing-map-points" role="region" aria-label="Peta titik pengumpulan" class="leaflet-map h-[480px] min-w-0 overflow-hidden rounded-xl bg-white max-[760px]:h-[360px]"></div>
+          <div
+            id="landing-map"
+            data-leaflet-map
+            data-points="landing-map-points"
+            role="region"
+            aria-label="Peta titik pengumpulan"
+            class="leaflet-map h-[480px] min-w-0 overflow-hidden rounded-xl bg-white max-[760px]:h-[360px]"
+          ></div>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="manfaat" aria-labelledby="incentives-title" class="bg-gradient-to-b from-[#3b507d] to-[#e7e2ce] px-[72px] py-16 max-lg:px-10 max-[760px]:px-6 max-[760px]:py-12">
-    <div class="mx-auto grid min-h-[428px] w-full max-w-[1200px] grid-cols-[minmax(0,7fr)_minmax(0,5fr)] items-center gap-12 max-[760px]:grid-cols-1">
+  <section
+    id="manfaat"
+    aria-labelledby="incentives-title"
+    class="bg-gradient-to-b from-[#3b507d] to-[#e7e2ce] px-[72px] py-16 max-lg:px-10 max-[760px]:px-6 max-[760px]:py-12"
+  >
+    <div
+      class="mx-auto grid min-h-[428px] w-full max-w-[1200px] grid-cols-[minmax(0,7fr)_minmax(0,5fr)] items-center gap-12 max-[760px]:grid-cols-1"
+    >
       <div>
-        <h2 id="incentives-title" class="text-[28px] font-semibold leading-9 tracking-[-0.42px] text-white max-[760px]:text-2xl max-[760px]:leading-8">Dapat insentif, atau donasikan.</h2>
-        <p class="!font-['Roboto_Mono',monospace] w-full max-w-[658px] pt-4 text-base leading-[26px] text-white max-[760px]:text-sm max-[760px]:leading-[23px]">
-          Setiap kilogram barang bekas yang kamu serahkan memiliki nilai nyata. Kamu dapat menerima insentif tunai ke dompet digital, atau menyalurkan nilainya sebagai donasi bagi program penghijauan dan pendidikan anak pemulung.
+        <h2
+          id="incentives-title"
+          class="text-[28px] font-semibold leading-9 tracking-[-0.42px] text-white max-[760px]:text-2xl max-[760px]:leading-8"
+        >
+          Dapat insentif, atau donasikan.
+        </h2>
+        <p
+          class="!font-['Roboto_Mono',monospace] w-full max-w-[658px] pt-4 text-base leading-[26px] text-white max-[760px]:text-sm max-[760px]:leading-[23px]"
+        >
+          Setiap kilogram barang bekas yang kamu serahkan memiliki nilai nyata.
+          Kamu dapat menerima insentif tunai ke dompet digital, atau menyalurkan
+          nilainya sebagai donasi bagi program penghijauan dan pendidikan anak
+          pemulung.
         </p>
         <div class="mt-8 flex flex-col gap-4">
           <article class="flex items-start gap-4 bg-[#eff4ff] p-4">
-            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#beb7a7] text-[#3b507d]">
+            <span
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#beb7a7] text-[#3b507d]"
+            >
               {% include "components/lucide_icon.html" with name="scale" icon_class="h-5 w-5" only %}
             </span>
             <div class="min-w-0 flex-1">
-              <h3 class="text-lg font-semibold leading-[26px]">Transparansi Timbangan</h3>
-              <p class="!font-['Roboto_Mono',monospace] pt-1 text-sm leading-5 text-[#334155]">Menggunakan timbangan digital resmi langsung atau diverifikasi <em>realtime</em> oleh kurir.</p>
+              <h3 class="text-lg font-semibold leading-[26px]">
+                Transparansi Timbangan
+              </h3>
+              <p
+                class="!font-['Roboto_Mono',monospace] pt-1 text-sm leading-5 text-[#334155]"
+              >
+                Menggunakan timbangan digital resmi langsung atau diverifikasi
+                <em>realtime</em> oleh kurir.
+              </p>
             </div>
           </article>
           <article class="flex items-start gap-4 bg-[#eff4ff] p-4">
-            <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#beb7a7] text-[#3b507d]">
+            <span
+              class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#beb7a7] text-[#3b507d]"
+            >
               {% include "components/lucide_icon.html" with name="heart" icon_class="h-5 w-5" only %}
             </span>
             <div class="min-w-0 flex-1">
-              <h3 class="text-lg font-semibold leading-[26px]">Penyaluran Donasi Amanah</h3>
-              <p class="!font-['Roboto_Mono',monospace] pt-1 text-sm leading-5 text-[#334155]">Laporan penyaluran donasi sosial dan lingkungan tercatat transparan dengan rekam jejak digital di aplikasi.</p>
+              <h3 class="text-lg font-semibold leading-[26px]">
+                Penyaluran Donasi Amanah
+              </h3>
+              <p
+                class="!font-['Roboto_Mono',monospace] pt-1 text-sm leading-5 text-[#334155]"
+              >
+                Laporan penyaluran donasi sosial dan lingkungan tercatat
+                transparan dengan rekam jejak digital di aplikasi.
+              </p>
             </div>
           </article>
         </div>
       </div>
 
-      <aside aria-label="Ringkasan setoran simulasi" class="flex min-w-0 flex-col rounded-xl bg-white p-6 shadow-md max-[760px]:p-[18px]">
-        <div class="flex items-center justify-between gap-2 border-b border-[#e2e8f0] pb-3 text-[13px] font-semibold leading-[18px] tracking-[0.65px] text-[#334155] uppercase">
-          <strong>Ringkasan Setoran Simulasi</strong><span class="!font-['Roboto_Mono',monospace] shrink-0 rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 tracking-[0.12px] text-white normal-case">Live Estimate</span>
+      <aside
+        aria-label="Ringkasan setoran simulasi"
+        class="flex min-w-0 flex-col rounded-xl bg-white p-6 shadow-md max-[760px]:p-[18px]"
+      >
+        <div
+          class="flex items-center justify-between gap-2 border-b border-[#e2e8f0] pb-3 text-[13px] font-semibold leading-[18px] tracking-[0.65px] text-[#334155] uppercase"
+        >
+          <strong>Ringkasan Setoran Simulasi</strong
+          ><span
+            class="!font-['Roboto_Mono',monospace] shrink-0 rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 tracking-[0.12px] text-white normal-case"
+            >Live Estimate</span
+          >
         </div>
         <div class="my-4 flex flex-col gap-3 rounded-lg bg-[#eff4ff] p-4">
-          <div class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]">
-            <div class="flex min-w-0 flex-col"><strong class="!font-['Roboto_Mono',monospace] font-medium">Kardus bekas (gelombang)</strong><span class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]">5,5 kg @ Rp 1.000/kg</span></div><b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold">Rp 5.500</b>
+          <div
+            class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]"
+          >
+            <div class="flex min-w-0 flex-col">
+              <strong class="!font-['Roboto_Mono',monospace] font-medium"
+                >Kardus bekas (gelombang)</strong
+              ><span
+                class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]"
+                >5,5 kg @ Rp 1.000/kg</span
+              >
+            </div>
+            <b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold"
+              >Rp 5.500</b
+            >
           </div>
-          <div class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]">
-            <div class="flex min-w-0 flex-col"><strong class="!font-['Roboto_Mono',monospace] font-medium">Botol plastik PET bening</strong><span class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]">2,5 kg @ Rp 3.000/kg</span></div><b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold">Rp 7.500</b>
+          <div
+            class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]"
+          >
+            <div class="flex min-w-0 flex-col">
+              <strong class="!font-['Roboto_Mono',monospace] font-medium"
+                >Botol plastik PET bening</strong
+              ><span
+                class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]"
+                >2,5 kg @ Rp 3.000/kg</span
+              >
+            </div>
+            <b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold"
+              >Rp 7.500</b
+            >
           </div>
-          <div class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]">
-            <div class="flex min-w-0 flex-col"><strong class="!font-['Roboto_Mono',monospace] font-medium">Besi bersih</strong><span class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]">3,0 kg @ Rp 20.000/kg</span></div><b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold">Rp 60.000</b>
+          <div
+            class="flex items-center justify-between gap-3 text-sm leading-5 text-[#0f172a]"
+          >
+            <div class="flex min-w-0 flex-col">
+              <strong class="!font-['Roboto_Mono',monospace] font-medium"
+                >Besi bersih</strong
+              ><span
+                class="!font-['Roboto_Mono',monospace] text-xs font-medium leading-4 text-[#334155]"
+                >3,0 kg @ Rp 20.000/kg</span
+              >
+            </div>
+            <b class="!font-['Roboto_Mono',monospace] shrink-0 font-semibold"
+              >Rp 60.000</b
+            >
           </div>
         </div>
-        <div class="flex items-baseline justify-between gap-2 pt-2 text-sm font-medium leading-5 text-[#334155] max-[420px]:items-start"><span>Perkiraan insentif</span><strong class="whitespace-nowrap text-4xl font-bold leading-[44px] tracking-[-0.72px] text-[#34a853] max-[760px]:text-[28px] max-[760px]:leading-9 max-[420px]:text-2xl">Rp 72.000</strong></div>
+        <div
+          class="flex items-baseline justify-between gap-2 pt-2 text-sm font-medium leading-5 text-[#334155] max-[420px]:items-start"
+        >
+          <span>Perkiraan insentif</span
+          ><strong
+            class="whitespace-nowrap text-4xl font-bold leading-[44px] tracking-[-0.72px] text-[#34a853] max-[760px]:text-[28px] max-[760px]:leading-9 max-[420px]:text-2xl"
+            >Rp 72.000</strong
+          >
+        </div>
         <div class="grid grid-cols-2 gap-3 pt-6">
-          <button type="button" class="flex min-h-10 items-center justify-center rounded-[7px] bg-[#beb7a7] px-3.5 py-2.5 text-sm font-bold leading-5 text-white">Terima insentif</button>
-          <button type="button" class="flex min-h-10 items-center justify-center rounded-[7px] bg-[#eff4ff] px-3.5 py-2.5 text-sm font-medium leading-5 text-[#334155]">Donasikan</button>
+          <button
+            type="button"
+            class="flex min-h-10 items-center justify-center rounded-[7px] bg-[#beb7a7] px-3.5 py-2.5 text-sm font-bold leading-5 text-white"
+          >
+            Terima insentif
+          </button>
+          <button
+            type="button"
+            class="flex min-h-10 items-center justify-center rounded-[7px] bg-[#eff4ff] px-3.5 py-2.5 text-sm font-medium leading-5 text-[#334155]"
+          >
+            Donasikan
+          </button>
         </div>
-        <p class="!font-['Roboto_Mono',monospace] flex items-center gap-1.5 pt-5 text-xs font-medium leading-4 text-[#334155]">
-          {% include "components/lucide_icon.html" with name="info" icon_class="h-[12px] w-[12px] shrink-0" only %}<span>Jumlah akhir dihitung setelah barang ditimbang petugas.</span>
+        <p
+          class="!font-['Roboto_Mono',monospace] flex items-center gap-1.5 pt-5 text-xs font-medium leading-4 text-[#334155]"
+        >
+          {% include "components/lucide_icon.html" with name="info" icon_class="h-[12px] w-[12px] shrink-0" only %}<span
+            >Jumlah akhir dihitung setelah barang ditimbang petugas.</span
+          >
         </p>
       </aside>
     </div>
   </section>
 
-  <section aria-labelledby="final-cta-title" class="bg-[#e7e2ce] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12">
-    <div class="mx-auto flex w-full max-w-[1200px] flex-col items-center text-center">
-      <h2 id="final-cta-title" class="text-4xl font-bold leading-[44px] tracking-[-0.72px] text-[#334155] max-[760px]:text-[28px] max-[760px]:leading-9">Siap mulai Setor Loak?</h2>
-      <p class="!font-['Roboto_Mono',monospace] pt-3 text-base leading-6 text-[#334155] max-[760px]:text-sm max-[760px]:leading-[22px]">Daftar sekarang dan ubah barang bekasmu jadi manfaat nyata untuk<br class="max-[420px]:hidden"> kantong dan lingkungan.</p>
+  <section
+    aria-labelledby="final-cta-title"
+    class="bg-[#e7e2ce] px-10 py-16 max-[760px]:px-5 max-[760px]:py-12"
+  >
+    <div
+      class="mx-auto flex w-full max-w-[1200px] flex-col items-center text-center"
+    >
+      <h2
+        id="final-cta-title"
+        class="text-4xl font-bold leading-[44px] tracking-[-0.72px] text-[#334155] max-[760px]:text-[28px] max-[760px]:leading-9"
+      >
+        Siap mulai Setor Loak?
+      </h2>
+      <p
+        class="!font-['Roboto_Mono',monospace] pt-3 text-base leading-6 text-[#334155] max-[760px]:text-sm max-[760px]:leading-[22px]"
+      >
+        Daftar sekarang dan ubah barang bekasmu jadi manfaat nyata untuk<br
+          class="max-[420px]:hidden"
+        />
+        kantong dan lingkungan.
+      </p>
       <div class="flex flex-wrap justify-center gap-4 pt-8">
-        <a class="inline-flex min-h-12 items-center justify-center rounded-lg bg-[#3b507d] px-8 py-3.5 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white" href="{% url 'auth_page' %}">Daftar Sekarang</a>
-        <a class="inline-flex min-h-12 items-center justify-center rounded-lg border border-[#334155] bg-white/10 px-6 py-3.5 text-center text-sm font-medium leading-5 text-[#334155] transition-colors duration-150 hover:bg-white/35" href="{% url 'auth_page' %}">Masuk ke Akun</a>
+        <a
+          class="inline-flex min-h-12 items-center justify-center rounded-lg bg-[#3b507d] px-8 py-3.5 text-center text-sm font-medium leading-5 text-white shadow-sm transition-colors duration-150 hover:bg-[#2f436f] hover:text-white"
+          href="{% url 'auth_page' %}"
+          >Daftar Sekarang</a
+        >
+        <a
+          class="inline-flex min-h-12 items-center justify-center rounded-lg border border-[#334155] bg-white/10 px-6 py-3.5 text-center text-sm font-medium leading-5 text-[#334155] transition-colors duration-150 hover:bg-white/35"
+          href="{% url 'auth_page' %}"
+          >Masuk ke Akun</a
+        >
       </div>
     </div>
   </section>
 </main>
 
-{% include "components/footer.html" %}
-{% endblock %}
+{% include "components/footer.html" %} {% endblock %}

@@ -1,124 +1,253 @@
-{% extends "base.html" %}
-{% block title %}Detail Setoran #{{ submission.pk }} · SiLoak{% endblock %}
-{% block content %}
-{% include "components/navbar.html" with active_item="history" %}
-<main id="main-content" class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8">
+{% extends "base.html" %} {% block title %}Detail Setoran #{{ submission.pk }} ·
+SiLoak{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="history" %}
+<main
+  id="main-content"
+  class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8"
+>
   <div class="mx-auto max-w-5xl">
     <nav class="mb-4 text-sm text-text-body" aria-label="Breadcrumb">
-      <a class="hover:text-primary" href="{% url 'dashboard' %}">Beranda</a><span class="px-2">/</span>
-      <a class="hover:text-primary" href="{% url 'waste:submissions' %}">Riwayat setoran</a><span class="px-2">/</span>
+      <a class="hover:text-primary" href="{% url 'dashboard' %}">Beranda</a
+      ><span class="px-2">/</span>
+      <a class="hover:text-primary" href="{% url 'waste:submissions' %}"
+        >Riwayat setoran</a
+      ><span class="px-2">/</span>
       <span class="text-primary">#{{ submission.pk }}</span>
     </nav>
     {% if messages %}
-      <div class="mb-5 space-y-2" aria-live="polite">
-        {% for message in messages %}<div class="rounded-lg border border-border-slate bg-surface-card px-4 py-3 text-sm text-text-primary">{{ message }}</div>{% endfor %}
+    <div class="mb-5 space-y-2" aria-live="polite">
+      {% for message in messages %}
+      <div
+        class="rounded-lg border border-border-slate bg-surface-card px-4 py-3 text-sm text-text-primary"
+      >
+        {{ message }}
       </div>
+      {% endfor %}
+    </div>
     {% endif %}
-    <header class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+    <header
+      class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center"
+    >
       <div>
-        <p class="text-sm text-text-body">Pengajuan setoran #{{ submission.pk }}</p>
-        <h1 class="mt-1 text-3xl font-bold tracking-tight text-text-primary">Detail setoran</h1>
-        <p class="mt-2 text-sm text-text-body">Diajukan {{ submission.created_at|date:"j M Y, H:i" }}</p>
+        <p class="text-sm text-text-body">
+          Pengajuan setoran #{{ submission.pk }}
+        </p>
+        <h1 class="mt-1 text-3xl font-bold tracking-tight text-text-primary">
+          Detail setoran
+        </h1>
+        <p class="mt-2 text-sm text-text-body">
+          Diajukan {{ submission.created_at|date:"j M Y, H:i" }}
+        </p>
       </div>
       {% if submission.status == "verified" %}
-        <span class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-800">{{ submission.get_status_display }}</span>
+      <span
+        class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-green-800"
+        >{{ submission.get_status_display }}</span
+      >
       {% elif submission.status == "canceled" %}
-        <span class="inline-flex w-fit rounded-full bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-800">{{ submission.get_status_display }}</span>
+      <span
+        class="inline-flex w-fit rounded-full bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-800"
+        >{{ submission.get_status_display }}</span
+      >
       {% else %}
-        <span class="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1.5 text-sm font-semibold text-amber-800">{{ submission.get_status_display }}</span>
+      <span
+        class="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1.5 text-sm font-semibold text-amber-800"
+        >{{ submission.get_status_display }}</span
+      >
       {% endif %}
     </header>
 
     {% if submission.status == "pending" %}
-      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
-        Bawa sampahmu ke titik pengumpulan yang dipilih. Petugas akan menimbang setiap jenis sampah di lokasi.
-      </div>
+    <div
+      class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"
+    >
+      Bawa sampahmu ke titik pengumpulan yang dipilih. Petugas akan menimbang
+      setiap jenis sampah di lokasi.
+    </div>
     {% elif submission.status == "verified" %}
-      <div class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-900">
-        Penimbangan selesai{% if submission.verified_at %} pada {{ submission.verified_at|date:"j M Y, H:i" }}{% endif %}. Berat aktual tercatat di bawah.
-      </div>
+    <div
+      class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-900"
+    >
+      Penimbangan selesai{% if submission.verified_at %} pada {{ submission.verified_at|date:"j M Y, H:i" }}{% endif %}. Berat aktual
+      tercatat di bawah.
+    </div>
     {% else %}
-      <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">Pengajuan ini telah dibatalkan.</div>
+    <div
+      class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900"
+    >
+      Pengajuan ini telah dibatalkan.
+    </div>
     {% endif %}
 
     <div class="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)]">
       <div class="space-y-6">
-        <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
-          <h2 class="text-xl font-semibold text-text-primary">Titik pengumpulan</h2>
-          <h3 class="mt-4 font-semibold text-text-primary">{{ submission.collection_point.name }}</h3>
-          <p class="mt-1 text-sm text-text-body">{{ submission.collection_point.address }}</p>
-          {% if submission.collection_point.operating_hours %}<p class="mt-2 text-sm text-text-body">Jam operasional: {{ submission.collection_point.operating_hours }}</p>{% endif %}
+        <section
+          class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm"
+        >
+          <h2 class="text-xl font-semibold text-text-primary">
+            Titik pengumpulan
+          </h2>
+          <h3 class="mt-4 font-semibold text-text-primary">
+            {{ submission.collection_point.name }}
+          </h3>
+          <p class="mt-1 text-sm text-text-body">
+            {{ submission.collection_point.address }}
+          </p>
+          {% if submission.collection_point.operating_hours %}
+          <p class="mt-2 text-sm text-text-body">
+            Jam operasional: {{ submission.collection_point.operating_hours }}
+          </p>
+          {% endif %}
         </section>
 
-        <section class="overflow-hidden rounded-xl border border-border-slate bg-surface-card shadow-sm">
-          <div class="border-b border-border-slate px-5 py-4"><h2 class="text-xl font-semibold text-text-primary">Rincian dan hasil penimbangan</h2></div>
+        <section
+          class="overflow-hidden rounded-xl border border-border-slate bg-surface-card shadow-sm"
+        >
+          <div class="border-b border-border-slate px-5 py-4">
+            <h2 class="text-xl font-semibold text-text-primary">
+              Rincian dan hasil penimbangan
+            </h2>
+          </div>
           <div class="divide-y divide-border-slate">
             {% for item in submission.items.all %}
-              <div class="grid gap-3 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
-                <div>
-                  <p class="font-semibold text-text-primary">{{ item.waste_type.name }}</p>
-                  <p class="mt-1 text-sm text-text-body">Perkiraan: {{ item.estimated_weight|floatformat:2 }} kg</p>
-                  {% if item.unit_rate_snapshot != None %}<p class="mt-1 text-xs text-text-body">Tarif saat pengajuan: Rp {{ item.unit_rate_snapshot|floatformat:2 }} / kg</p>{% endif %}
-                </div>
-                <div class="text-left sm:text-right">
-                  {% if item.actual_weight != None %}
-                    <p class="text-xs text-text-body">Berat aktual</p>
-                    <p class="font-semibold text-text-primary">{{ item.actual_weight|floatformat:2 }} kg</p>
-                  {% else %}
-                    <p class="text-sm text-text-body">Belum ditimbang</p>
-                  {% endif %}
-                </div>
+            <div
+              class="grid gap-3 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center"
+            >
+              <div>
+                <p class="font-semibold text-text-primary">
+                  {{ item.waste_type.name }}
+                </p>
+                <p class="mt-1 text-sm text-text-body">
+                  Perkiraan: {{ item.estimated_weight|floatformat:2 }} kg
+                </p>
+                {% if item.unit_rate_snapshot != None %}
+                <p class="mt-1 text-xs text-text-body">
+                  Tarif saat pengajuan: Rp {{ item.unit_rate_snapshot|floatformat:2 }} / kg
+                </p>
+                {% endif %}
               </div>
+              <div class="text-left sm:text-right">
+                {% if item.actual_weight != None %}
+                <p class="text-xs text-text-body">Berat aktual</p>
+                <p class="font-semibold text-text-primary">
+                  {{ item.actual_weight|floatformat:2 }} kg
+                </p>
+                {% else %}
+                <p class="text-sm text-text-body">Belum ditimbang</p>
+                {% endif %}
+              </div>
+            </div>
             {% empty %}
-              <p class="px-5 py-6 text-sm text-text-body">Belum ada rincian barang.</p>
+            <p class="px-5 py-6 text-sm text-text-body">
+              Belum ada rincian barang.
+            </p>
             {% endfor %}
           </div>
-          <div class="flex flex-col gap-2 border-t border-border-slate bg-surface-soft px-5 py-4 text-sm sm:flex-row sm:justify-between">
-            <span class="text-text-body">Total perkiraan: <strong class="text-text-primary">{{ submission.estimated_weight|floatformat:2 }} kg</strong></span>
-            {% if submission.actual_weight != None %}<span class="text-text-body">Total aktual: <strong class="text-text-primary">{{ submission.actual_weight|floatformat:2 }} kg</strong></span>{% endif %}
+          <div
+            class="flex flex-col gap-2 border-t border-border-slate bg-surface-soft px-5 py-4 text-sm sm:flex-row sm:justify-between"
+          >
+            <span class="text-text-body"
+              >Total perkiraan:
+              <strong class="text-text-primary"
+                >{{ submission.estimated_weight|floatformat:2 }} kg</strong
+              ></span
+            >
+            {% if submission.actual_weight != None %}<span
+              class="text-text-body"
+              >Total aktual:
+              <strong class="text-text-primary"
+                >{{ submission.actual_weight|floatformat:2 }} kg</strong
+              ></span
+            >{% endif %}
           </div>
         </section>
       </div>
 
       <aside class="space-y-4">
-        <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+        <section
+          class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm"
+        >
           <h2 class="text-lg font-semibold text-text-primary">Ringkasan</h2>
           <dl class="mt-4 space-y-3 text-sm">
-            <div class="flex justify-between gap-3"><dt class="text-text-body">Nomor pengajuan</dt><dd class="font-semibold text-text-primary">#{{ submission.pk }}</dd></div>
-            <div class="flex justify-between gap-3"><dt class="text-text-body">Status</dt><dd class="font-semibold text-text-primary">{{ submission.get_status_display }}</dd></div>
-            <div class="flex justify-between gap-3"><dt class="text-text-body">Jumlah jenis</dt><dd class="font-semibold text-text-primary">{{ submission.items.count }}</dd></div>
+            <div class="flex justify-between gap-3">
+              <dt class="text-text-body">Nomor pengajuan</dt>
+              <dd class="font-semibold text-text-primary">
+                #{{ submission.pk }}
+              </dd>
+            </div>
+            <div class="flex justify-between gap-3">
+              <dt class="text-text-body">Status</dt>
+              <dd class="font-semibold text-text-primary">
+                {{ submission.get_status_display }}
+              </dd>
+            </div>
+            <div class="flex justify-between gap-3">
+              <dt class="text-text-body">Jumlah jenis</dt>
+              <dd class="font-semibold text-text-primary">
+                {{ submission.items.count }}
+              </dd>
+            </div>
           </dl>
           {% if submission.status == "verified" %}
-            <div class="mt-5 border-t border-border-slate pt-4">
-              {% if submission.actual_reward != None %}
-                <p class="text-sm text-text-body">Estimasi insentif berdasarkan berat aktual</p>
-                <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.actual_reward|floatformat:2 }}</p>
-              {% else %}
-                <p class="text-sm text-text-body">Insentif belum tersedia karena tarif untuk satu atau lebih jenis sampah belum diatur.</p>
-              {% endif %}
-            </div>
+          <div class="mt-5 border-t border-border-slate pt-4">
+            {% if submission.actual_reward != None %}
+            <p class="text-sm text-text-body">
+              Estimasi insentif berdasarkan berat aktual
+            </p>
+            <p class="mt-1 text-2xl font-bold text-text-primary">
+              Rp {{ submission.actual_reward|floatformat:2 }}
+            </p>
+            {% else %}
+            <p class="text-sm text-text-body">
+              Insentif belum tersedia karena tarif untuk satu atau lebih jenis
+              sampah belum diatur.
+            </p>
+            {% endif %}
+          </div>
           {% elif submission.estimated_reward != None %}
-            <div class="mt-5 border-t border-border-slate pt-4">
-              <p class="text-sm text-text-body">Perkiraan insentif</p>
-              <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ submission.estimated_reward|floatformat:2 }}</p>
-              <p class="mt-1 text-xs text-text-body">Nilai akhir mengikuti hasil penimbangan.</p>
-            </div>
+          <div class="mt-5 border-t border-border-slate pt-4">
+            <p class="text-sm text-text-body">Perkiraan insentif</p>
+            <p class="mt-1 text-2xl font-bold text-text-primary">
+              Rp {{ submission.estimated_reward|floatformat:2 }}
+            </p>
+            <p class="mt-1 text-xs text-text-body">
+              Nilai akhir mengikuti hasil penimbangan.
+            </p>
+          </div>
           {% endif %}
         </section>
 
         {% if submission.status == "pending" %}
-          <a class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-slate bg-surface-card px-4 py-3 font-semibold text-text-primary shadow-sm hover:bg-surface-soft" href="{% url 'waste:edit' submission_id=submission.pk %}">
-            <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga']" aria-hidden="true">edit</span>Ubah pengajuan
-          </a>
-          <form method="post" action="{% url 'waste:cancel' submission_id=submission.pk %}" onsubmit="return confirm('Batalkan pengajuan setoran ini?')">
-            {% csrf_token %}
-            <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="submit">Batalkan pengajuan</button>
-          </form>
+        <a
+          class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-slate bg-surface-card px-4 py-3 font-semibold text-text-primary shadow-sm hover:bg-surface-soft"
+          href="{% url 'waste:edit' submission_id=submission.pk %}"
+        >
+          <span
+            class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga']"
+            aria-hidden="true"
+            >edit</span
+          >Ubah pengajuan
+        </a>
+        <form
+          method="post"
+          action="{% url 'waste:cancel' submission_id=submission.pk %}"
+          onsubmit="return confirm('Batalkan pengajuan setoran ini?');"
+        >
+          {% csrf_token %}
+          <button
+            class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50"
+            type="submit"
+          >
+            Batalkan pengajuan
+          </button>
+        </form>
         {% endif %}
-        <a class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline" href="{% url 'waste:submissions' %}">← Kembali ke riwayat</a>
+        <a
+          class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline"
+          href="{% url 'waste:submissions' %}"
+          >← Kembali ke riwayat</a
+        >
       </aside>
     </div>
   </div>
 </main>
-{% include "components/footer.html" %}
-{% endblock %}
+{% include "components/footer.html" %} {% endblock %}
