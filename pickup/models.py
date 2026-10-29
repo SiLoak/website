@@ -1,8 +1,13 @@
+import uuid
+
 from django.db import models
 from django.core.validators import MinLengthValidator
 from django.conf import settings
 from django.db.models import Q
-import uuid
+from django.core.validators import MinValueValidator
+from decimal import Decimal
+
+from waste.models import Submission, WasteType
 
 # Create your models here.
 class PickupRequest(models.Model):
@@ -19,6 +24,13 @@ class PickupRequest(models.Model):
     COMPLETED = "COMPLETED", "Selesai"
     CANCELLED = "CANCELLED", "Dibatalkan"
     FAILED = "FAILED", "Gagal"
+
+  class TimeSlot(models.TextChoices):
+    S0810 = "08:00-10:00", "08.00 - 10.00"
+    S1012 = "10:00-12:00", "10.00 - 12.00"
+    S1214 = "12:00-14:00", "12.00 - 14.00"
+    S1416 = "14:00-16:00", "14.00 - 16.00"
+    S1618 = "16:00-18:00", "16.00 - 18.00"
 
   CANCELLABLE_STATUSES = (Status.PENDING, Status.ASSIGNED)
 
@@ -84,24 +96,13 @@ class PickupRequest(models.Model):
   )
 
   # Schedule
-  scheduled_at = models.DateTimeField(
-    help_text="Tanggal dan waktu pickup yang diminta oleh giver.",
+  scheduled_date = models.DateField(
+    help_text="Tanggal pickup yang diminta oleh giver.",
   )
 
-  # Request details
-  item_description = models.TextField(
-    blank=True,
-    help_text="Deskripsi awal barang yang akan diambil.",
-  )
-
-  giver_note = models.TextField(
-    blank=True,
-    help_text="Catatan tambahan dari giver untuk collector.",
-  )
-
-  collector_note = models.TextField(
-    blank=True,
-    help_text="Catatan collector selama proses pickup.",
+  time_slot = models.CharField(
+    max_length=11,
+    choices=TimeSlot.choices,
   )
 
   # Status
@@ -114,10 +115,15 @@ class PickupRequest(models.Model):
 
   status_reason = models.TextField(blank=True)
 
+  # Incentive
+  incentive_allocation = models.CharField(
+    max_length=12,
+    choices=Submission.IncentiveAllocation.choices, default=Submission.IncentiveAllocation.WALLET,
+  )
+
   # Timestamps
   created_at = models.DateTimeField(auto_now_add=True)
   updated_at = models.DateTimeField(auto_now=True)
-
   assigned_at = models.DateTimeField(null=True, blank=True)
   completed_at = models.DateTimeField(null=True, blank=True)
   cancelled_at = models.DateTimeField(null=True, blank=True)
@@ -134,7 +140,7 @@ class PickupRequest(models.Model):
         name="pickup_collector_status_idx",
       ),
       models.Index(
-        fields=["scheduled_at", "status"],
+        fields=["scheduled_date", "status"],
         name="pickup_schedule_status_idx",
       ),
     ]
@@ -158,6 +164,99 @@ class PickupRequest(models.Model):
   @property
   def is_cancellable(self):
     return self.status in self.CANCELLABLE_STATUSES
+
+  @property
+  def estimated_weight(self):
+    return sum(
+      (item.estimated_weight for item in self.items.all()), Decimal("0")
+    )
+
+  @property
+  def actual_weight(self):
+    items = list(self.items.all())
+    if not items or any(item.actual_weight is None for item in items):
+      return None
+    return sum((item.actual_weight for item in items), Decimal("0"))
+
+  @property
+  def estimated_reward(self):
+    items = list(self.items.all())
+    if any(item.unit_rate_snapshot is None for item in items):
+      return None
+    return sum((item.estimated_subtotal for item in items), Decimal("0"))
+
+  @property
+  def actual_reward(self):
+    items = list(self.items.all())
+    if not items or any(
+      item.actual_weight is None or item.unit_rate_snapshot is None
+      for item in items
+    ):
+      return None
+    return sum((item.actual_subtotal for item in items), Decimal("0"))
+
+
+class PickupItem(models.Model):
+  """
+  Represents pickup items.
+  """
+
+  pickup_request = models.ForeignKey(
+    PickupRequest,
+    on_delete=models.CASCADE,
+    related_name="items",
+  )
+
+  waste_type = models.ForeignKey(
+    WasteType,
+    on_delete=models.PROTECT,
+    related_name="pickup_items",
+  )
+
+  estimated_weight = models.DecimalField(
+    max_digits=8,
+    decimal_places=2,
+    validators=[MinValueValidator(Decimal("0.01"))],
+  )
+
+  actual_weight = models.DecimalField(
+    max_digits=8,
+    decimal_places=2,
+    null=True,
+    blank=True,
+    validators=[MinValueValidator(Decimal("0.01"))],
+  )
+
+  unit_rate_snapshot = models.DecimalField(
+    max_digits=10,
+    decimal_places=2,
+    null=True,
+    blank=True,
+  )
+
+  class Meta:
+    ordering = ["pk"]
+    constraints = [
+      models.UniqueConstraint(
+        fields=["pickup_request", "waste_type"],
+        name="unique_waste_type_per_pickup_request",
+      )
+    ]
+
+  def __str__(self):
+    return f"{self.waste_type} — {self.submission}"
+
+  @property
+  def estimated_subtotal(self):
+    if self.unit_rate_snapshot is None:
+      return None
+    return self.estimated_weight * self.unit_rate_snapshot
+
+  @property
+  def actual_subtotal(self):
+    if self.actual_weight is None or self.unit_rate_snapshot is None:
+      return None
+    return self.actual_weight * self.unit_rate_snapshot
 
 
 class PickupStatusHistory(models.Model):

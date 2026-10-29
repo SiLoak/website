@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+{% block title %}Detail Setoran Pick Up #{{ pickup.pk }} · SiLoak{% endblock %}
+{% block content %}
+{% include "components/navbar.html" with active_item="history" %}
+<main id="main-content" class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8">
+  <div class="mx-auto max-w-5xl">
+    <nav class="mb-4 text-sm text-text-body" aria-label="Breadcrumb">
+      <a class="hover:text-primary" href="{% url 'dashboard' %}">Beranda</a><span class="px-2">/</span>
+      <a class="hover:text-primary" href="{% url 'waste:submissions' %}">Riwayat setoran</a><span class="px-2">/</span>
+      <span class="text-primary">#{{ pickup.pk }}</span>
+    </nav>
+    {% if messages %}
+      <div class="mb-5 space-y-2" aria-live="polite">
+        {% for message in messages %}<div class="rounded-lg border border-border-slate bg-surface-card px-4 py-3 text-sm text-text-primary">{{ message }}</div>{% endfor %}
+      </div>
+    {% endif %}
+    <header class="mb-6 flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
+      <div>
+        <p class="text-sm text-text-body">Pickup setoran #{{ pickup.pk }}</p>
+        <h1 class="mt-1 text-3xl font-bold tracking-tight text-text-primary">Detail setoran pick up</h1>
+        <p class="mt-2 text-sm text-text-body">Diajukan {{ pickup.created_at|date:"j M Y, H:i" }}</p>
+      </div>
+      {% if pickup.status == "PENDING" %}
+        <span class="inline-flex w-fit rounded-full bg-green-100 px-3 py-1.5 text-sm font-semibold text-gray-800">{{ pickup.get_status_display }}</span>
+      {% elif pickup.status == "COMPLETED" %}
+        <span class="inline-flex w-fit rounded-full bg-red-100 px-3 py-1.5 text-sm font-semibold text-green-800">{{ pickup.get_status_display }}</span>
+      {% elif pickup.status == "CANCELED" or pickup.status == "FAILED" %}
+        <span class="inline-flex w-fit rounded-full bg-red-100 px-3 py-1.5 text-sm font-semibold text-red-800">{{ pickup.get_status_display }}</span>
+      {% else %}
+        <span class="inline-flex w-fit rounded-full bg-amber-100 px-3 py-1.5 text-sm font-semibold text-amber-800">{{ pickup.get_status_display }}</span>
+      {% endif %}
+    </header>
+
+    {% if pickup.status == "PENDING" %}
+      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Harap menunggu. Petugas akan segera ditugaskan untuk menjemput barang loakmu.
+      </div>
+    {% if pickup.status == "ASSIGNED" %}
+      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Petugas telah ditugaskan dan akan segera menjemput barang loakmu.
+      </div>
+    {% if pickup.status == "ON_THE_WAY" %}
+      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Petugas sedang dalam perjalanan untuk menjemput barang loakmu.
+      </div>
+    {% if pickup.status == "ARRIVED" %}
+      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Petugas telah tiba di lokasimu.
+      </div>
+    {% if pickup.status == "WEIGHING" %}
+      <div class="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        Barang loakmu sedang ditimbang dan diverifikasi.
+      </div>
+    {% elif pickup.status == "COMPLETED" %}
+      <div class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-900">
+        Penimbangan selesai{% if pickup.completed_at %} pada {{ pickup.completed_at|date:"j M Y, H:i" }}{% endif %}. Berat aktual tercatat di bawah.
+      </div>
+    {% elif pickup.status == "CANCELLED" %}
+      <div class="mb-6 rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-900">
+        Pickup dibatalkan {% if pickup.cancelled_at %} pada {{ pickup.cancelled_at|date:"j M Y, H:i" }}{% endif %}.
+      </div>
+    {% else %}
+      <div class="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">Pickup ini gagal.</div>
+    {% endif %}
+
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1.5fr)_minmax(18rem,1fr)]">
+      <div class="space-y-6">
+        <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+          <h2 class="text-xl font-semibold text-text-primary">Alamat penjemputan</h2>
+          <p class="mt-1 text-sm text-text-body">{{ pickup.address_detail }}</p>
+        </section>
+
+        <section class="overflow-hidden rounded-xl border border-border-slate bg-surface-card shadow-sm">
+          <div class="border-b border-border-slate px-5 py-4"><h2 class="text-xl font-semibold text-text-primary">Rincian dan hasil penimbangan</h2></div>
+          <div class="divide-y divide-border-slate">
+            {% for item in pickup.items.all %}
+              <div class="grid gap-3 px-5 py-4 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                <div>
+                  <p class="font-semibold text-text-primary">{{ item.waste_type.name }}</p>
+                  <p class="mt-1 text-sm text-text-body">Perkiraan: {{ item.estimated_weight|floatformat:2 }} kg</p>
+                  {% if item.unit_rate_snapshot != None %}<p class="mt-1 text-xs text-text-body">Tarif saat pickup: Rp {{ item.unit_rate_snapshot|floatformat:0 }} / kg</p>{% endif %}
+                </div>
+                <div class="text-left sm:text-right">
+                  {% if item.actual_weight != None %}
+                    <p class="text-xs text-text-body">Berat aktual</p>
+                    <p class="font-semibold text-text-primary">{{ item.actual_weight|floatformat:2 }} kg</p>
+                  {% else %}
+                    <p class="text-sm text-text-body">Belum ditimbang</p>
+                  {% endif %}
+                </div>
+              </div>
+            {% empty %}
+              <p class="px-5 py-6 text-sm text-text-body">Belum ada rincian barang.</p>
+            {% endfor %}
+          </div>
+          <div class="flex flex-col gap-2 border-t border-border-slate bg-surface-soft px-5 py-4 text-sm sm:flex-row sm:justify-between">
+            <span class="text-text-body">Total perkiraan: <strong class="text-text-primary">{{ pickup.estimated_weight|floatformat:2 }} kg</strong></span>
+            {% if pickup.actual_weight != None %}<span class="text-text-body">Total aktual: <strong class="text-text-primary">{{ pickup.actual_weight|floatformat:2 }} kg</strong></span>{% endif %}
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-4">
+        <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
+          <h2 class="text-lg font-semibold text-text-primary">Ringkasan</h2>
+          <dl class="mt-4 space-y-3 text-sm">
+            <div class="flex justify-between gap-3"><dt class="text-text-body">Nomor pickup</dt><dd class="font-semibold text-text-primary">#{{ pickup.pk }}</dd></div>
+            <div class="flex justify-between gap-3"><dt class="text-text-body">Status</dt><dd class="font-semibold text-text-primary">{{ pickup.get_status_display }}</dd></div>
+            <div class="flex justify-between gap-3"><dt class="text-text-body">Jumlah jenis</dt><dd class="font-semibold text-text-primary">{{ pickup.items.count }}</dd></div>
+          </dl>
+          {% if pickup.status == "COMPLETED" %}
+            <div class="mt-5 border-t border-border-slate pt-4">
+              {% if pickup.actual_reward != None %}
+                <p class="text-sm text-text-body">Estimasi insentif berdasarkan berat aktual</p>
+                <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ pickup.actual_reward|floatformat:0 }}</p>
+              {% else %}
+                <p class="text-sm text-text-body">Insentif belum tersedia karena tarif untuk satu atau lebih jenis sampah belum diatur.</p>
+              {% endif %}
+            </div>
+          {% elif pickup.estimated_reward != None %}
+            <div class="mt-5 border-t border-border-slate pt-4">
+              <p class="text-sm text-text-body">Perkiraan insentif</p>
+              <p class="mt-1 text-2xl font-bold text-text-primary">Rp {{ pickup.estimated_reward|floatformat:0 }}</p>
+              <p class="mt-1 text-xs text-text-body">Nilai akhir mengikuti hasil penimbangan.</p>
+            </div>
+          {% endif %}
+        </section>
+
+        {% if pickup.status == "PENDING" %}
+          <form method="post" action="{% url 'pickup:cancel_pickup_ajax' pickup_id=pickup.pk %}" onsubmit="return confirm('Batalkan pickup setoran ini?')">
+            {% csrf_token %}
+            <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="submit">Batalkan pickup</button>
+          </form>
+        {% endif %}
+        <a class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline" href="{% url 'waste:submissions' %}">← Kembali ke riwayat</a>
+      </aside>
+    </div>
+  </div>
+</main>
+{% include "components/footer.html" %}
+{% endblock %}

@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from pickup import services
 from pickup.models import PickupRequest
-from pickup.forms import PickupForm
+from pickup.forms import PickupRequestForm
 from pickup.permissions import is_giver, is_collector, is_admin
 
 
@@ -129,7 +129,7 @@ def show_pickup_list(request):
 
   context = {
     "id_query": id_query,
-    "form": PickupForm(),
+    "form": PickupRequestForm(),
   }
 
   return render(request, "pickup.html", context)
@@ -166,7 +166,7 @@ def show_pickup_detail(request, pickup_id):
     "pickup": pickup,
   }
 
-  return render(request, "waste/detail.html", context)
+  return render(request, "pickup/detail.html", context)
   
 
 # ---------- API: read ----------
@@ -188,7 +188,8 @@ def get_pickup_json(request):
       "fields": {
         "status": pickup.status,
         "status_display": pickup.get_status_display(),
-        "scheduled_at": pickup.scheduled_at,
+        "scheduled_date": pickup.scheduled_date,
+        "time_slot": pickup.time_slot,
         "address": pickup.pickup_address,
         "collector_name": _display_name(pickup.collector),
       }
@@ -223,10 +224,10 @@ def get_collector_pickup_json(request):
       "fields": {
         "status": pickup.status,
         "status_display": pickup.get_status_display(),
-        "scheduled_at": pickup.scheduled_at,
+        "scheduled_date": pickup.scheduled_date,
+        "time_slot": pickup.time_slot,
         "address": pickup.pickup_address,
         "giver_name": _display_name(pickup.giver),
-        "item_description": pickup.item_description,
       }
     })
 
@@ -261,10 +262,8 @@ def get_pickup_detail_json(request, pickup_id):
       "latitude": float(pickup.latitude) if pickup.latitude is not None else None,
       "longitude": float(pickup.longitude) if pickup.longitude is not None else None,
       "contact_phone": pickup.contact_phone if can_see_contact else None,
-      "scheduled_at": pickup.scheduled_at,
-      "item_description": pickup.item_description,
-      "giver_note": pickup.giver_note,
-      "collector_note": pickup.collector_note,
+      "scheduled_date": pickup.scheduled_date,
+      "time_slot": pickup.time_slot,
       "status": pickup.status,
       "status_display": pickup.get_status_display(),
       "status_reason": pickup.status_reason,
@@ -286,7 +285,7 @@ def create_pickup_ajax(request):
   if not is_giver(request.user):
     return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
-  form = PickupForm(request.POST)
+  form = PickupRequestForm(request.POST)
   if not form.is_valid():
     return JsonResponse({"errors": form.errors.get_json_data()}, status=400)
 

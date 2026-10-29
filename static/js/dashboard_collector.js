@@ -53,22 +53,13 @@ function formatDate(date) {
   }).format(new Date(date));
 }
 
-function formatTime(time) {
-  return new Intl.DateTimeFormat("id-ID", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hourCycle: "h23",
-    timeZone: "Asia/Jakarta",
-  }).format(new Date(time));
-}
-
 const today = new Date().toLocaleDateString("id-ID", {
   timeZone: "Asia/Jakarta",
 });
 
 function getTodaysPickups(pickupData) {
   return pickupData.filter((pickup) => {
-    const scheduledDate = new Date(pickup.fields.scheduled_at);
+    const scheduledDate = new Date(pickup.fields.scheduled_date);
 
     const pickupDate = scheduledDate.toLocaleDateString("id-ID", {
       timeZone: "Asia/Jakarta",
@@ -131,7 +122,7 @@ function buildPickupRowElement(item) {
       </div>
       <div class="min-w-0">
         <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${pickupId} • ${pickup.pickup_address}</p>
-        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(pickup.scheduled_at)} ${formatTime(pickup.scheduled_at)} WIB - 6,2 kg & Plastik Kaca</p>
+        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(pickup.scheduled_date)} ${pickup.time_slot} WIB - 6,2 kg & Plastik Kaca</p>
       </div>
     </div>
     <div class="shrink-0 pl-3 flex items-center gap-3">
@@ -166,7 +157,7 @@ function buildNewPickupRowElement(item) {
       </div>
       <div class="min-w-0">
         <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${newPickupId} • ${newPickup.pickup_address}</p>
-        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(newPickup.scheduled_at)} • ${formatTime(newPickup.scheduled_at)} WIB • 5,5 kg Kardus</p>
+        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(newPickup.scheduled_date)} • ${newPickup.time_slot} WIB • 5,5 kg Kardus</p>
       </div>
     </div>
     <div class="shrink-0 pl-3 flex items-center gap-3">
