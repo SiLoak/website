@@ -238,7 +238,7 @@ def donation_view(request):
                     transaction_type="donation",
                     status="success",
                     amount=amount,
-                    description="Donasi insentif SiLoak",
+                    description="Donasi saldo",
                 )
 
                 Donation.objects.create(

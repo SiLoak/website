@@ -3,7 +3,7 @@ from django.utils import timezone
 from django.db import transaction
 
 from .models import CollectionPoint, Submission, SubmissionItem, WasteType
-from wallet.services import credit_wallet
+from wallet.services import credit_wallet, record_donation
 
 
 @admin.register(WasteType)
@@ -68,8 +68,11 @@ def verify_submissions(modeladmin, request, queryset):
                 update_fields=["status", "verified_at", "verified_by", "updated_at"]
             )
 
-            if (submission.incentive_allocation == Submission.IncentiveAllocation.WALLET):
+            if submission.incentive_allocation == Submission.IncentiveAllocation.WALLET:
                 credit_wallet(user=submission.user, amount=actual_reward, description=f"Insentif setoran #{submission.pk}", reference=f"waste_submission:{submission.pk}")
+
+            elif submission.incentive_allocation == Submission.IncentiveAllocation.DONATION:
+                record_donation(user=submission.user, amount=actual_reward, description=f"Donasi insentif setoran #{submission.pk}", reference=f"waste_submission_donation:{submission.pk}")
             verified_count += 1
 
     if verified_count:
