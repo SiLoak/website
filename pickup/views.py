@@ -240,7 +240,7 @@ def get_pickup_json(request):
         "status_display": pickup.get_status_display(),
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
-        "address": pickup.pickup_address,
+        "address_detail": pickup.address_detail,
         "collector_name": _display_name(pickup.collector),
       }
     })
@@ -276,7 +276,7 @@ def get_collector_pickup_json(request):
         "status_display": pickup.get_status_display(),
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
-        "address": pickup.pickup_address,
+        "address_detail": pickup.address_detail,
         "giver_name": _display_name(pickup.giver),
       }
     })

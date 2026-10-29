@@ -76,9 +76,13 @@ function getActivePickups(pickupData) {
 }
 
 function getCompletedPickups(pickupData) {
+  const now = new Date();
+
   return pickupData.filter((pickup) => {
-    const completedAt = pickup.fields.completed_at ? new Date(pickup.fields.completed_at) : "";
+    const completedAt = pickup.fields.completed_at ? new Date(pickup.fields.completed_at) : null;
     return (
+      completedAt !== null &&
+      !Number.isNaN(completedAt.getTime()) &&
       completedAt.getMonth() === now.getMonth() &&
       completedAt.getFullYear() === now.getFullYear() &&
       pickup.fields.status_display === "COMPLETED"
@@ -104,6 +108,53 @@ function getTodaysStat(pickupData) {
   return [todaysCompletedPickups, todaysActivePickups, todaysWaitingPickups];
 }
 
+function changeStatusBadge(pickupStatus) {
+  let message = "";
+  let color = "";
+  switch (pickupStatus) {
+    case "ASSIGNED":
+      message = "Kurir Ditugaskan";
+      color = "bg-status-warning-bg text-status-warning-text";
+      break;
+    case "ON_THE_WAY":
+      message = "Kurir Dalam Perjalanan";
+      color = "bg-status-warning-bg text-status-warning-text";
+      break;
+    case "ARRIVED":
+      message = "Kurir Tiba";
+      color = "bg-status-warning-bg text-status-warning-text";
+      break;
+    case "WEIGHING":
+      message = "Penimbangan dan Verifikasi";
+      color = "bg-status-warning-bg text-status-warning-text";
+      break;
+    case "COMPLETED":
+      message = "Selesai";
+      color = "bg-green-100 text-green-700"
+      break;
+    default:
+      message = "Menunggu Penugasan";
+      color = "bg-gray-100 text-gray-700";
+      break;
+  }
+  return [message, color];
+}
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+
 // Membuat elemen row untuk pickup list
 function buildPickupRowElement(item) {
   const pickup = item.fields;
@@ -121,12 +172,13 @@ function buildPickupRowElement(item) {
         <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[19px]">local_shipping</span>
       </div>
       <div class="min-w-0">
-        <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${pickupId} • ${pickup.pickup_address}</p>
-        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(pickup.scheduled_date)} ${pickup.time_slot} WIB - 6,2 kg & Plastik Kaca</p>
+        <p class="font-label-md text-label-md font-medium text-text-primary truncate">${pickupId}</p>
+        <p class="font-label-md text-label-md text-text-body/90 truncate">${pickup.address_detail}</p>
+        <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(pickup.scheduled_date)} • ${pickup.time_slot} WIB • 6,2 kg & Plastik Kaca</p>
       </div>
     </div>
     <div class="shrink-0 pl-3 flex items-center gap-3">
-      <span class="bg-status-warning-bg text-status-warning-text font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">Ditugaskan</span>
+      <span class="${changeStatusBadge(pickup.status)[1]} font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">${changeStatusBadge(pickup.status)[0]}</span>
       <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}">
         Detail
         <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
@@ -156,16 +208,20 @@ function buildNewPickupRowElement(item) {
         <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[19px]">hourglass_top</span>
       </div>
       <div class="min-w-0">
-        <p class="font-label-md text-label-md font-medium text-text-primary truncate">#${newPickupId} • ${newPickup.pickup_address}</p>
+        <p class="font-label-md text-label-md font-medium text-text-primary truncate">${newPickupId}</p>
+        <p class="font-label-md text-label-md text-text-body/90 truncate">${newPickup.address_detail}</p>
         <p class="font-label-sm text-label-sm text-text-body/70">${formatDate(newPickup.scheduled_date)} • ${newPickup.time_slot} WIB • 5,5 kg Kardus</p>
       </div>
     </div>
     <div class="shrink-0 pl-3 flex items-center gap-3">
-      <span class="bg-surface-soft text-text-body font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">Pending</span>
+      <span class="bg-surface-soft text-text-body font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">${changeStatusBadge(newPickup.status)[0]}</span>
       <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}"> Detail <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
       </a>
-      <form method="post" action="${acceptUrl}"> {% csrf_token %} <button class="h-9 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold inline-flex items-center gap-1.5 hover:bg-tertiary transition-colors shadow-sm" type="submit">
-          <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[18px]">check</span> Terima </button>
+      <form method="post" action="${acceptUrl}">
+        <button class="h-9 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold inline-flex items-center gap-1.5 hover:bg-tertiary transition-colors shadow-sm" type="submit">
+          <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[18px]">check</span>
+          Terima
+        </button>
       </form>
     </div>
   `;
@@ -185,7 +241,7 @@ async function fetchPickupList() {
     const url = BASE_ENDPOINT;
 
     const response = await fetch(url, {
-      headers: { 'Accept': 'application/json' },
+      headers: { 'Accept': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
       signal: pickupAbortController.signal,
     });
 
