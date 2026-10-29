@@ -2,11 +2,9 @@ import uuid
 
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
-from django.contrib.auth.views import redirect_to_login
 from django.http import JsonResponse, Http404
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
-from django.contrib import messages
 from django.views.decorators.http import require_POST
 from django.utils import timezone
 from django.db import transaction
@@ -14,8 +12,9 @@ from django.db import transaction
 from pickup import services
 from pickup.models import PickupRequest
 from pickup.forms import PickupRequestForm, PickupWeighingFormSet
-from pickup.permissions import is_giver, is_collector, is_admin
+from pickup.permissions import is_collector, is_admin
 from waste.views import _submission_form_view
+from main.htmx import is_htmx, with_toast
 from main.security import ajax_login_required, collector_required, giver_required, rate_limit
 
 
@@ -57,6 +56,16 @@ COLLECTOR_ACTIONS = {
 
 
 VALID_SCOPES = {"mine", "available"}
+
+TRANSITION_MESSAGES = {
+  Status.CANCELLED: "Pickup berhasil dibatalkan.",
+  Status.ASSIGNED: "Tugas pickup berhasil diambil.",
+  Status.ON_THE_WAY: "Status diperbarui: kurir dalam perjalanan.",
+  Status.ARRIVED: "Status diperbarui: kurir sudah tiba.",
+  Status.WEIGHING: "Penimbangan dimulai.",
+  Status.FAILED: "Pickup ditandai gagal.",
+  Status.COMPLETED: "Penimbangan selesai. Pickup ditandai selesai.",
+}
 
 
 # ---------- Helper ----------
@@ -114,9 +123,12 @@ def _transition_response(request, pickup_id, new_status, note="", collector=None
   except services.PickupServiceError as e:
     return JsonResponse({"error": e.message}, status=e.status_code)
 
+  message = TRANSITION_MESSAGES.get(new_status, "Status pickup berhasil diperbarui.")
+  if is_htmx(request):
+    return with_toast(_render_detail(request, pickup.pk), message)
   return JsonResponse(
     {
-      "message": "Status pickup berhasil diperbarui.",
+      "message": message,
       "pk": str(pickup.id),
       "status": pickup.status,
       "status_display": pickup.get_status_display(),
@@ -176,8 +188,7 @@ def show_collector_pickup_list(request):
   return render(request, "pickup/dashboard_collector.html", context)
 
 
-@login_required(login_url="auth_page")
-def show_pickup_detail(request, pickup_id):
+def _render_detail(request, pickup_id, weighing_formset=None, status=200):
   pickup, is_owner, is_assigned = _get_accessible_pickup(request.user, pickup_id)
   user_is_admin = is_admin(request.user)
 
@@ -192,11 +203,8 @@ def show_pickup_detail(request, pickup_id):
 
   collector_actions = COLLECTOR_ACTIONS.get(pickup.status, ()) if is_assigned else ()
 
-  weighing_formset = None
-  if is_assigned and pickup.status == Status.WEIGHING:
-    weighing_formset = PickupWeighingFormSet(
-      queryset=pickup.items.all(), prefix="weigh"
-    )
+  if weighing_formset is None and is_assigned and pickup.status == Status.WEIGHING:
+    weighing_formset = PickupWeighingFormSet(queryset=pickup.items.all(), prefix="weigh")
 
   context = {
     "active_item": "history",
@@ -211,9 +219,13 @@ def show_pickup_detail(request, pickup_id):
     "collector_actions": collector_actions,
     "weighing_formset": weighing_formset,
   }
+  return render(request, "pickup/detail.html", context, status=status)
 
-  return render(request, "pickup/detail.html", context)
-  
+
+@login_required(login_url="auth_page")
+def show_pickup_detail(request, pickup_id):
+  return _render_detail(request, pickup_id)
+
 
 # ---------- API: read ----------
 
@@ -382,6 +394,8 @@ def complete_weighing_ajax(request, pickup_id):
     request.POST, queryset=pickup.items.all(), prefix="weigh"
   )
   if not formset.is_valid():
+    if is_htmx(request):
+      return _render_detail(request, pickup.pk, weighing_formset=formset, status=422)
     return JsonResponse(
       {
         "error": "Periksa kembali berat aktual yang diisi.",
@@ -402,6 +416,8 @@ def complete_weighing_ajax(request, pickup_id):
   except services.PickupServiceError as e:
     return JsonResponse({"error": e.message}, status=e.status_code)
 
+  if is_htmx(request):
+    return with_toast(_render_detail(request, pickup.pk), TRANSITION_MESSAGES[Status.COMPLETED])
   return JsonResponse(
     {
       "message": "Penimbangan selesai. Pickup ditandai selesai.",

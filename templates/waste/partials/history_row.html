@@ -17,5 +17,10 @@
   <td class="whitespace-nowrap"><span class="history-badge is-{{ entry.status_group }}" data-status-badge>{{ entry.status_display }}</span></td>
   <td class="whitespace-nowrap text-right">
     <a class="history-link" href="{{ entry.detail_url }}">Detail <span aria-hidden="true">→</span></a>
+    {% if entry.cancellable %}
+      <button type="button" class="history-cancel" data-optimistic-cancel
+              hx-post="{% url 'waste:cancel_entry' %}" hx-vals='{"entry": "{{ entry.select_value }}"}'
+              hx-target="closest tr" hx-swap="outerHTML" hx-confirm="Batalkan pengajuan {{ entry.number }}?">Batalkan</button>
+    {% endif %}
   </td>
 </tr>

@@ -2,6 +2,15 @@
 (function () {
   "use strict";
 
+  // Swap 422 responses too: they carry the form re-rendered with its errors.
+  window.htmx.config.responseHandling = [
+    { code: "204", swap: false },
+    { code: "[23]..", swap: true },
+    { code: "422", swap: true },
+    { code: "[45]..", swap: false, error: true },
+    { code: "...", swap: false },
+  ];
+
   const TOAST_DURATION_MS = 4500;
   const STATUS_MESSAGES = {
     401: "Sesi kamu berakhir. Silakan masuk lagi.",

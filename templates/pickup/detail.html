@@ -115,10 +115,11 @@
           </div>
 
           {% if weighing_formset %}
-            <form id="weighing-form" method="post" action="{% url 'pickup:complete_weighing_ajax' pickup_id=pickup.pk %}" novalidate>
+            <form id="weighing-form" method="post" action="{% url 'pickup:complete_weighing_ajax' pickup_id=pickup.pk %}" novalidate
+                  hx-post="{% url 'pickup:complete_weighing_ajax' pickup_id=pickup.pk %}" hx-target="#page-root" hx-select="#page-root" hx-swap="outerHTML" hx-disabled-elt="find [type=submit]">
               {% csrf_token %}
               {{ weighing_formset.management_form }}
-              <p id="weighing-feedback" class="px-5 pt-4 text-sm text-red-700" role="alert" hidden></p>
+              {% if weighing_formset.non_form_errors %}<p class="px-5 pt-4 text-sm text-red-700" role="alert">{{ weighing_formset.non_form_errors|join:" " }}</p>{% endif %}
               <div class="divide-y divide-border-slate">
                 {% for wform in weighing_formset %}
                   {{ wform.id }}
@@ -131,7 +132,7 @@
                     <div>
                       <label class="text-xs text-text-body" for="{{ wform.actual_weight.id_for_label }}">Berat aktual (kg)</label>
                       {{ wform.actual_weight }}
-                      <p class="mt-1 text-xs text-red-700" data-weight-error="{{ forloop.counter0 }}"></p>
+                      {% if wform.actual_weight.errors %}<p class="mt-1 text-xs text-red-700">{{ wform.actual_weight.errors|join:", " }}</p>{% endif %}
                     </div>
                   </div>
                 {% endfor %}
@@ -172,7 +173,6 @@
       </div>
 
       <aside class="space-y-4">
-        <p id="pickup-action-feedback" class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800" role="alert" hidden></p>
 
         <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
           <h2 class="text-lg font-semibold text-text-primary">Ringkasan</h2>
@@ -208,7 +208,7 @@
           <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
             <h2 class="text-lg font-semibold text-text-primary">Tugas pickup</h2>
             <p class="mt-2 text-sm text-text-body">Pickup ini belum memiliki petugas.</p>
-            <button class="mt-4 w-full rounded-lg bg-primary px-4 py-3 font-semibold text-white hover:opacity-90" type="button" data-ajax-action data-url="{% url 'pickup:accept_pickup_ajax' pickup_id=pickup.pk %}" data-confirm="Ambil tugas pickup ini?">Ambil tugas ini</button>
+            <button class="mt-4 w-full rounded-lg bg-primary px-4 py-3 font-semibold text-white hover:opacity-90" type="button" hx-post="{% url 'pickup:accept_pickup_ajax' pickup_id=pickup.pk %}" hx-target="#page-root" hx-select="#page-root" hx-swap="outerHTML" hx-confirm="Ambil tugas pickup ini?" hx-disabled-elt="this">Ambil tugas ini</button>
           </section>
         {% endif %}
 
@@ -216,10 +216,10 @@
           <section class="rounded-xl border border-border-slate bg-surface-card p-5 shadow-sm">
             <h2 class="text-lg font-semibold text-text-primary">Aksi petugas</h2>
             <label class="mt-4 block text-xs text-text-body" for="status-note">Catatan atau alasan (wajib jika menandai gagal)</label>
-            <textarea id="status-note" class="mt-1 w-full rounded-lg border border-border-slate bg-surface-card px-3 py-2 text-sm text-text-primary" rows="2" maxlength="500"></textarea>
+            <textarea id="status-note" name="note" class="mt-1 w-full rounded-lg border border-border-slate bg-surface-card px-3 py-2 text-sm text-text-primary" rows="2" maxlength="500"></textarea>
             <div class="mt-4 space-y-3">
               {% for action in collector_actions %}
-                <button class="w-full rounded-lg px-4 py-3 font-semibold {% if action.danger %}text-red-700 hover:bg-red-50{% else %}bg-primary text-white hover:opacity-90{% endif %}" type="button" data-ajax-action data-url="{% url 'pickup:update_pickup_status_ajax' pickup_id=pickup.pk %}" data-status="{{ action.status }}" data-needs-note="{% if action.needs_note %}true{% else %}false{% endif %}"{% if action.danger %} data-confirm="Tandai pickup ini gagal?"{% endif %}>{{ action.label }}</button>
+                <button class="w-full rounded-lg px-4 py-3 font-semibold {% if action.danger %}text-red-700 hover:bg-red-50{% else %}bg-primary text-white hover:opacity-90{% endif %}" type="button" hx-post="{% url 'pickup:update_pickup_status_ajax' pickup_id=pickup.pk %}" hx-vals='{"status": "{{ action.status }}"}' hx-include="#status-note" hx-target="#page-root" hx-select="#page-root" hx-swap="outerHTML" hx-disabled-elt="this"{% if action.danger %} hx-confirm="Tandai pickup ini gagal?"{% endif %}>{{ action.label }}</button>
               {% endfor %}
             </div>
           </section>
@@ -245,7 +245,7 @@
           <a class="block w-full rounded-lg bg-primary px-4 py-3 text-center font-semibold text-white hover:opacity-90" href="{% url 'pickup:edit' pickup_id=pickup.pk %}">Ubah permintaan</a>
         {% endif %}
         {% if can_cancel %}
-          <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="button" data-ajax-action data-url="{% url 'pickup:cancel_pickup_ajax' pickup_id=pickup.pk %}" data-confirm="Batalkan pickup setoran ini?">Batalkan pickup</button>
+          <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="button" hx-post="{% url 'pickup:cancel_pickup_ajax' pickup_id=pickup.pk %}" hx-target="#page-root" hx-select="#page-root" hx-swap="outerHTML" hx-confirm="Batalkan pickup setoran ini?" hx-disabled-elt="this">Batalkan pickup</button>
         {% endif %}
         <a class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline" href="{% url 'waste:submissions' %}">← Kembali ke riwayat</a>
       </aside>
@@ -253,89 +253,4 @@
   </div>
 </main>
 {% include "components/footer.html" %}
-
-<script>
-(function () {
-  const csrfToken = "{{ csrf_token }}";
-
-  async function postData(url, body) {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "X-CSRFToken": csrfToken, "X-Requested-With": "XMLHttpRequest" },
-      credentials: "same-origin",
-      body: body,
-    });
-    let data = {};
-    try { data = await response.json(); } catch (error) { data = {}; }
-    return { ok: response.ok, data: data };
-  }
-
-  function showFeedback(element, message) {
-    if (!element) return;
-    element.textContent = message;
-    element.hidden = !message;
-  }
-
-  const actionFeedback = document.getElementById("pickup-action-feedback");
-  const noteField = document.getElementById("status-note");
-
-  document.querySelectorAll("[data-ajax-action]").forEach(function (button) {
-    button.addEventListener("click", async function () {
-      if (button.dataset.confirm && !window.confirm(button.dataset.confirm)) return;
-
-      const note = noteField ? noteField.value.trim() : "";
-      if (button.dataset.needsNote === "true" && !note) {
-        showFeedback(actionFeedback, "Alasan wajib diisi.");
-        return;
-      }
-
-      const body = new FormData();
-      if (button.dataset.status) body.append("status", button.dataset.status);
-      if (note) body.append("note", note);
-
-      button.disabled = true;
-      showFeedback(actionFeedback, "");
-      try {
-        const result = await postData(button.dataset.url, body);
-        if (result.ok) { window.location.reload(); return; }
-        showFeedback(actionFeedback, result.data.error || "Terjadi kesalahan. Coba lagi.");
-      } catch (error) {
-        showFeedback(actionFeedback, "Tidak dapat terhubung ke server.");
-      }
-      button.disabled = false;
-    });
-  });
-
-  const weighingForm = document.getElementById("weighing-form");
-  if (weighingForm) {
-    const weighingFeedback = document.getElementById("weighing-feedback");
-    weighingForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      const submitButton = weighingForm.querySelector("[type=submit]");
-      submitButton.disabled = true;
-      showFeedback(weighingFeedback, "");
-      document.querySelectorAll("[data-weight-error]").forEach(function (element) { element.textContent = ""; });
-
-      try {
-        const result = await postData(weighingForm.action, new FormData(weighingForm));
-        if (result.ok) { window.location.reload(); return; }
-
-        const data = result.data;
-        const general = (data.non_form_errors && data.non_form_errors.length)
-          ? data.non_form_errors.join(" ")
-          : (data.error || "Terjadi kesalahan. Coba lagi.");
-        showFeedback(weighingFeedback, general);
-        (data.form_errors || []).forEach(function (errors, index) {
-          const target = document.querySelector('[data-weight-error="' + index + '"]');
-          const list = errors && errors.actual_weight;
-          if (target && list) target.textContent = list.map(function (item) { return item.message; }).join(", ");
-        });
-      } catch (error) {
-        showFeedback(weighingFeedback, "Tidak dapat terhubung ke server.");
-      }
-      submitButton.disabled = false;
-    });
-  }
-})();
-</script>
 {% endblock %}

@@ -15,7 +15,7 @@
     {% block extra_head %}{% endblock %}
 </head>
 <body class="min-h-screen bg-page-bg font-body-md text-text-primary antialiased" hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-    {% block content %}{% endblock %}
+    <div id="page-root">{% block content %}{% endblock %}</div>
     <div id="toast-region" class="siloak-toast-region" aria-live="polite" aria-atomic="false"></div>
     {% block extra_js %}{% endblock %}
 </body>

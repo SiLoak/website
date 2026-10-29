@@ -237,6 +237,17 @@ def build_history(user, filters):
     return entries
 
 
+def entry_for(user, kind, pk):
+    """A single history entry owned by ``user``, or None."""
+    if kind == "dropoff":
+        obj = _base_submissions(user).filter(pk=pk).first()
+        return _dropoff_entry(obj) if obj else None
+    if kind == "pickup":
+        obj = _base_pickups(user).filter(pk=pk).first()
+        return _pickup_entry(obj) if obj else None
+    return None
+
+
 def history_stats(user):
     """Totals across all of the user's entries, computed with aggregate queries."""
     submissions = Submission.objects.filter(user=user).aggregate(

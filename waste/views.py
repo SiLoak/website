@@ -1,10 +1,10 @@
-import json
 from datetime import timedelta
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.http import QueryDict
+from django.http import Http404, HttpResponse, QueryDict
+from django.urls import reverse
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
@@ -20,10 +20,12 @@ from .history import (
     HistoryFilterForm,
     build_history,
     cancel_entries,
+    entry_for,
     history_stats,
     parse_selection,
 )
 from wallet.models import Wallet
+from main.htmx import hx_location, is_htmx, with_toast
 from main.security import rate_limit
 
 PICKUP_PREFILL_FIELDS = (
@@ -113,6 +115,10 @@ def _save_submission(request, form, formset, editing):
     return submission
 
 
+def _after_save(request, path):
+    return hx_location(path) if is_htmx(request) else redirect(path)
+
+
 def _submission_form_view(request, submission=None, pickup=None):
     """One form for three jobs: new setoran/pickup, edit setoran, edit pickup."""
     if submission is not None and submission.status != Submission.Status.PENDING:
@@ -157,15 +163,17 @@ def _submission_form_view(request, submission=None, pickup=None):
                 "Permintaan penjemputan berhasil diperbarui." if editing_pickup
                 else "Permintaan penjemputan berhasil dibuat.",
             )
-            return redirect("pickup:show_pickup_detail", pickup_id=saved.pk)
+            return _after_save(request, reverse("pickup:show_pickup_detail", args=[saved.pk]))
         if not is_pickup and form.is_valid() and formset.is_valid():
             saved = _save_submission(request, form, formset, editing)
             messages.success(
                 request,
                 "Pengajuan berhasil diperbarui." if editing else "Pengajuan setoran berhasil dibuat.",
             )
-            return redirect("waste:detail", submission_id=saved.pk)
+            return _after_save(request, reverse("waste:detail", args=[saved.pk]))
 
+    # 422 lets HTMX swap the form back in with its errors.
+    status = 422 if data is not None and is_htmx(request) else 200
     return render(
         request,
         "waste/dropoff.html",
@@ -182,6 +190,7 @@ def _submission_form_view(request, submission=None, pickup=None):
             "delivery_method": delivery_method,
             "pickup_dates": _pickup_date_choices(),
         },
+        status=status,
     )
 
 
@@ -210,41 +219,34 @@ def edit_submission(request, submission_id):
 @require_POST
 @rate_limit("submission-cancel", "10/m")
 def cancel_submission(request, submission_id):
-    submission = get_object_or_404(
-        Submission, pk=submission_id, user=request.user
-    )
+    submission = get_object_or_404(Submission, pk=submission_id, user=request.user)
     if submission.status != Submission.Status.PENDING:
-        messages.error(request, "Hanya pengajuan yang menunggu penimbangan yang dapat dibatalkan.")
-    else:
-        submission.status = Submission.Status.CANCELED
-        submission.canceled_at = timezone.now()
-        submission.save(update_fields=["status", "canceled_at", "updated_at"])
-        messages.success(request, "Pengajuan setoran berhasil dibatalkan.")
+        message = "Hanya pengajuan yang menunggu penimbangan yang dapat dibatalkan."
+        if is_htmx(request):
+            return HttpResponse(message, status=409, content_type="text/plain; charset=utf-8")
+        messages.error(request, message)
+        return redirect("waste:detail", submission_id=submission.pk)
+
+    cancel_entries(request.user, [submission.pk], [], reason="")
+    if is_htmx(request):
+        return with_toast(_render_detail(request, submission.pk), "Pengajuan setoran berhasil dibatalkan.")
+    messages.success(request, "Pengajuan setoran berhasil dibatalkan.")
     return redirect("waste:detail", submission_id=submission.pk)
 
 
-@login_required(login_url="auth_page")
-def submission_detail(request, submission_id):
+def _render_detail(request, submission_id):
     submission = get_object_or_404(
         Submission.objects.select_related("collection_point", "user")
         .prefetch_related("items__waste_type"),
         pk=submission_id,
         user=request.user,
     )
-    return render(
-        request,
-        "waste/detail.html",
-        {"active_item": "history", "submission": submission},
-    )
+    return render(request, "waste/detail.html", {"active_item": "history", "submission": submission})
 
 
-def _is_htmx(request):
-    return request.headers.get("HX-Request") == "true"
-
-
-def _toast(response, message, level="success"):
-    response["HX-Trigger"] = json.dumps({"showToast": {"message": message, "level": level}})
-    return response
+@login_required(login_url="auth_page")
+def submission_detail(request, submission_id):
+    return _render_detail(request, submission_id)
 
 
 def _history_context(request, params):
@@ -259,13 +261,13 @@ def _history_context(request, params):
         "page_obj": page_obj,
         "filter_query": query.urlencode(),
         "stats": history_stats(request.user),
-        "is_htmx": _is_htmx(request),
+        "is_htmx": is_htmx(request),
     }
 
 
 def _render_history(request, params, status=200):
     context = _history_context(request, params)
-    template = "waste/partials/history_results.html" if _is_htmx(request) else "history.html"
+    template = "waste/partials/history_results.html" if is_htmx(request) else "history.html"
     return render(request, template, context, status=status)
 
 
@@ -285,9 +287,38 @@ def bulk_cancel(request):
     else:
         message, level = "Tidak ada pengajuan yang dapat dibatalkan dari pilihanmu.", "warning"
 
-    if _is_htmx(request):
+    if is_htmx(request):
         # Re-render the list with the filters the user is looking at.
         params = QueryDict(request.POST.get("filter_query", ""))
-        return _toast(_render_history(request, params), message, level)
+        return with_toast(_render_history(request, params), message, level)
     getattr(messages, level)(request, message)
     return redirect("waste:submissions")
+
+
+@login_required(login_url="auth_page")
+@require_POST
+@rate_limit("history-cancel", "20/m")
+def cancel_entry(request):
+    """Cancel one history row (drop-off or pickup) and send back the new row."""
+    dropoff_ids, pickup_ids = parse_selection([request.POST.get("entry", "")])
+    kind, pk = ("dropoff", dropoff_ids[0]) if dropoff_ids else ("pickup", pickup_ids[0]) if pickup_ids else (None, None)
+    entry = entry_for(request.user, kind, pk) if kind else None
+    if entry is None:
+        raise Http404
+    if not entry.cancellable:
+        message = "Pengajuan ini sudah tidak dapat dibatalkan."
+        if is_htmx(request):
+            return HttpResponse(message, status=409, content_type="text/plain; charset=utf-8")
+        messages.error(request, message)
+        return redirect("waste:submissions")
+
+    cancel_entries(request.user, dropoff_ids, pickup_ids, reason="Dibatalkan dari riwayat.")
+    message = f"Pengajuan {entry.number} dibatalkan."
+    if not is_htmx(request):
+        messages.success(request, message)
+        return redirect("waste:submissions")
+    response = render(request, "waste/partials/history_row_swap.html", {
+        "entry": entry_for(request.user, kind, pk),
+        "stats": history_stats(request.user),
+    })
+    return with_toast(response, message)

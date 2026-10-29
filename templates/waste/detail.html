@@ -110,7 +110,9 @@
           <a class="flex w-full items-center justify-center gap-2 rounded-lg border border-border-slate bg-surface-card px-4 py-3 font-semibold text-text-primary shadow-sm hover:bg-surface-soft" href="{% url 'waste:edit' submission_id=submission.pk %}">
             <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga']" aria-hidden="true">edit</span>Ubah pengajuan
           </a>
-          <form method="post" action="{% url 'waste:cancel' submission_id=submission.pk %}" onsubmit="return confirm('Batalkan pengajuan setoran ini?')">
+          <form method="post" action="{% url 'waste:cancel' submission_id=submission.pk %}"
+                hx-post="{% url 'waste:cancel' submission_id=submission.pk %}" hx-target="#page-root" hx-select="#page-root" hx-swap="outerHTML"
+                hx-confirm="Batalkan pengajuan setoran ini?" hx-disabled-elt="find button">
             {% csrf_token %}
             <button class="w-full rounded-lg px-4 py-3 font-semibold text-red-700 hover:bg-red-50" type="submit">Batalkan pengajuan</button>
           </form>
