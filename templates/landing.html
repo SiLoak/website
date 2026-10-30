@@ -11,6 +11,7 @@ Barang Bekas{% endblock %} {% block extra_head %}
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 />
 <link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}" />
+<link rel="stylesheet" href="{% static 'css/location-widgets.css' %}" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{% static 'js/leaflet-maps.js' %}"></script>
 {% endblock %} {% block content %}
@@ -254,7 +255,7 @@ Barang Bekas{% endblock %} {% block extra_head %}
         class="box-border w-full rounded-xl bg-white p-8 shadow-sm max-[760px]:p-4"
       >
         <form
-          action="#titik-pengumpulan"
+          action="{% url 'location:list' %}"
           method="get"
           class="flex items-center gap-4 max-[1000px]:flex-wrap max-[760px]:items-stretch max-[760px]:gap-2.5"
         >
@@ -263,8 +264,9 @@ Barang Bekas{% endblock %} {% block extra_head %}
           >
             {% include "components/lucide_icon.html" with name="search" icon_class="absolute left-[14px] z-10 h-[18px] w-[18px] text-[#64748b]" only %}
             <input
-              type="text"
-              value="Tebet Timur, Jakarta Selatan"
+              type="search"
+              name="q"
+              placeholder="Cari nama titik atau alamat"
               aria-label="Cari lokasi atau titik pengumpulan"
               class="!m-0 !h-11 !min-w-0 !w-full !rounded-lg !border-0 !bg-[#eff4ff] !py-0 !pl-11 !pr-4 !text-sm !leading-5 !text-[#0f172a] placeholder:text-[#64748b] focus:!outline focus:!outline-2 focus:!outline-[#3b507d]/20"
             />
@@ -273,24 +275,24 @@ Barang Bekas{% endblock %} {% block extra_head %}
             aria-label="Jarak pencarian"
             class="inline-flex shrink-0 items-center gap-2 max-[760px]:flex-1 max-[760px]:justify-between"
           >
-            <button
-              type="button"
-              class="min-h-[34px] rounded-[7px] bg-[#3b507d] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-white max-[760px]:flex-1 max-[760px]:px-2"
+            <a
+              href="{% url 'location:list' %}?radius=2"
+              class="min-h-[34px] rounded-[7px] bg-[#3b507d] px-3.5 py-2 text-center text-[13px] font-medium leading-[18px] text-white max-[760px]:flex-1 max-[760px]:px-2"
             >
               2 km
-            </button>
-            <button
-              type="button"
-              class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2"
+            </a>
+            <a
+              href="{% url 'location:list' %}?radius=5"
+              class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-center text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2"
             >
               5 km
-            </button>
-            <button
-              type="button"
-              class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2"
+            </a>
+            <a
+              href="{% url 'location:list' %}?radius=10"
+              class="min-h-[34px] rounded-[7px] bg-[#eff4ff] px-3.5 py-2 text-center text-[13px] font-medium leading-[18px] text-[#334155] max-[760px]:flex-1 max-[760px]:px-2"
             >
               10 km
-            </button>
+            </a>
           </div>
           <button
             id="landing-find-nearest"
@@ -314,137 +316,36 @@ Barang Bekas{% endblock %} {% block extra_head %}
         >
           <div
             role="list"
-            aria-label="Titik pengumpulan terdekat"
-            class="relative h-[480px] max-h-[480px] overflow-y-auto pr-1 max-[760px]:flex max-[760px]:h-[420px] max-[760px]:max-h-[420px] max-[760px]:flex-col max-[760px]:gap-2"
+            aria-label="Titik pengumpulan"
+            class="landing-point-list h-[480px] max-h-[480px] overflow-y-auto pr-1 max-[760px]:h-auto max-[760px]:max-h-[420px]"
           >
+            {% for point in featured_points %}
             <article
               role="listitem"
-              class="absolute inset-x-0 top-0 flex flex-col gap-2 rounded-xl bg-[#e7e2ce] p-4 max-[760px]:static max-[760px]:shrink-0"
+              class="landing-point-card{% if forloop.first %} is-first{% endif %}"
             >
               <div class="flex items-center justify-between gap-2">
-                <h3
-                  class="text-lg font-semibold leading-[26px] max-[420px]:text-base"
-                >
-                  TPST SiLoak Tebet Timur
-                </h3>
-                <span
-                  class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700"
-                  >Buka</span
-                >
+                <h3 class="text-lg font-semibold leading-[26px] max-[420px]:text-base">{{ point.name }}</h3>
+                {% if point.is_open != None %}
+                <span class="landing-point-badge{% if point.is_open %} is-open{% endif %}">{% if point.is_open %}Buka{% else %}Tutup{% endif %}</span>
+                {% endif %}
               </div>
-              <p class="text-[13px] leading-[18px] text-[#334155]">
-                Jl. Tebet Timur Dalam Raya No. 42, Jakarta Selatan
-              </p>
-              <div
-                class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]"
-              >
-                <span class="inline-flex items-center gap-1"
-                  >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}1,2 km dari kamu</span
-                ><b class="!font-['Inter',sans-serif]">•</b
-                ><span class="inline-flex items-center gap-1"
-                  >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.00 - 17.00 WIB</span
-                >
+              <p class="text-[13px] leading-[18px] text-[#334155]">{{ point.address|default:"Alamat dimuat dari OpenStreetMap di halaman Titik Pengumpulan" }}</p>
+              <div class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]">
+                <span class="landing-point-chip">{{ point.category_label }}</span>
+                {% if point.is_open != None %}
+                <span class="inline-flex items-center gap-1">{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}{{ point.opening_label }}</span>
+                {% endif %}
               </div>
-              <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
-                <span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
-                  >Kardus</span
-                ><span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
-                  >Plastik</span
-                ><span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
-                  >Logam</span
-                ><span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#beb7a7] px-2 py-0.5 text-xs font-bold leading-4 text-white"
-                  >E-Waste</span
-                >
-              </div>
-              <div
-                class="flex items-center justify-end gap-1 pt-4 text-[13px] font-semibold leading-[18px] text-[#112250]"
-              >
-                Pilih Titik Ini {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[9px] w-[9px]" only %}
+              <div class="flex items-center justify-end gap-4 pt-3 text-[13px] font-semibold leading-[18px] text-[#112250]">
+                <a class="hover:underline" href="{{ point.directions_url }}" target="_blank" rel="noopener">Rute ↗</a>
+                <a class="inline-flex items-center gap-1 hover:underline" href="{% url 'waste:new' %}?point={{ point.id }}">Pilih Titik Ini {% include "components/lucide_icon.html" with name="arrow-right" icon_class="h-[9px] w-[9px]" only %}</a>
               </div>
             </article>
-            <article
-              role="listitem"
-              class="absolute inset-x-0 top-[204px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0"
-            >
-              <div class="flex items-center justify-between gap-2">
-                <h3
-                  class="text-lg font-semibold leading-[26px] max-[420px]:text-base"
-                >
-                  Bank Sampah Melati Indah
-                </h3>
-                <span
-                  class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700"
-                  >Buka</span
-                >
-              </div>
-              <p class="text-[13px] leading-[18px] text-[#334155]">
-                Jl. Pancoran Barat III No. 15, Jakarta Selatan
-              </p>
-              <div
-                class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]"
-              >
-                <span class="inline-flex items-center gap-1"
-                  >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}2,4 km dari kamu</span
-                ><b class="!font-['Inter',sans-serif]">•</b
-                ><span class="inline-flex items-center gap-1"
-                  >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}08.30 - 16.00 WIB</span
-                >
-              </div>
-              <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
-                <span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
-                  >Kardus</span
-                ><span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
-                  >Kertas</span
-                ><span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
-                  >Plastik</span
-                >
-              </div>
-            </article>
-            <article
-              role="listitem"
-              class="absolute inset-x-0 top-[364px] flex flex-col gap-2 rounded-xl bg-white p-4 max-[760px]:static max-[760px]:shrink-0"
-            >
-              <div class="flex items-center justify-between gap-2">
-                <h3
-                  class="text-lg font-semibold leading-[26px] max-[420px]:text-base"
-                >
-                  Pusat Daur Ulang Manggarai
-                </h3>
-                <span
-                  class="!font-['Roboto_Mono',monospace] shrink-0 rounded-full bg-[#ecfdf5] px-2 py-0.5 text-xs font-medium leading-4 text-green-700"
-                  >Buka</span
-                >
-              </div>
-              <p class="text-[13px] leading-[18px] text-[#334155]">
-                Jl. Manggarai Utara No. 8, Jakarta Selatan
-              </p>
-              <div
-                class="mt-1 flex flex-wrap items-center gap-2 text-xs font-medium leading-4 text-[#334155]"
-              >
-                <span class="inline-flex items-center gap-1"
-                  >{% include "components/lucide_icon.html" with name="map-pin" icon_class="h-3 w-3" only %}3,8 km dari kamu</span
-                ><b class="!font-['Inter',sans-serif]">•</b
-                ><span class="inline-flex items-center gap-1"
-                  >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}09.00 - 18.00 WIB</span
-                >
-              </div>
-              <div class="mt-1 flex max-h-6 flex-wrap gap-1.5 overflow-hidden">
-                <span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
-                  >Semua Kategori</span
-                ><span
-                  class="!font-['Roboto_Mono',monospace] whitespace-nowrap rounded bg-[#e5eeff] px-2 py-0.5 text-xs font-medium leading-4 text-[#334155]"
-                  >Layanan Timbang Cepat</span
-                >
-              </div>
-            </article>
+            {% empty %}
+            <p class="text-sm text-[#334155]">Belum ada titik pengumpulan aktif.</p>
+            {% endfor %}
+            <a class="landing-point-more" href="{% url 'location:list' %}">Lihat semua {{ point_count }} titik di peta →</a>
           </div>
           {{ map_points|json_script:"landing-map-points" }}
           <div

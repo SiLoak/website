@@ -107,11 +107,18 @@
     const knownAddress = point.address || addressCache.get(point.id) || "";
     address.textContent = knownAddress || "Alamat belum tersedia";
     address.dataset.missing = knownAddress ? "false" : "true";
+    // Hours are shown only for points that recorded them.
+    const hoursKnown = point.is_open !== null;
     const badge = card.querySelector('[data-field="open-badge"]');
-    badge.className = "location-badge " + (point.is_open === true ? "is-open" : point.is_open === false ? "is-closed" : "is-unknown");
-    badge.textContent = point.is_open === true ? "Buka" : point.is_open === false ? "Tutup" : "Jam ?";
+    badge.hidden = !hoursKnown;
+    badge.className = "location-badge " + (point.is_open ? "is-open" : "is-closed");
+    badge.textContent = point.is_open ? "Buka" : "Tutup";
     card.querySelector('[data-field="category"]').textContent = point.category_label;
-    card.querySelector('[data-field="opening"]').textContent = point.opening_label;
+    const opening = card.querySelector('[data-field="opening"]');
+    opening.hidden = !hoursKnown;
+    opening.textContent = hoursKnown ? point.opening_label : "";
+    const setor = card.querySelector('[data-field="setor"]');
+    setor.href = setor.href.split("?")[0] + "?point=" + point.id;
     const distance = card.querySelector('[data-field="distance"]');
     distance.hidden = point.distance_km === null;
     distance.textContent = point.distance_km === null ? "" : formatKm(point.distance_km);

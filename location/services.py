@@ -150,6 +150,22 @@ def serialize_point(point, now, origin=None):
     }
 
 
+def active_points():
+    from waste.models import CollectionPoint
+
+    return CollectionPoint.objects.filter(is_active=True, latitude__isnull=False, longitude__isnull=False)
+
+
+def points_payload(origin=None):
+    """Every active point, serialized like the API, sorted by name. Used by other modules' maps."""
+    from django.utils import timezone
+
+    now = timezone.localtime()
+    rows = [serialize_point(point, now, origin) for point in active_points()]
+    rows.sort(key=lambda row: row["name"].lower())
+    return rows
+
+
 def _clean_label(display_name):
     return re.sub(r",\s*Indonesia$", "", display_name or "").strip()
 

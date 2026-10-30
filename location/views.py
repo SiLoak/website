@@ -37,9 +37,7 @@ class PointQueryForm(forms.Form):
 
 
 def _active_points():
-    return CollectionPoint.objects.filter(
-        is_active=True, latitude__isnull=False, longitude__isnull=False
-    )
+    return services.active_points()
 
 
 def _too_many_requests():
@@ -129,6 +127,22 @@ def api_point_address(request, point_id):
     except services.GeocodingError:
         return JsonResponse({"error": "Alamat tidak dapat dimuat dari OpenStreetMap."}, status=502)
     return JsonResponse({"address": address, "source": "openstreetmap"})
+
+
+@require_GET
+def api_reverse(request):
+    """GET /location/api/reverse/?lat=&lng= — address of any coordinate (OpenStreetMap)."""
+    form = PointQueryForm(request.GET)
+    if not form.is_valid() or form.origin is None:
+        errors = form.errors.get_json_data() if form.errors else {"lat": [{"message": "Isi lat dan lng."}]}
+        return JsonResponse({"errors": errors}, status=400)
+    if services.throttle(request, "address", ADDRESS_LIMIT_PER_MINUTE):
+        return _too_many_requests()
+    try:
+        address = services.reverse_geocode(*form.origin)
+    except services.GeocodingError:
+        return JsonResponse({"error": "Alamat tidak dapat dimuat dari OpenStreetMap."}, status=502)
+    return JsonResponse({"address": address})
 
 
 @require_GET

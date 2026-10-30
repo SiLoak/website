@@ -10,6 +10,7 @@ from django.utils import timezone
 
 from auth.forms import ProfileForm
 from auth.models import UserProfile
+from location import services as location_services
 from main.history import build_history_context
 from pickup.models import PickupItem, PickupRequest
 from pickup.permissions import is_collector, is_giver
@@ -18,13 +19,14 @@ from waste.models import CollectionPoint, Submission, SubmissionItem
 
 
 def landing_page(request):
-    points = list(
-        CollectionPoint.objects.filter(is_active=True)
-        .exclude(latitude__isnull=True)
-        .exclude(longitude__isnull=True)
-        .values("id", "name", "address", "latitude", "longitude", "operating_hours")
-    )
-    return render(request, "landing.html", {"map_points": points})
+    # Points come from the location module so the landing map matches /location/.
+    points = location_services.points_payload()
+    featured = sorted(points, key=lambda point: (point["is_open"] is None, not point["address"]))[:4]
+    return render(request, "landing.html", {
+        "map_points": points,
+        "featured_points": featured,
+        "point_count": len(points),
+    })
 
 
 @login_required(login_url="auth_page")
