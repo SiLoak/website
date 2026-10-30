@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% load static %} {% block title %}{% if editing %}Ubah Pengajuan{% else %}Setor Loak{% endif %} · SiLoak{% endblock %} {% block extra_head %}
+{% extends "base.html" %} {% load static l10n location_tags %} {% block title %}{% if editing %}Ubah Pengajuan{% else %}Setor Loak{% endif %} · SiLoak{% endblock %} {% block extra_head %}
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link
@@ -10,8 +10,10 @@
   href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
 />
 <link rel="stylesheet" href="{% static 'css/leaflet-maps.css' %}" />
+<link rel="stylesheet" href="{% static 'css/location-widgets.css' %}" />
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{% static 'js/leaflet-maps.js' %}"></script>
+<script src="{% static 'js/location-connect.js' %}" defer></script>
 {% endblock %} {% block content %} {% include "components/navbar.html" with active_item="waste" %}
 <main class="waste-page">
   <div class="waste-shell">
@@ -357,7 +359,7 @@
             </div>
             <div class="waste-point-split">
               <div>
-                <div id="point-list" class="waste-point-list">
+                <div id="point-list" class="waste-point-list" data-address-url-template="{% url 'location:api_point_address' 0 %}">
                   {% for point in form.collection_point.field.queryset %}
                   <button
                     type="button"
@@ -377,16 +379,20 @@
                         >{% include "components/lucide_icon.html" with name="check" icon_class="h-3 w-3" only %}</span
                       >
                     </span>
-                    <span class="waste-point-address">{{ point.address }}</span>
+                    {% with info=point|point_info %}
+                    <span class="waste-point-address" data-point-address-text>{{ info.address|default:"Alamat belum tersedia" }}</span>
                     <span class="waste-point-meta"
-                      ><span class="waste-open-tag">Buka</span
-                      ><span class="waste-distance" data-distance-label
+                      ><span class="waste-point-category">{{ info.category_label }}</span
+                      >{% if info.is_open != None %}<span class="waste-open-tag">{% if info.is_open %}Buka{% else %}Tutup{% endif %}</span>{% endif %}<span class="waste-distance" data-distance-label
                         >Jarak belum tersedia</span
                       ></span
                     >
+                    {% if info.is_open != None %}
                     <span class="waste-point-hours"
-                      >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}Jam layanan: {{ point.operating_hours|default:"Hubungi titik pengumpulan" }}</span
+                      >{% include "components/lucide_icon.html" with name="clock" icon_class="h-3 w-3" only %}{{ info.opening_label }}</span
                     >
+                    {% endif %}
+                    {% endwith %}
                   </button>
                   {% empty %}
                   <div class="waste-point-empty">
@@ -449,16 +455,23 @@
                 >{% include "components/lucide_icon.html" with name="navigation" icon_class="h-3 w-3" only %}Alamat</span
               >
             </div>
-            <div class="waste-pickup-address">
+            <div class="waste-pickup-address" data-location-connect
+                 data-geocode-url="{% url 'location:api_geocode' %}"
+                 data-reverse-url="{% url 'location:api_reverse' %}">
               <div class="waste-pickup-search">
-                <input
-                  class="waste-address-control"
-                  type="text"
-                  value="Pilih alamat penjemputan"
-                  disabled
-                  aria-label="Alamat penjemputan"
-                />
-                <button class="waste-nearest" type="button" disabled>
+                <div class="location-connect-search">
+                  <input
+                    id="pickup-address-search"
+                    class="waste-address-control"
+                    type="search"
+                    placeholder="Cari alamat, mis. Jl. Margonda Raya, Depok"
+                    autocomplete="off"
+                    aria-label="Cari alamat penjemputan"
+                    aria-controls="pickup-address-suggestions"
+                  />
+                  <ul id="pickup-address-suggestions" class="location-connect-suggestions" role="listbox" aria-label="Saran alamat" hidden></ul>
+                </div>
+                <button class="waste-nearest" type="button" data-pickup-use-location>
                   {% include "components/lucide_icon.html" with name="navigation" icon_class="h-3.5 w-3.5" only %}Pakai lokasi
                   saya
                 </button>
@@ -472,10 +485,11 @@
                   class="leaflet-map"
                   role="region"
                   aria-label="Peta pratinjau lokasi penjemputan"
-                  data-latitude="{{ pickup_latitude|default_if_none:'' }}"
-                  data-longitude="{{ pickup_longitude|default_if_none:'' }}"
+                  data-latitude="{{ pickup_form.latitude.value|default_if_none:''|unlocalize }}"
+                  data-longitude="{{ pickup_form.longitude.value|default_if_none:''|unlocalize }}"
                 ></div>
               </div>
+              <p class="location-connect-note" data-pickup-location-note aria-live="polite" hidden></p>
               {{ pickup_form.latitude }}{{ pickup_form.longitude }}
               <div class="waste-address-grid">
                 <div>
@@ -874,7 +888,11 @@
           .addTo(pickupMap)
           .bindPopup("Lokasi penjemputan");
       if (center) pickupMap.setView([latitude, longitude], 16);
+      document.dispatchEvent(new CustomEvent("siloak:pickup-location-changed", { detail: { latitude, longitude } }));
     }
+    document.addEventListener("siloak:set-pickup-location", (event) =>
+      setPickupLocation(event.detail.latitude, event.detail.longitude, true),
+    );
 
     if (pickupPreview && window.L) {
       const latitude = Number(pickupPreview.dataset.latitude);
@@ -1224,9 +1242,10 @@
           : " · " +
             distance.toLocaleString("id-ID", { maximumFractionDigits: 1 }) +
             " km dari kamu";
-      const hours = card.dataset.pointHours || "Jam layanan belum tersedia";
+      // Opening hours are shown only when the point recorded them.
+      const hours = card.dataset.pointHours ? " (" + card.dataset.pointHours + ")" : "";
       document.querySelector("[data-summary-point-meta]").textContent =
-        card.dataset.pointAddress + " (" + hours + ")" + distanceText;
+        card.dataset.pointAddress + hours + distanceText;
       if (document.activeElement !== card)
         card.setAttribute("aria-pressed", "true");
     }

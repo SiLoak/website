@@ -1,0 +1,18 @@
+<article class="location-card" data-point-card data-point-id="{{ point.id|default:'' }}" tabindex="0" role="button" aria-pressed="false">
+  <div class="flex items-start justify-between gap-2">
+    <div class="min-w-0">
+      <h3 class="font-headline-sm text-headline-sm text-text-primary font-semibold leading-snug" data-field="name">{{ point.name }}</h3>
+      <p class="location-card-address" data-field="address">{{ point.address|default:"Alamat belum tersedia" }}</p>
+    </div>
+    <span class="location-badge{% if point.is_open %} is-open{% else %} is-closed{% endif %}" data-field="open-badge"{% if point.is_open == None %} hidden{% endif %}>{% if point.is_open %}Buka{% else %}Tutup{% endif %}</span>
+  </div>
+  <div class="location-card-meta">
+    <span class="location-chip" data-field="category">{{ point.category_label }}</span>
+    <span class="location-distance" data-field="distance"{% if point.distance_km == None %} hidden{% endif %}>{% if point.distance_km != None %}{{ point.distance_km|floatformat:1 }} km dari kamu{% endif %}</span>
+    <span data-field="opening"{% if point.is_open == None %} hidden{% endif %}>{% if point.is_open != None %}{{ point.opening_label }}{% endif %}</span>
+  </div>
+  <div class="location-card-actions">
+    <a class="location-link" data-field="directions" href="{{ point.directions_url }}" target="_blank" rel="noopener">Rute ↗</a>
+    <a class="location-link" data-field="setor" href="{% url 'waste:new' %}{% if point.id %}?point={{ point.id }}{% endif %}">Setor ke sini</a>
+  </div>
+</article>
