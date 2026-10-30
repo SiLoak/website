@@ -238,13 +238,10 @@ function buildNewPickupRowElement(item) {
       <span class="bg-surface-soft text-text-body font-label-sm text-label-sm px-2.5 py-1 rounded-full font-medium">${changeStatusBadge(newPickup.status)[0]}</span>
       <a class="font-label-md text-label-md font-semibold text-primary-container hover:underline inline-flex items-center gap-1 group" href="${detailUrl}"> Detail <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
       </a>
-      <form id="accept-form" method="post" action="${acceptUrl}">
-        <input type="hidden" name="csrfmiddlewaretoken" value="${CSRF_TOKEN}">
-        <button class="h-9 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold inline-flex items-center gap-1.5 hover:bg-tertiary transition-colors shadow-sm" type="submit">
-          <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[18px]">check</span>
-          Terima
-        </button>
-      </form>
+      <button class="h-9 px-4 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-semibold inline-flex items-center gap-1.5 hover:bg-tertiary transition-colors shadow-sm" type="button" data-accept-url="${acceptUrl}">
+        <span class="font-symbols font-normal not-italic leading-none tracking-normal normal-case whitespace-nowrap antialiased [font-feature-settings:'liga'] [-webkit-font-feature-settings:'liga'] text-[18px]">check</span>
+        Terima
+      </button>
     </div>
   `;
 
@@ -365,36 +362,6 @@ async function fetchNewPickupList() {
     displayNewPickupSection({ showError: true });
   }
 }
-
-document.addEventListener("submit", async (event) => {
-  const form = event.target.closest(".accept-form");
-
-  if (!form) return;
-
-  event.preventDefault();
-
-  try {
-    const response = await fetch(form.action, {
-      method: "POST",
-      headers: {
-        "X-CSRFToken": CSRF_TOKEN,
-        "X-Requested-With": "XMLHttpRequest",
-      },
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new Error(data.message || "Gagal menerima pickup.");
-    }
-
-    // Hapus card setelah berhasil
-    form.closest(".pickup-card")?.remove();
-
-  } catch (error) {
-    console.error(error);
-  }
-});
 
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
