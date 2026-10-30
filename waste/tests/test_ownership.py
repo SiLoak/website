@@ -103,3 +103,10 @@ class SubmissionOwnershipTests(TestCase):
 
         item.refresh_from_db()
         self.assertEqual(item.estimated_weight, Decimal("2.50"))
+
+    def test_anonymous_user_cannot_view_submission_detail(self):
+        response = self.client.get(
+            reverse("waste:detail", kwargs={"submission_id": self.submission.pk})
+        )
+
+        self.assertNotEqual(response.status_code, 200)
