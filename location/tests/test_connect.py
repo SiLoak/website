@@ -117,3 +117,26 @@ class SetorFormMapTests(ConnectTestCase):
         self.assertNotIn(">Buka<", unknown_card)
         self.assertIn(">Buka<", known_card)
         self.assertIn("Unit pengolahan sampah", unknown_card)
+
+
+class LandingInteractiveTests(ConnectTestCase):
+    def html(self):
+        return self.client.get(reverse("landing_page")).content.decode()
+
+    def test_landing_loads_the_interactive_finder_wired_to_the_api(self):
+        html = self.html()
+
+        self.assertIn("js/location-landing.js", html)
+        self.assertIn('data-points-url="%s"' % reverse("location:api_points"), html)
+        self.assertIn('data-geocode-url="%s"' % reverse("location:api_geocode"), html)
+        self.assertIn('id="landing-point-template"', html)
+
+    def test_cards_and_controls_carry_hooks_for_the_map(self):
+        html = self.html()
+
+        self.assertIn(f'data-landing-card data-point-id="{self.with_hours.pk}"', html)
+        for km in ("2", "5", "10"):
+            self.assertIn(f'data-landing-radius="{km}"', html)
+        self.assertIn("data-landing-nearest", html)
+        # The location module handles "Cari yang terdekat" now, not the generic map helper.
+        self.assertNotIn('data-find-nearest="landing-map"', html)
