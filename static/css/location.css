@@ -1,0 +1,94 @@
+/* Location page (Titik Pengumpulan). Kept apart from the Tailwind build so this
+   module never needs a rebuild of static/tailwind.css. */
+
+.location-count-pill {
+  display: inline-flex; align-items: center; gap: 8px; align-self: flex-start;
+  border: 1px solid #a7f3d0; border-radius: 999px; background: #ecfdf5;
+  padding: 4px 12px; color: #047857; font-size: 13px; font-weight: 600;
+}
+.location-pulse { width: 8px; height: 8px; border-radius: 50%; background: #047857; animation: location-pulse 1.6s ease-in-out infinite; }
+@keyframes location-pulse { 50% { opacity: .35; } }
+
+.location-search { position: relative; flex: 1; min-width: 0; }
+.location-input, .location-select {
+  width: 100%; height: 44px; border: 1px solid #e2e8f0; border-radius: 8px; background: #fff;
+  padding: 0 14px; color: #1e293b; font: 500 14px/20px Outfit, sans-serif;
+}
+.location-select { width: auto; height: 34px; padding: 0 10px; font-size: 13px; }
+.location-input:focus, .location-select:focus { outline: none; border-color: #1b367e; box-shadow: 0 0 0 3px rgba(27, 54, 126, .14); }
+
+.location-suggestions {
+  position: absolute; z-index: 1000; top: calc(100% + 4px); left: 0; right: 0; margin: 0; padding: 4px;
+  list-style: none; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff;
+  box-shadow: 0 12px 28px -10px rgba(15, 23, 42, .3);
+}
+.location-suggestions li { border-radius: 7px; padding: 8px 10px; color: #0f172a; font-size: 13px; line-height: 18px; cursor: pointer; }
+.location-suggestions li small { display: block; color: #64748b; font-size: 11px; }
+.location-suggestions li:hover, .location-suggestions li[aria-selected="true"] { background: #eef3ff; }
+.location-suggestions li.is-muted { color: #64748b; cursor: default; background: none; }
+
+.location-button {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 16px;
+  border: 1px solid #1b367e; border-radius: 8px; background: #fff; color: #1b367e;
+  font-size: 14px; font-weight: 600; white-space: nowrap; cursor: pointer;
+}
+.location-button:hover { background: #eef3ff; }
+.location-button:disabled { opacity: .6; cursor: progress; }
+
+.location-segment { display: inline-flex; padding: 2px; border: 1px solid #e2e8f0; border-radius: 8px; background: #f8fafc; }
+.location-segment button { border: 0; border-radius: 6px; background: transparent; padding: 4px 12px; color: #475569; font-size: 13px; cursor: pointer; }
+.location-segment button[aria-pressed="true"] { background: #1b367e; color: #fff; font-weight: 600; }
+.location-segment button:disabled { color: #cbd5e1; cursor: not-allowed; }
+
+.location-toggle {
+  display: inline-flex; align-items: center; gap: 6px; border: 1px solid #e2e8f0; border-radius: 999px;
+  background: #fff; padding: 6px 12px; color: #475569; font-size: 13px; cursor: pointer;
+}
+.location-toggle[aria-pressed="true"] { border-color: #a7f3d0; background: #ecfdf5; color: #047857; font-weight: 600; }
+.location-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+.location-reset { margin-left: auto; border: 0; background: none; color: #1b367e; font-size: 13px; font-weight: 600; cursor: pointer; }
+.location-reset:hover { text-decoration: underline; }
+
+.location-status { margin: -8px 0 0; color: #64748b; font-size: 13px; }
+.location-status.is-error { color: #b91c1c; }
+.location-origin-label { color: #1b367e; font-size: 12px; font-weight: 600; }
+
+.location-list { display: flex; flex-direction: column; gap: 12px; padding-right: 6px; transition: opacity .15s; }
+.location-list[aria-busy="true"] { opacity: .55; }
+@media (min-width: 1024px) {
+  .location-list { height: 596px; overflow-y: auto; }
+  .location-map { position: sticky; top: 96px; }
+}
+
+.location-card {
+  border: 1px solid #e2e8f0; border-radius: 12px; background: #fff; padding: 16px;
+  cursor: pointer; transition: border-color .15s, box-shadow .15s, background .15s;
+}
+.location-card:hover { border-color: #1b367e; box-shadow: 0 2px 8px rgba(15, 23, 42, .06); }
+.location-card:focus-visible { outline: 3px solid rgba(27, 54, 126, .35); outline-offset: 2px; }
+.location-card.is-selected { border: 2px solid #1b367e; padding: 15px; background: rgba(238, 243, 255, .55); }
+.location-card-address { margin: 2px 0 0; color: #64748b; font-size: 13px; line-height: 18px; }
+.location-card-address.is-loading { color: #94a3b8; font-style: italic; }
+.location-card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin-top: 10px; color: #475569; font-size: 13px; }
+.location-chip { border-radius: 999px; background: #f1f5f9; padding: 2px 9px; color: #334155; font-size: 12px; font-weight: 600; }
+.location-distance { color: #1b367e; font-weight: 600; }
+.location-card-actions { display: flex; gap: 16px; margin-top: 12px; border-top: 1px solid #f1f5f9; padding-top: 10px; }
+.location-link { color: #1b367e; font-size: 13px; font-weight: 600; text-decoration: none; }
+.location-link:hover { text-decoration: underline; }
+
+.location-badge { flex: 0 0 auto; border-radius: 999px; border: 1px solid; padding: 2px 9px; font-size: 12px; font-weight: 600; }
+.location-badge.is-open { border-color: #a7f3d0; background: #ecfdf5; color: #047857; }
+.location-badge.is-closed { border-color: #e2e8f0; background: #f8fafc; color: #64748b; }
+.location-badge.is-unknown { border-color: #fde68a; background: #fffbeb; color: #92400e; }
+
+.location-empty { border: 1px dashed #cbd5e1; border-radius: 12px; padding: 20px; color: #64748b; font-size: 13px; text-align: center; }
+
+.location-origin-marker span {
+  display: block; width: 18px; height: 18px; border: 3px solid #fff; border-radius: 50%; background: #2563eb;
+  box-shadow: 0 0 0 6px rgba(37, 99, 235, .22), 0 1px 4px rgba(15, 23, 42, .4);
+}
+
+@media (max-width: 640px) {
+  .location-reset { margin-left: 0; }
+  .location-button { width: 100%; }
+}

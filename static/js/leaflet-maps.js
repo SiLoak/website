@@ -78,11 +78,10 @@
       const key = String(id);
       const marker = markers.get(key);
       if (!marker) return false;
-      if (selectedId !== null && markers.has(selectedId)) {
-        markers.get(selectedId).setIcon(pointIcon(false)).setZIndexOffset(0);
-      }
-      selectedId = key;
-      marker.setIcon(pointIcon(true)).setZIndexOffset(1000);
+      markers.forEach((candidate, candidateId) => {
+        const selected = candidateId === key;
+        candidate.setIcon(pointIcon(selected)).setZIndexOffset(selected ? 1000 : 0);
+      });
       if (center) map.setView(marker.getLatLng(), Math.max(map.getZoom(), 15));
       if (openPopup) marker.openPopup();
       return true;

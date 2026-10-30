@@ -366,6 +366,36 @@ async function fetchNewPickupList() {
   }
 }
 
+document.addEventListener("submit", async (event) => {
+  const form = event.target.closest(".accept-form");
+
+  if (!form) return;
+
+  event.preventDefault();
+
+  try {
+    const response = await fetch(form.action, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": CSRF_TOKEN,
+        "X-Requested-With": "XMLHttpRequest",
+      },
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Gagal menerima pickup.");
+    }
+
+    // Hapus card setelah berhasil
+    form.closest(".pickup-card")?.remove();
+
+  } catch (error) {
+    console.error(error);
+  }
+});
+
 if (document.readyState === "loading") {
   document.addEventListener("DOMContentLoaded", () => {
     fetchPickupList();

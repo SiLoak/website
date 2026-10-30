@@ -250,6 +250,7 @@ def get_pickup_json(request):
         "status_display": pickup.get_status_display(),
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
+        "pickup_address": pickup.pickup_address,
         "address_detail": pickup.address_detail,
         "collector_name": _display_name(pickup.collector),
       }
@@ -289,6 +290,7 @@ def get_collector_pickup_json(request):
         "status_display": pickup.get_status_display(),
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
+        "pickup_address": pickup.pickup_address,
         "address_detail": pickup.address_detail,
         "pickup_address": pickup.pickup_address,
         "completed_at": pickup.completed_at,
@@ -325,7 +327,7 @@ def get_pickup_detail_json(request, pickup_id):
     "fields": {
       "giver_name": _display_name(pickup.giver),
       "collector_name": _display_name(pickup.collector),
-      "address": pickup.pickup_address,
+      "pickup_address": pickup.pickup_address,
       "address_detail": pickup.address_detail,
       "latitude": float(pickup.latitude) if pickup.latitude is not None else None,
       "longitude": float(pickup.longitude) if pickup.longitude is not None else None,
@@ -380,11 +382,9 @@ def accept_pickup_ajax(request, pickup_id):
   if not is_collector(request.user):
     return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
-  _transition_response(
+  return _transition_response(
     request, pickup_id, Status.ASSIGNED, collector=request.user
   )
-
-  return redirect("pickup:show_pickup_detail", pickup_id=pickup_id)
 
 
 @require_POST
