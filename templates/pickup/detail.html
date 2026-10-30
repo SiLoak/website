@@ -9,9 +9,11 @@
     <nav class="mb-4 text-sm text-text-body" aria-label="Breadcrumb">
       <a class="hover:text-primary" href="{% url 'dashboard' %}">Beranda</a
       ><span class="px-2">/</span>
-      <a class="hover:text-primary" href="{% url 'waste:submissions' %}"
-        >Riwayat aktivitas</a
-      ><span class="px-2">/</span>
+      {% if user_is_collector and not user_is_giver %}
+      <a class="hover:text-primary" href="{% url 'pickup:show_collector_pickup_list' %}">Antrean pickup</a>
+      {% else %}
+      <a class="hover:text-primary" href="{% url 'waste:submissions' %}">Riwayat aktivitas</a>
+      {% endif %}<span class="px-2">/</span>
       <span class="text-primary">#{{ pickup.pk }}</span>
     </nav>
     {% if messages %}
@@ -460,11 +462,19 @@
           Batalkan pickup
         </button>
         {% endif %}
+        {% if user_is_collector and not user_is_giver %}
+        <a
+          class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline"
+          href="{% url 'pickup:show_collector_pickup_list' %}"
+          >← Kembali ke antrean pickup</a
+        >
+        {% else %}
         <a
           class="block rounded-lg px-4 py-2 text-center font-semibold text-primary hover:underline"
           href="{% url 'waste:submissions' %}"
           >← Kembali ke riwayat aktivitas</a
         >
+        {% endif %}
       </aside>
     </div>
   </div>

@@ -138,6 +138,8 @@ def withdraw(request):
 
 @login_required(login_url="auth_page")
 def history(request):
+    if is_collector(request.user) and not is_giver(request.user):
+        return redirect("pickup:show_collector_pickup_list")
     return redirect("waste:submissions")
 
 
