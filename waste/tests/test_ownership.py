@@ -79,3 +79,27 @@ class SubmissionOwnershipTests(TestCase):
         self.assertNotEqual(response.status_code, 200)
         self.submission.refresh_from_db()
         self.assertEqual(self.submission.status, Submission.Status.PENDING)
+
+    def test_anonymous_user_cannot_edit_submission(self):
+        item = SubmissionItem.objects.get(submission=self.submission)
+        url = reverse("waste:edit", kwargs={"submission_id": self.submission.pk})
+
+        page = self.client.get(url)
+        self.assertNotEqual(page.status_code, 200)
+
+        self.client.post(
+            url,
+            {
+                "collection_point": str(self.point.pk),
+                "items-TOTAL_FORMS": "1",
+                "items-INITIAL_FORMS": "1",
+                "items-MIN_NUM_FORMS": "1",
+                "items-MAX_NUM_FORMS": "6",
+                "items-0-id": str(item.pk),
+                "items-0-waste_type": str(self.waste_type.pk),
+                "items-0-estimated_weight": "9.99",
+            },
+        )
+
+        item.refresh_from_db()
+        self.assertEqual(item.estimated_weight, Decimal("2.50"))
