@@ -380,11 +380,9 @@ def accept_pickup_ajax(request, pickup_id):
   if not is_collector(request.user):
     return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
-  _transition_response(
+  return _transition_response(
     request, pickup_id, Status.ASSIGNED, collector=request.user
   )
-
-  return redirect("pickup:show_pickup_detail", pickup_id=pickup_id)
 
 
 @require_POST
