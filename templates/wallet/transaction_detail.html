@@ -1,239 +1,217 @@
-{% extends "base.html" %}
-
-{% block title %}Detail Transaksi · SiLoak{% endblock %}
-
-{% block content %}
-{% include "components/navbar.html" with active_item="wallet" %}
+{% extends "base.html" %} {% block title %}Detail Transaksi · SiLoak{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="wallet" %}
 
 <main class="min-h-screen bg-page-bg">
-    <div class="mx-auto max-w-3xl px-4 py-8 sm:py-12">
+  <div class="mx-auto max-w-3xl px-4 py-8 sm:py-12">
+    <a
+      href="{% url 'wallet:index' %}"
+      class="inline-flex items-center gap-2 text-sm font-semibold text-[#2457D6] hover:underline"
+    >
+      ← Kembali ke dompet
+    </a>
 
-        <a href="{% url 'wallet:index' %}"
-           class="inline-flex items-center gap-2 text-sm font-semibold text-[#2457D6] hover:underline">
-            ← Kembali ke dompet
-        </a>
+    <header class="mb-6 mt-5">
+      <h1 class="text-2xl font-bold tracking-tight text-[#142653] sm:text-3xl">
+        Detail Transaksi
+      </h1>
+      <p class="mt-1 text-sm text-slate-500">Rincian transaksi dompet SiLoak</p>
+    </header>
 
-        <header class="mb-6 mt-5">
-            <h1 class="text-2xl font-bold tracking-tight text-[#142653] sm:text-3xl">
-                Detail Transaksi
-            </h1>
-            <p class="mt-1 text-sm text-slate-500">
-                Rincian transaksi dompet SiLoak
-            </p>
-        </header>
+    <section class="overflow-hidden rounded-2xl bg-white shadow-sm">
 
-        <section class="overflow-hidden rounded-2xl bg-white shadow-sm">
+      <div
+        class="flex min-h-[250px] flex-col items-center justify-center bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] px-6 py-8 text-center text-white sm:px-10 sm=min-h-[270px]"
+      >
+        <div
+          class="mx-auto flex h-14 w-14 items-center justify-center rounded-full {% if tx.status == 'success' %}bg-emerald-400/20 {% elif tx.status == 'failed' %}bg-red-400/20 {% else %}bg-white/15{% endif %}"
+        >
+          {% if tx.status == 'success' %} {% include "components/lucide_icon.html" with name="check-circle" icon_class="h-8 w-8 text-emerald-300" only %} {% elif tx.status == 'failed' %} {% include "components/lucide_icon.html" with name="x-circle" icon_class="h-8 w-8 text-red-300" only %} {% else %} {% include "components/lucide_icon.html" with name="clock" icon_class="h-8 w-8 text-white" only %} {% endif %}
+        </div>
 
-            <!-- Receipt Header -->
-            <div class="flex min-h-[250px] flex-col items-center justify-center bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] px-6 py-8 text-center text-white sm:px-10 sm=min-h-[270px]">
-                <div class="mx-auto flex h-14 w-14 items-center justify-center rounded-full
-                    {% if tx.status == 'success' %}bg-emerald-400/20
-                    {% elif tx.status == 'failed' %}bg-red-400/20
-                    {% else %}bg-white/15{% endif %}">
+        <p class="text-2xl font-bold sm:text-3xl">
+          {% if tx.status == 'success' %} Transaksi Berhasil {% elif tx.status == 'failed' %} Transaksi Gagal {% else %} Transaksi Sedang Diproses {% endif %}
+        </p>
 
-                    {% if tx.status == 'success' %}
-                        {% include "components/lucide_icon.html" with name="check-circle" icon_class="h-8 w-8 text-emerald-300" only %}
-                    {% elif tx.status == 'failed' %}
-                        {% include "components/lucide_icon.html" with name="x-circle" icon_class="h-8 w-8 text-red-300" only %}
-                    {% else %}
-                        {% include "components/lucide_icon.html" with name="clock" icon_class="h-8 w-8 text-white" only %}
-                    {% endif %}
-                </div>
+        <p class="mt-2 text-base text-white/80 sm:text-lg">{{ type_label }}</p>
 
-                <p class="text-2xl font-bold sm:text-3xl">
-                    {% if tx.status == 'success' %}
-                        Transaksi Berhasil
-                    {% elif tx.status == 'failed' %}
-                        Transaksi Gagal
-                    {% else %}
-                        Transaksi Sedang Diproses
-                    {% endif %}
-                </p>
+        <p
+          class="mt-5 text-4xl font-semibold tracking-tight sm:mt-4 sm:text-5xl"
+        >
+          {% if tx.transaction_type == 'earning' or tx.transaction_type == 'refund' %}+{% else %}-{% endif %}Rp {% if tx.transaction_type == 'withdrawal' %} {{ total_deduction|floatformat:2 }} {% else %} {{ tx.amount|floatformat:2 }} {% endif %}
+        </p>
 
-                <p class="mt-2 text-base text-white/80 sm:text-lg">
-                    {{ type_label }}
-                </p>
+        {% if tx.transaction_type == 'withdrawal' %}
+        <p class="mt-1 text-sm text-white/80 sm:text-base">
+          Total potongan saldo
+        </p>
+        {% endif %}
+      </div>
 
-                <p class="mt-5 text-4xl font-semibold tracking-tight sm:mt-4 sm:text-5xl">
-                    {% if tx.transaction_type == 'earning' or tx.transaction_type == 'refund' %}+{% else %}-{% endif %}Rp
-                    {% if tx.transaction_type == 'withdrawal' %}
-                        {{ total_deduction|floatformat:2 }}
-                    {% else %}
-                        {{ tx.amount|floatformat:2 }}
-                    {% endif %}
-                </p>
+      <div
+        class="space-y-8 px-5 pb-8 pt-7 sm:space-y-9 sm:px-10 sm:pb-10 sm:pt-8"
+      >
 
-                {% if tx.transaction_type == 'withdrawal' %}
-                    <p class="mt-1 text-sm text-white/80 sm:text-base">
-                        Total potongan saldo
-                    </p>
-                {% endif %}
+        <section>
+          <h2 class="mb-4 font-semibold text-[#142653]">Informasi transaksi</h2>
+
+          <dl class="space-y-4 text-sm">
+            <div class="flex items-start justify-between gap-4">
+              <dt class="text-slate-500">Jenis transaksi</dt>
+              <dd class="text-right font-medium text-slate-900">
+                {{ type_label }}
+              </dd>
             </div>
 
-            <div class="space-y-8 px-5 pb-8 pt-7 sm:space-y-9 sm:px-10 sm:pb-10 sm:pt-8">
-                <!-- General Information -->
-                <section>
-                    <h2 class="mb-4 font-semibold text-[#142653]">
-                        Informasi transaksi
-                    </h2>
-
-                    <dl class="space-y-4 text-sm">
-                        <div class="flex items-start justify-between gap-4">
-                            <dt class="text-slate-500">Jenis transaksi</dt>
-                            <dd class="text-right font-medium text-slate-900">
-                                {{ type_label }}
-                            </dd>
-                        </div>
-
-                        <div class="flex items-start justify-between gap-4">
-                            <dt class="text-slate-500">Keterangan</dt>
-                            <dd class="max-w-[60%] break-words text-right font-medium text-slate-900">
-                                {{ tx.description }}
-                            </dd>
-                        </div>
-
-                        <div class="flex items-start justify-between gap-4">
-                            <dt class="text-slate-500">Tanggal dan waktu</dt>
-                            <dd class="text-right font-medium text-slate-900">
-                                {{ tx.created_at|date:"d M Y, H:i" }}
-                            </dd>
-                        </div>
-
-                        <div class="flex items-start justify-between gap-4">
-                            <dt class="text-slate-500">Status</dt>
-                            <dd>
-                                <span class="inline-flex rounded-full px-3 py-1 text-xs font-medium
-                                    {% if tx.status == 'success' %}bg-emerald-50 text-emerald-700
-                                    {% elif tx.status == 'failed' %}bg-red-50 text-red-700
-                                    {% else %}bg-amber-50 text-amber-700{% endif %}">
-                                    {{ tx.get_status_display }}
-                                </span>
-                            </dd>
-                        </div>
-
-                        {% if tx.reference %}
-                            <div class="flex items-start justify-between gap-4">
-                                <dt class="text-slate-500">Referensi</dt>
-                                <dd class="max-w-[60%] break-all text-right font-medium text-slate-900">
-                                    {{ tx.reference }}
-                                </dd>
-                            </div>
-                        {% endif %}
-                    </dl>
-                </section>
-
-                <!-- Withdrawal Destination -->
-                {% if withdrawal %}
-                    <section class="border-t border-dashed border-slate-200 pt-6">
-                        <h2 class="mb-4 font-semibold text-[#142653]">
-                            Tujuan penarikan
-                        </h2>
-
-                        <div class="rounded-xl bg-slate-50 p-4">
-                            <dl class="space-y-4 text-sm">
-                                <div class="flex items-start justify-between gap-4">
-                                    <dt class="text-slate-500">Metode</dt>
-                                    <dd class="text-right font-medium text-slate-900">
-                                        {{ withdrawal.get_destination_type_display }}
-                                    </dd>
-                                </div>
-
-                                <div class="flex items-start justify-between gap-4">
-                                    <dt class="text-slate-500">Bank / e-wallet</dt>
-                                    <dd class="text-right font-medium text-slate-900">
-                                        {{ withdrawal.destination_name }}
-                                    </dd>
-                                </div>
-
-                                <div class="flex items-start justify-between gap-4">
-                                    <dt class="text-slate-500">Nomor rekening / akun</dt>
-                                    <dd class="break-all text-right font-medium text-slate-900">
-                                        {{ withdrawal.account_number }}
-                                    </dd>
-                                </div>
-
-                                <div class="flex items-start justify-between gap-4">
-                                    <dt class="text-slate-500">Nama pemilik</dt>
-                                    <dd class="max-w-[60%] break-words text-right font-medium text-slate-900">
-                                        {{ withdrawal.account_holder }}
-                                    </dd>
-                                </div>
-                            </dl>
-                        </div>
-                    </section>
-
-                    <!-- Withdrawal Fee Breakdown -->
-                    <section class="border-t border-dashed border-slate-200 pt-6">
-                        <h2 class="mb-4 font-semibold text-[#142653]">
-                            Rincian penarikan
-                        </h2>
-
-                        <dl class="space-y-4 text-sm">
-                            <div class="flex justify-between gap-4">
-                                <dt class="text-slate-500">Nominal penarikan</dt>
-                                <dd class="text-right font-medium">
-                                    Rp {{ withdrawal.amount|floatformat:2 }}
-                                </dd>
-                            </div>
-
-                            <div class="flex justify-between gap-4">
-                                <dt class="text-slate-500">Biaya transfer</dt>
-                                <dd class="text-right font-medium">
-                                    Rp {{ withdrawal.transfer_fee|floatformat:2 }}
-                                </dd>
-                            </div>
-
-                            <div class="flex justify-between gap-4">
-                                <dt class="text-slate-500">Biaya layanan</dt>
-                                <dd class="text-right font-medium">
-                                    Rp {{ withdrawal.service_fee|floatformat:2 }}
-                                </dd>
-                            </div>
-
-                            <div class="flex justify-between gap-4 border-t border-slate-200 pt-4 pb-4">
-                                <dt class="font-semibold text-[#142653]">
-                                    Total potongan saldo
-                                </dt>
-                                <dd class="text-right font-bold text-[#2457D6]">
-                                    Rp {{ total_deduction|floatformat:2 }}
-                                </dd>
-                            </div>
-                        </dl>
-                    </section>
-                {% endif %}
-
-                <!-- Refund Information -->
-                {% if tx.transaction_type == 'refund' %}
-                    <section class="rounded-xl bg-emerald-50 p-4">
-                        <div class="flex items-start gap-3">
-                            {% include "components/lucide_icon.html" with name="check-circle" icon_class="h-5 w-5 shrink-0 text-emerald-600" only %}
-                            <div>
-                                <h2 class="font-semibold text-emerald-800">
-                                    Pengembalian dana
-                                </h2>
-                                <p class="mt-1 text-sm text-emerald-700">
-                                    Transaksi ini mencatat dana yang dikembalikan ke dompet.
-                                </p>
-                            </div>
-                        </div>
-                    </section>
-                {% endif %}
-
-                <!-- Receipt Footer -->
-                <div class="border-t border-dashed border-slate-200 pt-6 text-center sm:pt-7">
-                    <p class="text-xs text-slate-500">
-                        Simpan rincian ini sebagai referensi transaksi SiLoak.
-                    </p>
-                </div>
-
-                <a href="{% url 'wallet:index' %}"
-                   class="flex w-full items-center justify-center rounded-lg bg-[#2457D6] px-4 py-4 text-base font-semibold text-white transition hover:bg-blue-700">
-                    Kembali ke Dompet
-                </a>
+            <div class="flex items-start justify-between gap-4">
+              <dt class="text-slate-500">Keterangan</dt>
+              <dd
+                class="max-w-[60%] break-words text-right font-medium text-slate-900"
+              >
+                {{ tx.description }}
+              </dd>
             </div>
+
+            <div class="flex items-start justify-between gap-4">
+              <dt class="text-slate-500">Tanggal dan waktu</dt>
+              <dd class="text-right font-medium text-slate-900">
+                {{ tx.created_at|date:"d M Y, H:i" }}
+              </dd>
+            </div>
+
+            <div class="flex items-start justify-between gap-4">
+              <dt class="text-slate-500">Status</dt>
+              <dd>
+                <span
+                  class="inline-flex rounded-full px-3 py-1 text-xs font-medium {% if tx.status == 'success' %}bg-emerald-50 text-emerald-700 {% elif tx.status == 'failed' %}bg-red-50 text-red-700 {% else %}bg-amber-50 text-amber-700{% endif %}"
+                >
+                  {{ tx.get_status_display }}
+                </span>
+              </dd>
+            </div>
+
+            {% if tx.reference %}
+            <div class="flex items-start justify-between gap-4">
+              <dt class="text-slate-500">Referensi</dt>
+              <dd
+                class="max-w-[60%] break-all text-right font-medium text-slate-900"
+              >
+                {{ tx.reference }}
+              </dd>
+            </div>
+            {% endif %}
+          </dl>
         </section>
-    </div>
+
+
+        {% if withdrawal %}
+        <section class="border-t border-dashed border-slate-200 pt-6">
+          <h2 class="mb-4 font-semibold text-[#142653]">Tujuan penarikan</h2>
+
+          <div class="rounded-xl bg-slate-50 p-4">
+            <dl class="space-y-4 text-sm">
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-slate-500">Metode</dt>
+                <dd class="text-right font-medium text-slate-900">
+                  {{ withdrawal.get_destination_type_display }}
+                </dd>
+              </div>
+
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-slate-500">Bank / e-wallet</dt>
+                <dd class="text-right font-medium text-slate-900">
+                  {{ withdrawal.destination_name }}
+                </dd>
+              </div>
+
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-slate-500">Nomor rekening / akun</dt>
+                <dd class="break-all text-right font-medium text-slate-900">
+                  {{ withdrawal.account_number }}
+                </dd>
+              </div>
+
+              <div class="flex items-start justify-between gap-4">
+                <dt class="text-slate-500">Nama pemilik</dt>
+                <dd
+                  class="max-w-[60%] break-words text-right font-medium text-slate-900"
+                >
+                  {{ withdrawal.account_holder }}
+                </dd>
+              </div>
+            </dl>
+          </div>
+        </section>
+
+
+        <section class="border-t border-dashed border-slate-200 pt-6">
+          <h2 class="mb-4 font-semibold text-[#142653]">Rincian penarikan</h2>
+
+          <dl class="space-y-4 text-sm">
+            <div class="flex justify-between gap-4">
+              <dt class="text-slate-500">Nominal penarikan</dt>
+              <dd class="text-right font-medium">
+                Rp {{ withdrawal.amount|floatformat:2 }}
+              </dd>
+            </div>
+
+            <div class="flex justify-between gap-4">
+              <dt class="text-slate-500">Biaya transfer</dt>
+              <dd class="text-right font-medium">
+                Rp {{ withdrawal.transfer_fee|floatformat:2 }}
+              </dd>
+            </div>
+
+            <div class="flex justify-between gap-4">
+              <dt class="text-slate-500">Biaya layanan</dt>
+              <dd class="text-right font-medium">
+                Rp {{ withdrawal.service_fee|floatformat:2 }}
+              </dd>
+            </div>
+
+            <div
+              class="flex justify-between gap-4 border-t border-slate-200 pt-4 pb-4"
+            >
+              <dt class="font-semibold text-[#142653]">Total potongan saldo</dt>
+              <dd class="text-right font-bold text-[#2457D6]">
+                Rp {{ total_deduction|floatformat:2 }}
+              </dd>
+            </div>
+          </dl>
+        </section>
+        {% endif %}
+
+
+        {% if tx.transaction_type == 'refund' %}
+        <section class="rounded-xl bg-emerald-50 p-4">
+          <div class="flex items-start gap-3">
+            {% include "components/lucide_icon.html" with name="check-circle" icon_class="h-5 w-5 shrink-0 text-emerald-600" only %}
+            <div>
+              <h2 class="font-semibold text-emerald-800">Pengembalian dana</h2>
+              <p class="mt-1 text-sm text-emerald-700">
+                Transaksi ini mencatat dana yang dikembalikan ke dompet.
+              </p>
+            </div>
+          </div>
+        </section>
+        {% endif %}
+
+
+        <div
+          class="border-t border-dashed border-slate-200 pt-6 text-center sm:pt-7"
+        >
+          <p class="text-xs text-slate-500">
+            Simpan rincian ini sebagai referensi transaksi SiLoak.
+          </p>
+        </div>
+
+        <a
+          href="{% url 'wallet:index' %}"
+          class="flex w-full items-center justify-center rounded-lg bg-[#2457D6] px-4 py-4 text-base font-semibold text-white transition hover:bg-blue-700"
+        >
+          Kembali ke Dompet
+        </a>
+      </div>
+    </section>
+  </div>
 </main>
 
-{% include "components/footer.html" %}
-{% endblock %}
+{% include "components/footer.html" %} {% endblock %}

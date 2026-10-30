@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pickup', '0003_pickupitem_and_more'),
+        ('pickup', '0004_pickuprequest_verification'),
     ]
 
     operations = [

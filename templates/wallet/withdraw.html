@@ -1,392 +1,445 @@
-
-{% extends "base.html" %}
-{% block title %}Tarik Saldo · SiLoak{% endblock %}
-
-{% block content %}
-{% include "components/navbar.html" with active_item="wallet" %}
+{% extends "base.html" %} {% block title %}Tarik Saldo · SiLoak{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="wallet" %}
 
 <main class="min-h-screen bg-[#f7f8fc]">
-    <div class="mx-auto max-w-6xl px-4 py-8">
-        <a href="{% url 'wallet:index' %}"
-           class="text-sm font-semibold text-[#2457D6]">
-            ← Kembali ke Dompet
-        </a>
+  <div class="mx-auto max-w-6xl px-4 py-8">
+    <a
+      href="{% url 'wallet:index' %}"
+      class="text-sm font-semibold text-[#2457D6]"
+    >
+      ← Kembali ke Dompet
+    </a>
 
-        <header class="mb-6 mt-4">
-            <h1 class="text-3xl font-bold text-[#142653]">
-                Tarik Saldo
-            </h1>
-            <p class="mt-1 text-sm text-slate-500">
-                Transfer saldo insentif SiLoak ke rekening bank atau e-wallet milikmu.
-            </p>
-        </header>
+    <header class="mb-6 mt-4">
+      <h1 class="text-3xl font-bold text-[#142653]">Tarik Saldo</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Transfer saldo insentif SiLoak ke rekening bank atau e-wallet milikmu.
+      </p>
+    </header>
 
-        {% if preview_mode %}
-        <div class="mb-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800">
-            <b>Mode Preview</b>
-            <p class="mt-1">Kamu sedang melihat pratinjau halaman penarikan. Login untuk menggunakan fitur ini.</p>
-        </div>
-        {% endif %}
-
-        <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
-
-            <!-- FORM UTAMA -->
-            <section class="space-y-5 lg:col-span-7">
-
-                <!-- SALDO -->
-                <div class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-5 shadow-sm">
-                    <div class="mb-2 flex items-center justify-between gap-3">
-                        <p class="text-sm text-white">SALDO TERSEDIA</p>
-                        <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white">SiLoak Wallet</span>
-                    </div>
-
-                    <p class="mt-1 text-4xl text-white font-bold">Rp {{ wallet.balance|floatformat:2 }}</p>
-
-                    <div class="mt-4 border-t border-white/15 pt-3 text-xs text-white/60">
-                        Minimum penarikan Rp10.000
-                    </div>
-                </div>
-
-                <form method="post" id="withdrawForm" class="space-y-5">
-                    {% csrf_token %}
-
-                    <!-- 1. TUJUAN PENARIKAN -->
-                    <section class="rounded-xl bg-white p-5 shadow-sm">
-                        <div class="mb-4 flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">1</span>
-                            <div>
-                                <h2 class="font-semibold text-[#142653]">
-                                    Pilih Tujuan Penarikan
-                                </h2>
-                                <p class="text-xs text-slate-500">
-                                    Pilih bank atau e-wallet penerima.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="space-y-4">
-                            {% for field in form %}
-                                {% if field.name == "destination_type" or field.name == "destination_name" %}
-                                <div>
-                                    <label for="{{ field.id_for_label }}"
-                                           class="mb-1 block text-sm font-medium text-slate-700">
-                                        {% if field.name == "destination_type" %}
-                                            Jenis Tujuan
-                                        {% else %}
-                                            Nama Bank / E-Wallet
-                                        {% endif %}
-                                    </label>
-
-                                    {{ field }}
-
-                                    {% for error in field.errors %}
-                                    <p class="mt-1 text-xs text-red-600">{{ error }}</p>
-                                    {% endfor %}
-                                </div>
-                                {% endif %}
-                            {% endfor %}
-                        </div>
-
-                        <p class="mt-3 text-xs text-slate-500">
-                            Pastikan pilihan tujuan sesuai dengan akun penerima.
-                        </p>
-                    </section>
-
-                    <!-- 2. NOMOR AKUN -->
-                    <section class="rounded-xl bg-white p-5 shadow-sm">
-                        <div class="mb-4 flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">2</span>
-                            <div>
-                                <h2 class="font-semibold text-[#142653]">
-                                    Masukkan Nomor Akun
-                                </h2>
-                                <p class="text-xs text-slate-500">
-                                    Gunakan nomor rekening atau nomor HP e-wallet.
-                                </p>
-                            </div>
-                        </div>
-
-                        {% for field in form %}
-                            {% if field.name == "account_number" or field.name == "account_holder" %}
-                            <div class="mb-4 last:mb-0">
-                                <label for="{{ field.id_for_label }}"
-                                       class="mb-1 block text-sm font-medium text-slate-700">
-                                    {{ field.label }}
-                                </label>
-                                {{ field }}
-                                {% for error in field.errors %}
-                                <p class="mt-1 text-xs text-red-600">{{ error }}</p>
-                                {% endfor %}
-                            </div>
-                            {% endif %}
-                        {% endfor %}
-
-                        <p class="mt-3 text-xs text-slate-500">
-                            Periksa kembali nomor dan nama pemilik akun sebelum melanjutkan.
-                        </p>
-                    </section>
-
-                    <!-- 3. NOMINAL -->
-                    <section class="rounded-xl bg-white p-5 shadow-sm">
-                        <div class="mb-4 flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">3</span>
-                            <div>
-                                <h2 class="font-semibold text-[#142653]">
-                                    Masukkan Jumlah Penarikan
-                                </h2>
-                                <p class="text-xs text-slate-500">
-                                    Minimum Rp10.000 per transaksi.
-                                </p>
-                            </div>
-                        </div>
-
-                        {% for field in form %}
-                            {% if field.name == "amount" %}
-                            <label for="{{ field.id_for_label }}"
-                                   class="mb-1 block text-sm font-medium text-slate-700">
-                                Nominal Penarikan
-                            </label>
-
-                            <div class="relative">
-                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-m font-semibold text-slate-500">Rp</span>
-                                <div>
-                                    {{ field }}
-                                </div>
-                            </div>
-
-                            {% for error in field.errors %}
-                            <p class="mt-1 text-xs text-red-600">{{ error }}</p>
-                            {% endfor %}
-                            {% endif %}
-                        {% endfor %}
-
-                        <div class="mt-3 flex flex-wrap gap-2">
-                            <button type="button" data-amount="10000"
-                                    class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]">Rp10.000,00</button>
-                            <button type="button" data-amount="50000"
-                                    class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]">Rp50.000,00</button>
-                            <button type="button" data-amount="100000"
-                                    class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]">Rp100.000,00</button>
-                            <button type="button" id="withdrawAll"
-                                    class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]">Tarik Semua Saldo</button>
-                        </div>
-
-                        <div class="mt-4 flex justify-between text-xs">
-                            <span class="text-slate-500">Saldo tersedia</span>
-                            <b id="availableBalance">
-                                Rp {% if wallet %}{{ wallet.balance|floatformat:2 }}{% else %}0{% endif %}
-                            </b>
-                        </div>
-
-                        <p id="amountWarning" class="mt-2 hidden text-xs text-red-600"></p>
-                    </section>
-
-                    <!-- 4. FEE & SETTLEMENT -->
-                    <section class="rounded-xl bg-white p-5 shadow-sm">
-                        <div class="mb-4 flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">4</span>
-                            <div>
-                                <h2 class="font-semibold text-[#142653]">
-                                    Fee &amp; Settlement Details
-                                </h2>
-                                <p class="text-xs text-slate-500">
-                                    Rincian pemotongan saldo.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="space-y-4 rounded-lg bg-slate-50 p-4 text-sm">
-                            <div class="flex justify-between gap-3">
-                                <span class="text-slate-500">Jumlah penarikan</span>
-                                <b id="feeAmount">Rp0</b>
-                            </div>
-                            <div class="flex justify-between gap-3">
-                                <span class="text-slate-500">Biaya transfer</span>
-                                <b id="transferFee">Rp0</b>
-                            </div>
-                            <div class="flex justify-between gap-3">
-                                <span class="text-slate-500">Biaya layanan (2%)</span>
-                                <b id="serviceFee">Rp0</b>
-                            </div>
-
-                            <div class="border-t border-slate-200 pt-3">
-                                <div class="flex justify-between gap-3">
-                                    <span class="font-semibold text-[#142653]">
-                                        Total saldo dipotong
-                                    </span>
-                                    <b id="totalDeduction" class="text-[#2457D6]">Rp0</b>
-                                </div>
-                            </div>
-                        </div>
-
-                        <p class="mt-3 text-xs leading-relaxed text-slate-500">
-                            Biaya layanan sebesar 2% dari nominal penarikan.
-                            Biaya transfer mengikuti bank atau e-wallet tujuan.
-                        </p>
-                    </section>
-
-                    <!-- 5. KONFIRMASI -->
-                    <section class="rounded-xl bg-white p-5 shadow-sm">
-                        <div class="mb-4 flex items-center gap-3">
-                            <span class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white">5</span>
-                            <div>
-                                <h2 class="font-semibold text-[#142653]">
-                                    Withdrawal Confirmation
-                                </h2>
-                                <p class="text-xs text-slate-500">
-                                    Periksa ringkasan sebelum mengajukan.
-                                </p>
-                            </div>
-                        </div>
-
-                        <div class="space-y-3 rounded-lg border border-slate-200 p-4 text-sm">
-                            <div class="flex justify-between gap-4">
-                                <span class="text-slate-500">Tujuan</span>
-                                <b id="confirmDestination" class="text-right">Belum dipilih</b>
-                            </div>
-                            <div class="flex justify-between gap-4">
-                                <span class="text-slate-500">Nomor akun</span>
-                                <b id="confirmAccount" class="text-right">Belum diisi</b>
-                            </div>
-                            <div class="flex justify-between gap-4">
-                                <span class="text-slate-500">Nominal penarikan</span>
-                                <b id="confirmAmount">Rp0</b>
-                            </div>
-                            <div class="flex justify-between gap-4 border-t border-slate-100 pt-3">
-                                <span class="font-semibold">Total pemotongan</span>
-                                <b id="confirmTotal" class="text-[#2457D6]">Rp0</b>
-                            </div>
-                        </div>
-
-                        {% if preview_mode %}
-                        <button type="button" disabled
-                                class="mt-5 w-full cursor-not-allowed rounded-lg bg-slate-300 px-4 py-3 text-sm font-semibold text-white">
-                            Login untuk Mengajukan Penarikan
-                        </button>
-                        {% else %}
-                        <button type="submit"
-                                class="mt-5 w-full rounded-lg bg-[#2457D6] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1946b5]">
-                            Konfirmasi &amp; Ajukan Penarikan
-                        </button>
-                        {% endif %}
-
-                        <p class="mt-3 text-center text-xs text-slate-500">
-                            Pastikan data penerima sudah benar.
-                        </p>
-                    </section>
-                </form>
-            </section>
-
-            <!-- SIDEBAR -->
-            <aside class="space-y-5 lg:col-span-5">
-                <section class="rounded-xl bg-white p-5 shadow-sm">
-                    <div class="flex items-center justify-between gap-3">
-                        <h2 class="font-semibold text-[#142653]">
-                            Ringkasan Penarikan
-                        </h2>
-                        <span class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-[#2457D6]">
-                            Live Summary
-                        </span>
-                    </div>
-
-                    <div class="mt-4 rounded-lg bg-[#f0f3ff] p-4">
-                        <p class="text-xs text-slate-500">TOTAL PENARIKAN</p>
-                        <p id="sidebarAmount" class="mt-1 text-2xl font-bold text-[#142653]">
-                            Rp0,00
-                        </p>
-                        <p class="mt-1 text-xs text-slate-500">
-                            Estimasi saldo yang diterima
-                        </p>
-                    </div>
-
-                    <div class="mt-4 space-y-3 text-sm">
-                        <div class="flex justify-between">
-                            <span class="text-slate-500">Biaya transfer</span>
-                            <b id="sidebarTransferFee">Rp0</b>
-                        </div>
-
-                        <div class="flex justify-between">
-                            <span class="text-slate-500">Biaya layanan</span>
-                            <b id="sidebarServiceFee">Rp0</b>
-                        </div>
-
-                        <div class="flex justify-between">
-                            <span class="text-slate-500">Total potongan</span>
-                            <b id="sidebarTotalDeduction">Rp0</b>
-                        </div>
-
-                        <div class="flex justify-between border-t border-slate-100 pt-3">
-                            <span class="text-slate-500">Sisa saldo</span>
-                            <b id="remainingBalance">Rp0</b>
-                        </div>
-
-                        <p id="feeValidation" class="text-xs text-red-600" aria-live="polite"></p>
-                    </div>
-                </section>
-
-                <section class="rounded-xl bg-white p-5 shadow-sm">
-                    <h2 class="font-semibold text-[#142653]">
-                        Alur Penarikan
-                    </h2>
-
-                    <ol class="mt-4 space-y-5 text-sm">
-                        <li class="flex gap-3">
-                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]">1</span>
-                            <div>
-                                <b>Permintaan Diajukan</b>
-                                <p class="mt-1 text-xs text-slate-500">
-                                    Permintaan dicatat oleh sistem.
-                                </p>
-                            </div>
-                        </li>
-                        <li class="flex gap-3">
-                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]">2</span>
-                            <div>
-                                <b>Menunggu Proses</b>
-                                <p class="mt-1 text-xs text-slate-500">
-                                    Admin memeriksa permintaan penarikan.
-                                </p>
-                            </div>
-                        </li>
-                        <li class="flex gap-3">
-                            <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]">3</span>
-                            <div>
-                                <b>Penarikan Selesai</b>
-                                <p class="mt-1 text-xs text-slate-500">
-                                    Status diperbarui setelah diproses.
-                                </p>
-                            </div>
-                        </li>
-                    </ol>
-                </section>
-
-                <section class="rounded-xl border border-blue-100 bg-blue-50 p-4">
-                    <p class="text-sm font-semibold text-[#142653]">
-                        <span aria-hidden="true">ⓘ</span> Informasi Keamanan
-                    </p>
-                    <p class="mt-2 text-xs leading-relaxed text-slate-600">
-                        Jangan bagikan PIN, kata sandi, atau kode OTP. Pastikan rekening atau e-wallet tujuan merupakan milik penerima yang benar.
-                    </p>
-                </section>
-            </aside>
-        </div>
+    {% if preview_mode %}
+    <div
+      class="mb-5 rounded-xl border border-blue-200 bg-blue-50 p-4 text-sm text-blue-800"
+    >
+      <b>Mode Preview</b>
+      <p class="mt-1">
+        Kamu sedang melihat pratinjau halaman penarikan. Login untuk menggunakan
+        fitur ini.
+      </p>
     </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
+
+      <section class="space-y-5 lg:col-span-7">
+
+        <div
+          class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-5 shadow-sm"
+        >
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <p class="text-sm text-white">SALDO TERSEDIA</p>
+            <span
+              class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white"
+              >SiLoak Wallet</span
+            >
+          </div>
+
+          <p class="mt-1 text-4xl text-white font-bold">
+            Rp {{ wallet.balance|floatformat:2 }}
+          </p>
+
+          <div class="mt-4 border-t border-white/15 pt-3 text-xs text-white/60">
+            Minimum penarikan Rp10.000
+          </div>
+        </div>
+
+        <form method="post" id="withdrawForm" class="space-y-5">
+          {% csrf_token %}
+
+
+          <section class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="mb-4 flex items-center gap-3">
+              <span
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white"
+                >1</span
+              >
+              <div>
+                <h2 class="font-semibold text-[#142653]">
+                  Pilih Tujuan Penarikan
+                </h2>
+                <p class="text-xs text-slate-500">
+                  Pilih bank atau e-wallet penerima.
+                </p>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              {% for field in form %} {% if field.name == "destination_type" or field.name == "destination_name" %}
+              <div>
+                <label
+                  for="{{ field.id_for_label }}"
+                  class="mb-1 block text-sm font-medium text-slate-700"
+                >
+                  {% if field.name == "destination_type" %} Jenis Tujuan {% else %} Nama Bank / E-Wallet {% endif %}
+                </label>
+
+                {{ field }} {% for error in field.errors %}
+                <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+                {% endfor %}
+              </div>
+              {% endif %} {% endfor %}
+            </div>
+
+            <p class="mt-3 text-xs text-slate-500">
+              Pastikan pilihan tujuan sesuai dengan akun penerima.
+            </p>
+          </section>
+
+
+          <section class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="mb-4 flex items-center gap-3">
+              <span
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white"
+                >2</span
+              >
+              <div>
+                <h2 class="font-semibold text-[#142653]">
+                  Masukkan Nomor Akun
+                </h2>
+                <p class="text-xs text-slate-500">
+                  Gunakan nomor rekening atau nomor HP e-wallet.
+                </p>
+              </div>
+            </div>
+
+            {% for field in form %} {% if field.name == "account_number" or field.name == "account_holder" %}
+            <div class="mb-4 last:mb-0">
+              <label
+                for="{{ field.id_for_label }}"
+                class="mb-1 block text-sm font-medium text-slate-700"
+              >
+                {{ field.label }}
+              </label>
+              {{ field }} {% for error in field.errors %}
+              <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+              {% endfor %}
+            </div>
+            {% endif %} {% endfor %}
+
+            <p class="mt-3 text-xs text-slate-500">
+              Periksa kembali nomor dan nama pemilik akun sebelum melanjutkan.
+            </p>
+          </section>
+
+
+          <section class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="mb-4 flex items-center gap-3">
+              <span
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white"
+                >3</span
+              >
+              <div>
+                <h2 class="font-semibold text-[#142653]">
+                  Masukkan Jumlah Penarikan
+                </h2>
+                <p class="text-xs text-slate-500">
+                  Minimum Rp10.000 per transaksi.
+                </p>
+              </div>
+            </div>
+
+            {% for field in form %} {% if field.name == "amount" %}
+            <label
+              for="{{ field.id_for_label }}"
+              class="mb-1 block text-sm font-medium text-slate-700"
+            >
+              Nominal Penarikan
+            </label>
+
+            <div class="relative">
+              <span
+                class="absolute left-3 top-1/2 -translate-y-1/2 text-m font-semibold text-slate-500"
+                >Rp</span
+              >
+              <div>{{ field }}</div>
+            </div>
+
+            {% for error in field.errors %}
+            <p class="mt-1 text-xs text-red-600">{{ error }}</p>
+            {% endfor %} {% endif %} {% endfor %}
+
+            <div class="mt-3 flex flex-wrap gap-2">
+              <button
+                type="button"
+                data-amount="10000"
+                class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]"
+              >
+                Rp10.000,00
+              </button>
+              <button
+                type="button"
+                data-amount="50000"
+                class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]"
+              >
+                Rp50.000,00
+              </button>
+              <button
+                type="button"
+                data-amount="100000"
+                class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]"
+              >
+                Rp100.000,00
+              </button>
+              <button
+                type="button"
+                id="withdrawAll"
+                class="rounded-lg border border-[#dbe2ee] bg-white px-[11px] py-2 text-xs font-semibold text-[#142653] transition-colors hover:border-[#2457D6] hover:bg-[#eff4ff] hover:text-[#2457D6]"
+              >
+                Tarik Semua Saldo
+              </button>
+            </div>
+
+            <div class="mt-4 flex justify-between text-xs">
+              <span class="text-slate-500">Saldo tersedia</span>
+              <b id="availableBalance">
+                Rp {% if wallet %}{{ wallet.balance|floatformat:2 }}{% else %}0{% endif %}
+              </b>
+            </div>
+
+            <p id="amountWarning" class="mt-2 hidden text-xs text-red-600"></p>
+          </section>
+
+
+          <section class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="mb-4 flex items-center gap-3">
+              <span
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white"
+                >4</span
+              >
+              <div>
+                <h2 class="font-semibold text-[#142653]">
+                  Fee &amp; Settlement Details
+                </h2>
+                <p class="text-xs text-slate-500">Rincian pemotongan saldo.</p>
+              </div>
+            </div>
+
+            <div class="space-y-4 rounded-lg bg-slate-50 p-4 text-sm">
+              <div class="flex justify-between gap-3">
+                <span class="text-slate-500">Jumlah penarikan</span>
+                <b id="feeAmount">Rp0</b>
+              </div>
+              <div class="flex justify-between gap-3">
+                <span class="text-slate-500">Biaya transfer</span>
+                <b id="transferFee">Rp0</b>
+              </div>
+              <div class="flex justify-between gap-3">
+                <span class="text-slate-500">Biaya layanan (2%)</span>
+                <b id="serviceFee">Rp0</b>
+              </div>
+
+              <div class="border-t border-slate-200 pt-3">
+                <div class="flex justify-between gap-3">
+                  <span class="font-semibold text-[#142653]">
+                    Total saldo dipotong
+                  </span>
+                  <b id="totalDeduction" class="text-[#2457D6]">Rp0</b>
+                </div>
+              </div>
+            </div>
+
+            <p class="mt-3 text-xs leading-relaxed text-slate-500">
+              Biaya layanan sebesar 2% dari nominal penarikan. Biaya transfer
+              mengikuti bank atau e-wallet tujuan.
+            </p>
+          </section>
+
+
+          <section class="rounded-xl bg-white p-5 shadow-sm">
+            <div class="mb-4 flex items-center gap-3">
+              <span
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-[#2457D6] font-bold text-white"
+                >5</span
+              >
+              <div>
+                <h2 class="font-semibold text-[#142653]">
+                  Withdrawal Confirmation
+                </h2>
+                <p class="text-xs text-slate-500">
+                  Periksa ringkasan sebelum mengajukan.
+                </p>
+              </div>
+            </div>
+
+            <div
+              class="space-y-3 rounded-lg border border-slate-200 p-4 text-sm"
+            >
+              <div class="flex justify-between gap-4">
+                <span class="text-slate-500">Tujuan</span>
+                <b id="confirmDestination" class="text-right">Belum dipilih</b>
+              </div>
+              <div class="flex justify-between gap-4">
+                <span class="text-slate-500">Nomor akun</span>
+                <b id="confirmAccount" class="text-right">Belum diisi</b>
+              </div>
+              <div class="flex justify-between gap-4">
+                <span class="text-slate-500">Nominal penarikan</span>
+                <b id="confirmAmount">Rp0</b>
+              </div>
+              <div
+                class="flex justify-between gap-4 border-t border-slate-100 pt-3"
+              >
+                <span class="font-semibold">Total pemotongan</span>
+                <b id="confirmTotal" class="text-[#2457D6]">Rp0</b>
+              </div>
+            </div>
+
+            {% if preview_mode %}
+            <button
+              type="button"
+              disabled
+              class="mt-5 w-full cursor-not-allowed rounded-lg bg-slate-300 px-4 py-3 text-sm font-semibold text-white"
+            >
+              Login untuk Mengajukan Penarikan
+            </button>
+            {% else %}
+            <button
+              type="submit"
+              class="mt-5 w-full rounded-lg bg-[#2457D6] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#1946b5]"
+            >
+              Konfirmasi &amp; Ajukan Penarikan
+            </button>
+            {% endif %}
+
+            <p class="mt-3 text-center text-xs text-slate-500">
+              Pastikan data penerima sudah benar.
+            </p>
+          </section>
+        </form>
+      </section>
+
+
+      <aside class="space-y-5 lg:col-span-5">
+        <section class="rounded-xl bg-white p-5 shadow-sm">
+          <div class="flex items-center justify-between gap-3">
+            <h2 class="font-semibold text-[#142653]">Ringkasan Penarikan</h2>
+            <span
+              class="rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-[#2457D6]"
+            >
+              Live Summary
+            </span>
+          </div>
+
+          <div class="mt-4 rounded-lg bg-[#f0f3ff] p-4">
+            <p class="text-xs text-slate-500">TOTAL PENARIKAN</p>
+            <p
+              id="sidebarAmount"
+              class="mt-1 text-2xl font-bold text-[#142653]"
+            >
+              Rp0,00
+            </p>
+            <p class="mt-1 text-xs text-slate-500">
+              Estimasi saldo yang diterima
+            </p>
+          </div>
+
+          <div class="mt-4 space-y-3 text-sm">
+            <div class="flex justify-between">
+              <span class="text-slate-500">Biaya transfer</span>
+              <b id="sidebarTransferFee">Rp0</b>
+            </div>
+
+            <div class="flex justify-between">
+              <span class="text-slate-500">Biaya layanan</span>
+              <b id="sidebarServiceFee">Rp0</b>
+            </div>
+
+            <div class="flex justify-between">
+              <span class="text-slate-500">Total potongan</span>
+              <b id="sidebarTotalDeduction">Rp0</b>
+            </div>
+
+            <div class="flex justify-between border-t border-slate-100 pt-3">
+              <span class="text-slate-500">Sisa saldo</span>
+              <b id="remainingBalance">Rp0</b>
+            </div>
+
+            <p
+              id="feeValidation"
+              class="text-xs text-red-600"
+              aria-live="polite"
+            ></p>
+          </div>
+        </section>
+
+        <section class="rounded-xl bg-white p-5 shadow-sm">
+          <h2 class="font-semibold text-[#142653]">Alur Penarikan</h2>
+
+          <ol class="mt-4 space-y-5 text-sm">
+            <li class="flex gap-3">
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]"
+                >1</span
+              >
+              <div>
+                <b>Permintaan Diajukan</b>
+                <p class="mt-1 text-xs text-slate-500">
+                  Permintaan dicatat oleh sistem.
+                </p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]"
+                >2</span
+              >
+              <div>
+                <b>Menunggu Proses</b>
+                <p class="mt-1 text-xs text-slate-500">
+                  Admin memeriksa permintaan penarikan.
+                </p>
+              </div>
+            </li>
+            <li class="flex gap-3">
+              <span
+                class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 font-bold text-[#2457D6]"
+                >3</span
+              >
+              <div>
+                <b>Penarikan Selesai</b>
+                <p class="mt-1 text-xs text-slate-500">
+                  Status diperbarui setelah diproses.
+                </p>
+              </div>
+            </li>
+          </ol>
+        </section>
+
+        <section class="rounded-xl border border-blue-100 bg-blue-50 p-4">
+          <p class="text-sm font-semibold text-[#142653]">
+            <span aria-hidden="true">ⓘ</span> Informasi Keamanan
+          </p>
+          <p class="mt-2 text-xs leading-relaxed text-slate-600">
+            Jangan bagikan PIN, kata sandi, atau kode OTP. Pastikan rekening
+            atau e-wallet tujuan merupakan milik penerima yang benar.
+          </p>
+        </section>
+      </aside>
+    </div>
+  </div>
 </main>
 
 {% include "components/footer.html" %}
 
 <span
-    id="walletBalanceData"
-    data-balance="{{ wallet.balance|stringformat:'f' }}"
-    hidden
+  id="walletBalanceData"
+  data-balance="{{ wallet.balance|stringformat:'f' }}"
+  hidden
 ></span>
 
-{{ bank_transfer_fees|json_script:"bank-transfer-fees-data" }}
-{{ ewallet_transfer_fees|json_script:"ewallet-transfer-fees-data" }}
-
+{{ bank_transfer_fees|json_script:"bank-transfer-fees-data" }} {{ ewallet_transfer_fees|json_script:"ewallet-transfer-fees-data" }}
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+  document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("withdrawForm");
     const amountInput = document.getElementById("id_amount");
     const typeInput = document.getElementById("id_destination_type");
@@ -395,221 +448,233 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (!form || !amountInput || !typeInput || !nameInput) return;
 
-    const balance = Number(document.getElementById("walletBalanceData").dataset.balance) || 0;
-    const bankFees = JSON.parse(document.getElementById("bank-transfer-fees-data").textContent);
-    const ewalletFees = JSON.parse(document.getElementById("ewallet-transfer-fees-data").textContent);
+    const balance =
+      Number(document.getElementById("walletBalanceData").dataset.balance) || 0;
+    const bankFees = JSON.parse(
+      document.getElementById("bank-transfer-fees-data").textContent,
+    );
+    const ewalletFees = JSON.parse(
+      document.getElementById("ewallet-transfer-fees-data").textContent,
+    );
     const SERVICE_FEE_RATE = 0.02;
 
     const optionsByType = {
-        bank: [
-            ["BCA", "BCA"],
-            ["BNI", "BNI"],
-            ["BRI", "BRI"],
-            ["Mandiri", "Bank Mandiri"],
-            ["BSI", "BSI"],
-            ["SeaBank", "SeaBank"]
-        ],
-        ewallet: [
-            ["GoPay", "GoPay"],
-            ["OVO", "OVO"],
-            ["DANA", "DANA"],
-            ["ShopeePay", "ShopeePay"]
-        ]
+      bank: [
+        ["BCA", "BCA"],
+        ["BNI", "BNI"],
+        ["BRI", "BRI"],
+        ["Mandiri", "Bank Mandiri"],
+        ["BSI", "BSI"],
+        ["SeaBank", "SeaBank"],
+      ],
+      ewallet: [
+        ["GoPay", "GoPay"],
+        ["OVO", "OVO"],
+        ["DANA", "DANA"],
+        ["ShopeePay", "ShopeePay"],
+      ],
     };
 
     function refreshDestinations() {
-        const previousValue = nameInput.value;
-        const options = optionsByType[typeInput.value] || [];
+      const previousValue = nameInput.value;
+      const options = optionsByType[typeInput.value] || [];
 
-        nameInput.replaceChildren();
+      nameInput.replaceChildren();
 
-        options.forEach(([value, label]) => {
-            const option = document.createElement("option");
-            option.value = value;
-            option.textContent = label;
-            nameInput.appendChild(option);
-        });
+      options.forEach(([value, label]) => {
+        const option = document.createElement("option");
+        option.value = value;
+        option.textContent = label;
+        nameInput.appendChild(option);
+      });
 
-        if (options.some(([value]) => value === previousValue)) {
-            nameInput.value = previousValue;
-        }
+      if (options.some(([value]) => value === previousValue)) {
+        nameInput.value = previousValue;
+      }
 
-        updateSummary();
+      updateSummary();
     }
 
-    const formatRupiah = value =>
-        new Intl.NumberFormat("id-ID", {
-            style: "currency",
-            currency: "IDR",
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2
-        }).format(Math.max(0, value));
+    const formatRupiah = (value) =>
+      new Intl.NumberFormat("id-ID", {
+        style: "currency",
+        currency: "IDR",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(Math.max(0, value));
 
     function calculateServiceFee(amount) {
-        return Math.floor(amount * SERVICE_FEE_RATE + 0.5);
+      return Math.floor(amount * SERVICE_FEE_RATE + 0.5);
     }
 
     function getTransferFee() {
-        const feeTable = typeInput.value === "ewallet"
-            ? ewalletFees
-            : bankFees;
+      const feeTable = typeInput.value === "ewallet" ? ewalletFees : bankFees;
 
-        const destination = nameInput.value;
+      const destination = nameInput.value;
 
-        if (!Object.prototype.hasOwnProperty.call(
-            feeTable, destination
-        )) {
-            return null;
-        }
+      if (!Object.prototype.hasOwnProperty.call(feeTable, destination)) {
+        return null;
+      }
 
-        return Number(feeTable[destination]);
+      return Number(feeTable[destination]);
     }
 
     function updateSummary() {
-        const amount = Math.max(
-            0, Number(amountInput.value) || 0
+      const amount = Math.max(0, Number(amountInput.value) || 0);
+
+      const transferFee = getTransferFee();
+      const validDestination = transferFee !== null;
+      const actualTransferFee = validDestination ? transferFee : 0;
+      const serviceFee = calculateServiceFee(amount);
+      const totalDeduction = amount + actualTransferFee + serviceFee;
+      const remaining = balance - totalDeduction;
+
+      // Fee breakdown
+      document.getElementById("feeAmount").textContent = formatRupiah(amount);
+      document.getElementById("transferFee").textContent = validDestination
+        ? formatRupiah(transferFee)
+        : "Belum tersedia";
+      document.getElementById("serviceFee").textContent =
+        formatRupiah(serviceFee);
+      document.getElementById("totalDeduction").textContent =
+        formatRupiah(totalDeduction);
+
+      // Confirmation summary
+      document.getElementById("confirmDestination").textContent =
+        nameInput.selectedOptions[0]?.text || "Belum dipilih";
+      document.getElementById("confirmAccount").textContent =
+        accountInput?.value || "Belum diisi";
+      document.getElementById("confirmAmount").textContent =
+        formatRupiah(amount);
+      document.getElementById("confirmTotal").textContent =
+        formatRupiah(totalDeduction);
+
+      // Sidebar summary
+      document.getElementById("sidebarAmount").textContent =
+        formatRupiah(amount);
+      document.getElementById("sidebarTransferFee").textContent =
+        validDestination ? formatRupiah(transferFee) : "Belum tersedia";
+      document.getElementById("sidebarServiceFee").textContent =
+        formatRupiah(serviceFee);
+      document.getElementById("sidebarTotalDeduction").textContent =
+        formatRupiah(totalDeduction);
+      document.getElementById("remainingBalance").textContent = formatRupiah(
+        Math.max(0, remaining),
+      );
+
+      // Validation warning
+      const warning = document.getElementById("amountWarning");
+      let warningMessage = "";
+
+      if (!validDestination) {
+        warningMessage = "Pilih tujuan transfer yang valid.";
+      } else if (amount > 0 && amount < 10000) {
+        warningMessage = "Minimum penarikan adalah Rp10.000,00.";
+      } else if (amount >= 10000 && totalDeduction > balance) {
+        warningMessage = "Saldo tidak cukup untuk nominal dan seluruh biaya.";
+      }
+
+      if (warning) {
+        warning.textContent = warningMessage;
+        warning.classList.toggle("hidden", !warningMessage);
+      }
+
+      const feeValidation = document.getElementById("feeValidation");
+
+      if (feeValidation) {
+        feeValidation.textContent = warningMessage;
+      }
+
+      // Disable submit when invalid
+      const submitButton = form.querySelector('button[type="submit"]');
+
+      if (submitButton) {
+        const validAmount = amount >= 10000;
+        const validBalance = totalDeduction <= balance;
+
+        submitButton.disabled = !(
+          validDestination &&
+          validAmount &&
+          validBalance
         );
-
-        const transferFee = getTransferFee();
-        const validDestination = transferFee !== null;
-        const actualTransferFee = validDestination ? transferFee : 0;
-        const serviceFee = calculateServiceFee(amount);
-        const totalDeduction =
-            amount + actualTransferFee + serviceFee;
-        const remaining = balance - totalDeduction;
-
-        // Fee breakdown
-        document.getElementById("feeAmount").textContent = formatRupiah(amount);
-        document.getElementById("transferFee").textContent = validDestination ? formatRupiah(transferFee) : "Belum tersedia";
-        document.getElementById("serviceFee").textContent = formatRupiah(serviceFee);
-        document.getElementById("totalDeduction").textContent = formatRupiah(totalDeduction);
-
-        // Confirmation summary
-        document.getElementById("confirmDestination").textContent = nameInput.selectedOptions[0]?.text || "Belum dipilih";
-        document.getElementById("confirmAccount").textContent = accountInput?.value || "Belum diisi";
-        document.getElementById("confirmAmount").textContent = formatRupiah(amount);
-        document.getElementById("confirmTotal").textContent = formatRupiah(totalDeduction);
-
-        // Sidebar summary
-        document.getElementById("sidebarAmount").textContent = formatRupiah(amount);
-        document.getElementById("sidebarTransferFee").textContent = validDestination ? formatRupiah(transferFee) : "Belum tersedia";
-        document.getElementById("sidebarServiceFee").textContent = formatRupiah(serviceFee);
-        document.getElementById("sidebarTotalDeduction").textContent = formatRupiah(totalDeduction);
-        document.getElementById("remainingBalance").textContent = formatRupiah(Math.max(0, remaining));
-
-        // Validation warning
-        const warning = document.getElementById("amountWarning");
-        let warningMessage = "";
-
-        if (!validDestination) {
-            warningMessage = "Pilih tujuan transfer yang valid.";
-        } else if (amount > 0 && amount < 10000) {
-            warningMessage = "Minimum penarikan adalah Rp10.000,00.";
-        } else if (amount >= 10000 && totalDeduction > balance) {
-            warningMessage = "Saldo tidak cukup untuk nominal dan seluruh biaya.";
-        }
-
-        if (warning) {
-            warning.textContent = warningMessage;
-            warning.classList.toggle("hidden", !warningMessage);
-        }
-
-        const feeValidation = document.getElementById("feeValidation");
-
-        if (feeValidation) {
-            feeValidation.textContent = warningMessage;
-        }
-
-        // Disable submit when invalid
-        const submitButton = form.querySelector(
-            'button[type="submit"]'
+        submitButton.classList.toggle("opacity-50", submitButton.disabled);
+        submitButton.classList.toggle(
+          "cursor-not-allowed",
+          submitButton.disabled,
         );
+      }
 
-        if (submitButton) {
-            const validAmount = amount >= 10000;
-            const validBalance = totalDeduction <= balance;
+      // Highlight selected amount button
+      document
+        .querySelectorAll("[data-amount], #withdrawAll")
+        .forEach((button) => {
+          const selected =
+            button.hasAttribute("data-amount") &&
+            Number(button.dataset.amount) === amount;
 
-            submitButton.disabled = !(validDestination && validAmount && validBalance);
-            submitButton.classList.toggle("opacity-50", submitButton.disabled);
-            submitButton.classList.toggle("cursor-not-allowed", submitButton.disabled);
-        }
-
-        // Highlight selected amount button
-        document.querySelectorAll("[data-amount], #withdrawAll")
-            .forEach(button => {
-                const selected =
-                    button.hasAttribute("data-amount") &&
-                    Number(button.dataset.amount) === amount;
-
-                button.classList.toggle("bg-[#eff4ff]", selected);
-                button.classList.toggle("border-[#2457D6]", selected);
-                button.classList.toggle("text-[#2457D6]", selected);
-            });
+          button.classList.toggle("bg-[#eff4ff]", selected);
+          button.classList.toggle("border-[#2457D6]", selected);
+          button.classList.toggle("text-[#2457D6]", selected);
+        });
     }
 
     function getMaxWithdrawable() {
-        const transferFee = getTransferFee();
+      const transferFee = getTransferFee();
 
-        if (transferFee === null) return 0;
+      if (transferFee === null) return 0;
 
-        let amount = Math.floor((balance - transferFee) / 1.02);
+      let amount = Math.floor((balance - transferFee) / 1.02);
 
-        while (
-            amount >= 0 &&
-            amount + transferFee + calculateServiceFee(amount) > balance
-        ) {
-            amount--;
-        }
+      while (
+        amount >= 0 &&
+        amount + transferFee + calculateServiceFee(amount) > balance
+      ) {
+        amount--;
+      }
 
-        // Nominal kelipatan Rp1.000.
-        return Math.max(0, Math.floor(amount / 1000) * 1000);
+      // Nominal kelipatan Rp1.000.
+      return Math.max(0, Math.floor(amount / 1000) * 1000);
     }
 
-    document.getElementById("withdrawAll")?.addEventListener(
-        "click",
-        function () {
-            amountInput.value = getMaxWithdrawable();
-            updateSummary();
-        }
-    );
+    document
+      .getElementById("withdrawAll")
+      ?.addEventListener("click", function () {
+        amountInput.value = getMaxWithdrawable();
+        updateSummary();
+      });
 
-    document.querySelectorAll("[data-amount]").forEach(button => {
-        button.addEventListener("click", function () {
-            amountInput.value = this.dataset.amount;
-            updateSummary();
-        });
+    document.querySelectorAll("[data-amount]").forEach((button) => {
+      button.addEventListener("click", function () {
+        amountInput.value = this.dataset.amount;
+        updateSummary();
+      });
     });
 
     typeInput.addEventListener("change", refreshDestinations);
 
-    [amountInput, nameInput, accountInput]
-        .filter(Boolean)
-        .forEach(input => {
-            input.addEventListener("input", updateSummary);
-            input.addEventListener("change", updateSummary);
-        });
+    [amountInput, nameInput, accountInput].filter(Boolean).forEach((input) => {
+      input.addEventListener("input", updateSummary);
+      input.addEventListener("change", updateSummary);
+    });
 
     form.addEventListener("submit", function (event) {
-        const amount = Number(amountInput.value) || 0;
-        const transferFee = getTransferFee();
+      const amount = Number(amountInput.value) || 0;
+      const transferFee = getTransferFee();
 
-        const total = transferFee === null
-            ? Infinity
-            : amount + transferFee + calculateServiceFee(amount);
+      const total =
+        transferFee === null
+          ? Infinity
+          : amount + transferFee + calculateServiceFee(amount);
 
-        if (
-            amount < 10000 ||
-            transferFee === null ||
-            total > balance
-        ) {
-            event.preventDefault();
-            updateSummary();
-            amountInput.focus();
-        }
+      if (amount < 10000 || transferFee === null || total > balance) {
+        event.preventDefault();
+        updateSummary();
+        amountInput.focus();
+      }
     });
 
     refreshDestinations();
-});
+  });
 </script>
 
 {% endblock %}

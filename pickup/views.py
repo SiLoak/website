@@ -28,7 +28,6 @@ PROGRESS_STATUSES = {
   Status.ON_THE_WAY,
   Status.ARRIVED,
   Status.WEIGHING,
-  Status.COMPLETED,
   Status.FAILED,
 }
 
@@ -64,7 +63,7 @@ TRANSITION_MESSAGES = {
   Status.ARRIVED: "Status diperbarui: kurir sudah tiba.",
   Status.WEIGHING: "Penimbangan dimulai.",
   Status.FAILED: "Pickup ditandai gagal.",
-  Status.COMPLETED: "Penimbangan selesai. Pickup ditandai selesai.",
+  Status.COMPLETED: "Pickup selesai diverifikasi dan insentif berhasil diproses.",
 }
 
 
@@ -163,8 +162,9 @@ def _get_current_month_string():
 
 @giver_required()
 def show_pickup_list(request):
-  # Givers track pickups together with drop-offs on the history page.
-  return redirect(reverse("waste:submissions") + "?type=pickup")
+  return redirect(
+    f"{reverse('waste:new')}?delivery_method=minta_dijemput"
+  )
 
 
 @giver_required()
@@ -186,6 +186,21 @@ def show_collector_pickup_list(request):
   }
 
   return render(request, "pickup/dashboard_collector.html", context)
+
+
+@collector_required()
+def show_collector_pickup_history(request):
+
+  pickups = (
+    PickupRequest.objects.filter(collector=request.user)
+    .select_related("giver")
+    .prefetch_related("items__waste_type", "status_history__changed_by")
+  )
+  return render(
+    request,
+    "pickup/collector_history.html",
+    {"active_item": "history", "pickups": pickups},
+  )
 
 
 def _render_detail(request, pickup_id, weighing_formset=None, status=200):
@@ -210,6 +225,7 @@ def _render_detail(request, pickup_id, weighing_formset=None, status=200):
     "active_item": "history",
     "submission_id": pickup_id,
     "pickup": pickup,
+    "payout_pending": pickup.status == Status.COMPLETED and pickup.verified_at is None,
     "is_owner": is_owner,
     "is_assigned": is_assigned,
     "can_accept": can_accept,
@@ -245,6 +261,7 @@ def get_pickup_json(request):
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
         "address": pickup.pickup_address,
+        "address_detail": pickup.address_detail,
         "collector_name": _display_name(pickup.collector),
       }
     })
@@ -266,7 +283,10 @@ def get_collector_pickup_json(request):
   else:
     pickup_list = PickupRequest.objects.filter(collector=request.user)
 
-  pickup_list = _apply_filters(pickup_list.select_related("giver"), request)
+  pickup_list = _apply_filters(
+    pickup_list.select_related("giver").prefetch_related("items__waste_type"),
+    request,
+  )
   
   data = []
   for pickup in pickup_list:
@@ -278,6 +298,12 @@ def get_collector_pickup_json(request):
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
         "address": pickup.pickup_address,
+        "address_detail": pickup.address_detail,
+        "pickup_address": pickup.pickup_address,
+        "completed_at": pickup.completed_at,
+        "estimated_weight": str(pickup.estimated_weight),
+        "actual_weight": str(pickup.actual_weight) if pickup.actual_weight is not None else None,
+        "items": [item.waste_type.name for item in pickup.items.all()],
         "giver_name": _display_name(pickup.giver),
       }
     })
@@ -358,7 +384,6 @@ def cancel_pickup_ajax(request, pickup_id):
 @collector_required(json=True)
 @rate_limit("pickup-accept", "20/m")
 def accept_pickup_ajax(request, pickup_id):
-
   return _transition_response(
     request, pickup_id, Status.ASSIGNED, collector=request.user
   )
@@ -411,6 +436,7 @@ def complete_weighing_ajax(request, pickup_id):
       pickup = services.change_status(
         pickup_id, Status.COMPLETED, request.user, reason="", collector=None
       )
+      pickup = services.verify_completed_pickup(pickup.pk, request.user)
   except PermissionDenied:
     return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
   except services.PickupServiceError as e:
@@ -420,7 +446,7 @@ def complete_weighing_ajax(request, pickup_id):
     return with_toast(_render_detail(request, pickup.pk), TRANSITION_MESSAGES[Status.COMPLETED])
   return JsonResponse(
     {
-      "message": "Penimbangan selesai. Pickup ditandai selesai.",
+      "message": "Pickup selesai diverifikasi dan insentif berhasil diproses.",
       "pk": str(pickup.id),
       "status": pickup.status,
       "status_display": pickup.get_status_display(),

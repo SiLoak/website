@@ -85,11 +85,13 @@ class PickupEditTests(PickupTestCase):
 
 
 class PickupListPageTests(PickupTestCase):
-    def test_pickup_index_redirects_givers_to_filtered_history(self):
+    def test_pickup_index_opens_the_form_with_pickup_preselected(self):
         self.client.force_login(self.giver)
         response = self.client.get(reverse("pickup:show_pickup_list"))
 
-        self.assertRedirects(response, reverse("waste:submissions") + "?type=pickup", fetch_redirect_response=False)
+        self.assertRedirects(response, reverse("waste:new") + "?delivery_method=minta_dijemput", fetch_redirect_response=False)
+        page = self.client.get(response["Location"])
+        self.assertEqual(page.context["delivery_method"], "minta_dijemput")
 
     def test_collectors_are_sent_to_their_dashboard(self):
         self.client.force_login(self.collector)

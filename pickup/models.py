@@ -133,6 +133,14 @@ class PickupRequest(models.Model):
   assigned_at = models.DateTimeField(null=True, blank=True)
   completed_at = models.DateTimeField(null=True, blank=True)
   cancelled_at = models.DateTimeField(null=True, blank=True)
+  verified_at = models.DateTimeField(null=True, blank=True)
+  verified_by = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True,
+    related_name="verified_pickup_requests",
+  )
 
   class Meta:
     ordering = ["-created_at"]
@@ -250,7 +258,7 @@ class PickupItem(models.Model):
     ]
 
   def __str__(self):
-    return f"{self.waste_type} — pickup #{str(self.pickup_request_id)[:8]}"
+    return f"{self.waste_type} — {self.pickup_request}"
 
   @property
   def estimated_subtotal(self):

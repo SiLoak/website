@@ -27,6 +27,8 @@ class SecurityTestCase(TestCase):
         self.giver = User.objects.create_user("giver-sec", password="unused-test-pass")
         self.collector = User.objects.create_user("collector-sec", password="unused-test-pass")
         self.collector.groups.add(Group.objects.get_or_create(name="Collector")[0])
+        # New accounts join Giver automatically; a collector account is collector-only.
+        self.collector.groups.remove(Group.objects.get(name="Giver"))
 
     def request(self, user=None, method="get", path="/x/", **extra):
         request = getattr(self.factory, method)(path, **extra)

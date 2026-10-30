@@ -1,194 +1,266 @@
-{% extends "base.html" %}
-{% block title %}Dompet · SiLoak{% endblock %}
-
-{% block content %}
-{% include "components/navbar.html" with active_item="wallet" %}
+{% extends "base.html" %} {% block title %}Dompet · SiLoak{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="wallet" %}
 
 <main class="min-h-screen bg-page-bg">
-    <div class="mx-auto max-w-6xl px-4 py-8">
-        <header class="mb-6">
-            <h1 class="text-3xl font-bold tracking-tight">Dompet</h1>
-            <p class="mt-1 text-sm text-slate-500">Lihat saldo insentifmu, tarik saldo, atau donasikan untuk kebaikan.</p>
-        </header>
+  <div class="mx-auto max-w-6xl px-4 py-8">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold tracking-tight">Dompet</h1>
+      <p class="mt-1 text-sm text-slate-500">
+        Lihat saldo insentifmu, tarik saldo, atau donasikan untuk kebaikan.
+      </p>
+    </header>
 
-        {% if messages %}
-            {% for message in messages %}
-                <p class="mb-4 rounded-lg bg-blue-50 p-3 text-sm text-blue-900">{{ message }}</p>
-            {% endfor %}
-        {% endif %}
+    {% if messages %} {% for message in messages %}
+    <p class="mb-4 rounded-lg bg-blue-50 p-3 text-sm text-blue-900">
+      {{ message }}
+    </p>
+    {% endfor %} {% endif %}
 
-        <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
-            <!-- Main Content Area -->
-            <div class="flex flex-col gap-5 lg:col-span-8">
-                <!-- Saldo Card -->
-                <section class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-6 text-white shadow-md sm:p-8">
-                    <div class="mb-2 flex items-center justify-between gap-3">
-                        <p class="text-sm text-white">SALDO TERSEDIA</p>
-                        <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white">SiLoak Wallet</span>
-                    </div>
-                    <p class="mt-1 text-4xl font-bold">Rp {{ wallet.balance|floatformat:2 }}</p>
-                    
-                    <div class="mt-6 flex flex-wrap gap-3">
-                        <a href="{% url 'wallet:withdraw' %}" class="rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-siloak-navy">↗ Tarik Saldo</a>
-                        <a href="{% url 'wallet:donate' %}" class="rounded-lg border border-white/50 px-4 py-2.5 text-sm font-semibold text-white">♡ Donasikan</a>
-                    </div>
-                </section>
+    <div class="grid grid-cols-1 items-start gap-5 lg:grid-cols-12">
 
-                <!-- Stats Overview -->
-                <section class="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                    <div class="flex items-center gap-4 rounded-xl p-4 shadow-sm" style="background-color: #E7E2CE;">
-                        <div class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-emerald-50">
-                            {% include "components/lucide_icon.html" with name="arrow-down" icon_class="h-7 w-7 text-emerald-600" only %}
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-500">Total diterima</p>
-                            <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_withdrawn|floatformat:2 }}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4 rounded-xl p-4 shadow-sm" style="background-color: #E7E2CE;">
-                        <div class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-amber-50">
-                            {% include "components/lucide_icon.html" with name="arrow-up" icon_class="h-7 w-7 text-amber-600" only %}
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-500">Total ditarik</p>
-                            <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_withdrawn|floatformat:2 }}</p>
-                        </div>
-                    </div>
-                    <div class="flex items-center gap-4 rounded-xl p-4 shadow-sm" style="background-color: #E7E2CE;">
-                        <div class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-500">
-                            {% include "components/lucide_icon.html" with name="heart" icon_class="h-7 w-7" only %}
-                        </div>
-                        <div>
-                            <p class="text-sm text-slate-500">Total donasi</p>
-                            <p class="mt-1 text-xl font-bold">Rp {{ wallet.total_donated|floatformat:2 }}</p>
-                        </div>
-                    </div>
-                </section>
+      <div class="flex flex-col gap-5 lg:col-span-8">
 
-                <!-- Transaction Table -->
-                <section class="overflow-hidden rounded-xl bg-white shadow-sm">
-                    <h2 class="border-b px-5 py-4 font-semibold">Transaksi insentif</h2>
-                    <div class="overflow-x-auto">
-                        <table class="w-full min-w-[600px] text-left text-sm">
-                            <thead class="bg-slate-50 text-xs text-slate-500">
-                                <tr>
-                                    <th class="px-5 py-3">Keterangan</th>
-                                    <th class="px-5 py-3">Tanggal</th>
-                                    <th class="px-5 py-3">Status</th>
-                                    <th class="px-5 py-3 text-right">Jumlah</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y">
-                                {% for tx in transactions %}
-                                    <tr>
-                                        <td class="px-5 py-4">
-                                            <p class="font-semibold">{{ tx.description }}</p>
-                                            {% if tx.destination %}
-                                                <p class="text-xs text-slate-500">{{ tx.destination }}</p>
-                                            {% endif %}
+        <section
+          class="rounded-xl bg-[linear-gradient(120deg,#142653_0%,#203f91_100%)] p-6 text-white shadow-md sm:p-8"
+        >
+          <div class="mb-2 flex items-center justify-between gap-3">
+            <p class="text-sm text-white">SALDO TERSEDIA</p>
+            <span
+              class="rounded-full bg-white/15 px-3 py-1 text-xs font-medium text-white"
+              >SiLoak Wallet</span
+            >
+          </div>
+          <p class="mt-1 text-4xl font-bold">
+            Rp {{ wallet.balance|floatformat:2 }}
+          </p>
 
-                                            {% if tx.transaction_type == 'refund' %}
-                                                <p class="mt-1 text-xs text-emerald-600">Saldo berhasil dikembalikan ke dompet</p>
-                                            {% endif %}
+          <div class="mt-6 flex flex-wrap gap-3">
+            <a
+              href="{% url 'wallet:withdraw' %}"
+              class="rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-siloak-navy"
+              >↗ Tarik Saldo</a
+            >
+            <a
+              href="{% url 'wallet:donate' %}"
+              class="rounded-lg border border-white/50 px-4 py-2.5 text-sm font-semibold text-white"
+              >♡ Donasikan</a
+            >
+          </div>
+        </section>
 
-                                            <a href="{% url 'wallet:transaction_detail' tx.pk %}"
-                                                class="mt-2 inline-block text-xs font-semibold text-[#2457D6] hover:underline">Detail →</a>
-                                        </td>
 
-                                        <td class="whitespace-nowrap px-5 py-4 text-slate-500">
-                                            {{ tx.created_at|date:"d M Y" }}
-                                        </td>
-                                        <td class="px-5 py-4">
-                                            <span class="rounded-full px-2 py-1 text-xs {% if tx.status == 'success' %}bg-emerald-50 text-emerald-700{% elif tx.status == 'failed' %}bg-red-50 text-red-700{% else %}bg-amber-50 text-amber-700{% endif %}">
-                                                {{ tx.get_status_display }}
-                                            </span>
-                                        </td>
-                                        <td class="whitespace-nowrap px-5 py-4 text-right font-semibold">
-                                            {% if tx.transaction_type == 'earning' or tx.transaction_type == 'refund' %}
-                                                +Rp {{ tx.amount|floatformat:2 }}
-                                            {% elif tx.transaction_type == 'withdrawal' %}
-                                                -Rp {{ tx.withdrawal_request.total_deduction|floatformat:2 }}
-                                            {% else %}
-                                                -Rp {{ tx.amount|floatformat:2 }}
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% empty %}
-                                    <tr>
-                                        <td colspan="4" class="px-5 py-12 text-center text-slate-500">
-                                            Belum ada transaksi. Insentif dari setoran yang selesai akan muncul di sini.
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </section>
+        <section class="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          <div
+            class="flex items-center gap-4 rounded-xl p-4 shadow-sm"
+            style="background-color: #e7e2ce"
+          >
+            <div
+              class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-emerald-50"
+            >
+              {% include "components/lucide_icon.html" with name="arrow-down" icon_class="h-7 w-7 text-emerald-600" only %}
+            </div>
+            <div>
+              <p class="text-sm text-slate-500">Total diterima</p>
+              <p class="mt-1 text-xl font-bold">
+                Rp {{ wallet.total_withdrawn|floatformat:2 }}
+              </p>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-4 rounded-xl p-4 shadow-sm"
+            style="background-color: #e7e2ce"
+          >
+            <div
+              class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-amber-50"
+            >
+              {% include "components/lucide_icon.html" with name="arrow-up" icon_class="h-7 w-7 text-amber-600" only %}
+            </div>
+            <div>
+              <p class="text-sm text-slate-500">Total ditarik</p>
+              <p class="mt-1 text-xl font-bold">
+                Rp {{ wallet.total_withdrawn|floatformat:2 }}
+              </p>
+            </div>
+          </div>
+          <div
+            class="flex items-center gap-4 rounded-xl p-4 shadow-sm"
+            style="background-color: #e7e2ce"
+          >
+            <div
+              class="flex h-[60px] w-[60px] shrink-0 items-center justify-center rounded-2xl bg-rose-50 text-rose-500"
+            >
+              {% include "components/lucide_icon.html" with name="heart" icon_class="h-7 w-7" only %}
+            </div>
+            <div>
+              <p class="text-sm text-slate-500">Total donasi</p>
+              <p class="mt-1 text-xl font-bold">
+                Rp {{ wallet.total_donated|floatformat:2 }}
+              </p>
+            </div>
+          </div>
+        </section>
+
+
+        <section class="overflow-hidden rounded-xl bg-white shadow-sm">
+          <h2 class="border-b px-5 py-4 font-semibold">Transaksi insentif</h2>
+          <div class="overflow-x-auto">
+            <table class="w-full min-w-[600px] text-left text-sm">
+              <thead class="bg-slate-50 text-xs text-slate-500">
+                <tr>
+                  <th class="px-5 py-3">Keterangan</th>
+                  <th class="px-5 py-3">Tanggal</th>
+                  <th class="px-5 py-3">Status</th>
+                  <th class="px-5 py-3 text-right">Jumlah</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y">
+                {% for tx in transactions %}
+                <tr>
+                  <td class="px-5 py-4">
+                    <p class="font-semibold">{{ tx.description }}</p>
+                    {% if tx.destination %}
+                    <p class="text-xs text-slate-500">{{ tx.destination }}</p>
+                    {% endif %} {% if tx.transaction_type == 'refund' %}
+                    <p class="mt-1 text-xs text-emerald-600">
+                      Saldo berhasil dikembalikan ke dompet
+                    </p>
+                    {% endif %}
+
+                    <a
+                      href="{% url 'wallet:transaction_detail' tx.pk %}"
+                      class="mt-2 inline-block text-xs font-semibold text-[#2457D6] hover:underline"
+                      >Detail →</a
+                    >
+                  </td>
+
+                  <td class="whitespace-nowrap px-5 py-4 text-slate-500">
+                    {{ tx.created_at|date:"d M Y" }}
+                  </td>
+                  <td class="px-5 py-4">
+                    <span
+                      class="rounded-full px-2 py-1 text-xs {% if tx.status == 'success' %}bg-emerald-50 text-emerald-700{% elif tx.status == 'failed' %}bg-red-50 text-red-700{% else %}bg-amber-50 text-amber-700{% endif %}"
+                    >
+                      {{ tx.get_status_display }}
+                    </span>
+                  </td>
+                  <td
+                    class="whitespace-nowrap px-5 py-4 text-right font-semibold"
+                  >
+                    {% if tx.transaction_type == 'earning' or tx.transaction_type == 'refund' %} +Rp {{ tx.amount|floatformat:2 }} {% elif tx.transaction_type == 'withdrawal' %} -Rp {{ tx.withdrawal_request.total_deduction|floatformat:2 }} {% else %} -Rp {{ tx.amount|floatformat:2 }} {% endif %}
+                  </td>
+                </tr>
+                {% empty %}
+                <tr>
+                  <td colspan="4" class="px-5 py-12 text-center text-slate-500">
+                    Belum ada transaksi. Insentif dari setoran yang selesai akan
+                    muncul di sini.
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+
+      <aside class="flex flex-col gap-5 lg:col-span-4">
+
+        <section class="rounded-xl bg-white p-5 shadow-sm">
+          <h2 class="font-semibold">Pilihan insentif</h2>
+          <p class="mt-1 text-sm text-slate-500">
+            Atur pilihan awal untuk setoran berikutnya.
+          </p>
+
+          <form method="post" class="mt-4 space-y-3">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="preference" />
+
+            <label
+              class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition hover:bg-slate-50"
+            >
+              <input
+                type="radio"
+                name="default_incentive"
+                value="wallet"
+                {% if wallet.default_incentive == "wallet" %}checked{% endif %}
+                class="accent-emerald-600"
+              />
+              <span>
+                <b class="block text-sm">Terima insentif</b>
+                <small class="text-slate-500">Masuk ke saldo dompetmu</small>
+              </span>
+            </label>
+
+            <label
+              class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition hover:bg-slate-50"
+            >
+              <input
+                type="radio"
+                name="default_incentive"
+                value="donation"
+                {% if wallet.default_incentive == "donation" %}checked{% endif %}
+                class="accent-rose-500"
+              />
+              <span>
+                <b class="block text-sm">Donasikan</b>
+                <small class="text-slate-500">Salurkan untuk kebaikan</small>
+              </span>
+            </label>
+
+            <button
+              type="submit"
+              class="w-full rounded-lg bg-siloak-blue px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90"
+            >
+              Simpan pilihan
+            </button>
+          </form>
+        </section>
+
+
+        <section class="rounded-xl bg-white p-5 shadow-sm">
+          <h2 class="font-semibold">Penarikan terakhir</h2>
+          {% if last_withdrawal %}
+          <p class="mt-3 text-2xl font-bold">
+            Rp {{ last_withdrawal.amount|floatformat:2 }}
+          </p>
+          <p class="mt-1 text-sm text-slate-500">
+            Ke {{ last_withdrawal.destination_name }} ••••{{ last_withdrawal.account_number|slice:"-4:" }}
+          </p>
+          <div class="mt-3 space-y-1 text-sm text-slate-600">
+            <div class="flex justify-between gap-3">
+              <span>Biaya transfer</span>
+              <span>Rp {{ last_withdrawal.transfer_fee|floatformat:0 }}</span>
+            </div>
+            <div class="flex justify-between gap-3">
+              <span>Biaya layanan</span>
+              <span>Rp {{ last_withdrawal.service_fee|floatformat:2 }}</span>
             </div>
 
-            <!-- Sidebar / Options Area -->
-            <aside class="flex flex-col gap-5 lg:col-span-4">
-                <!-- Preference Form -->
-                <section class="rounded-xl bg-white p-5 shadow-sm">
-                    <h2 class="font-semibold">Pilihan insentif</h2>
-                    <p class="mt-1 text-sm text-slate-500">Atur pilihan awal untuk setoran berikutnya.</p>
-                    
-                    <form method="post" class="mt-4 space-y-3">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="preference">
-                        
-                        <label class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition hover:bg-slate-50">
-                            <input type="radio" name="default_incentive" value="wallet" {% if wallet.default_incentive == 'wallet' %}checked{% endif %} class="accent-emerald-600">
-                            <span>
-                                <b class="block text-sm">Terima insentif</b>
-                                <small class="text-slate-500">Masuk ke saldo dompetmu</small>
-                            </span>
-                        </label>
-                        
-                        <label class="flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition hover:bg-slate-50">
-                            <input type="radio" name="default_incentive" value="donation" {% if wallet.default_incentive == 'donation' %}checked{% endif %} class="accent-rose-500">
-                            <span>
-                                <b class="block text-sm">Donasikan</b>
-                                <small class="text-slate-500">Salurkan untuk kebaikan</small>
-                            </span>
-                        </label>
-                        
-                        <button type="submit" class="w-full rounded-lg bg-siloak-blue px-4 py-2.5 text-sm font-semibold text-white transition hover:opacity-90">Simpan pilihan</button>
-                    </form>
-                </section>
+            <div
+              class="flex justify-between gap-3 border-t pt-2 font-semibold text-slate-900"
+            >
+              <span>Total potongan saldo</span>
+              <span
+                >Rp {{ last_withdrawal.total_deduction|floatformat:2 }}</span
+              >
+            </div>
+          </div>
+          <p class="mt-2 text-xs text-amber-700">
+            {{ last_withdrawal.get_status_display }} · {{ last_withdrawal.created_at|date:"d M Y, H:i" }}
+          </p>
+          {% else %}
+          <p class="mt-3 text-sm text-slate-500">Belum ada penarikan.</p>
+          {% endif %}
 
-                <!-- Last Withdrawal Info -->
-                <section class="rounded-xl bg-white p-5 shadow-sm">
-                    <h2 class="font-semibold">Penarikan terakhir</h2>
-                    {% if last_withdrawal %}
-                        <p class="mt-3 text-2xl font-bold">Rp {{ last_withdrawal.amount|floatformat:2 }}</p>
-                        <p class="mt-1 text-sm text-slate-500">Ke {{ last_withdrawal.destination_name }} ••••{{ last_withdrawal.account_number|slice:"-4:" }}</p>
-                        <div class="mt-3 space-y-1 text-sm text-slate-600">
-                            <div class="flex justify-between gap-3">
-                                <span>Biaya transfer</span>
-                                <span>Rp {{ last_withdrawal.transfer_fee|floatformat:0 }}</span>
-                            </div>
-                            <div class="flex justify-between gap-3">
-                                <span>Biaya layanan</span>
-                                <span>Rp {{ last_withdrawal.service_fee|floatformat:2 }}</span>
-                            </div>
-
-                            <div class="flex justify-between gap-3 border-t pt-2 font-semibold text-slate-900">
-                                <span>Total potongan saldo</span>
-                                <span>Rp {{ last_withdrawal.total_deduction|floatformat:2 }}</span>
-                            </div>
-                        </div>
-                        <p class="mt-2 text-xs text-amber-700">{{ last_withdrawal.get_status_display }} · {{ last_withdrawal.created_at|date:"d M Y, H:i" }}</p>
-                    {% else %}
-                        <p class="mt-3 text-sm text-slate-500">Belum ada penarikan.</p>
-                    {% endif %}
-                    
-                    <a href="{% url 'wallet:withdraw' %}" class="mt-4 inline-block text-sm font-semibold text-[#2457D6]">Buat penarikan →</a>
-                </section>
-            </aside>
-        </div>
+          <a
+            href="{% url 'wallet:withdraw' %}"
+            class="mt-4 inline-block text-sm font-semibold text-[#2457D6]"
+            >Buat penarikan →</a
+          >
+        </section>
+      </aside>
     </div>
+  </div>
 </main>
 
-{% include "components/footer.html" %}
-{% endblock %}
+{% include "components/footer.html" %} {% endblock %}

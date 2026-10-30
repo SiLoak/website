@@ -12,7 +12,7 @@ class PickupItemInline(admin.TabularInline):
     extra = 0
     can_delete = False
     fields = ("waste_type", "estimated_weight", "actual_weight", "unit_rate_snapshot")
-    readonly_fields = ("waste_type", "unit_rate_snapshot")
+    readonly_fields = fields
 
     def has_add_permission(self, request, obj=None):
         return False
@@ -29,6 +29,65 @@ class PickupStatusHistoryInline(admin.TabularInline):
 
     def has_add_permission(self, request, obj=None):
         return False
+
+
+@admin.action(description="Verifikasi pickup selesai dan proses insentif")
+def verify_pickups(modeladmin, request, queryset):
+    verified_count = 0
+    missing_weight_count = 0
+    missing_rate_count = 0
+    invalid_reward_count = 0
+
+    for selected in queryset.filter(
+        status=PickupRequest.Status.COMPLETED,
+        verified_at__isnull=True,
+    ):
+        try:
+            services.verify_completed_pickup(
+                selected.pk,
+                request.user,
+                note="Hasil timbang dan insentif diverifikasi admin.",
+            )
+        except services.PickupServiceError as error:
+            if error.code == "missing_weight":
+                missing_weight_count += 1
+            elif error.code == "missing_rate":
+                missing_rate_count += 1
+            elif error.code == "invalid_reward":
+                invalid_reward_count += 1
+            continue
+        verified_count += 1
+
+    if verified_count:
+        modeladmin.message_user(
+            request,
+            f"{verified_count} pickup diverifikasi dan insentif diproses.",
+            messages.SUCCESS,
+        )
+    if missing_weight_count:
+        modeladmin.message_user(
+            request,
+            f"{missing_weight_count} pickup dilewati karena berat aktual belum lengkap.",
+            messages.WARNING,
+        )
+    if missing_rate_count:
+        modeladmin.message_user(
+            request,
+            f"{missing_rate_count} pickup dilewati karena tarif jenis sampah belum diatur.",
+            messages.WARNING,
+        )
+    if invalid_reward_count:
+        modeladmin.message_user(
+            request,
+            f"{invalid_reward_count} pickup dilewati karena total insentif harus lebih dari nol.",
+            messages.WARNING,
+        )
+    if not any((verified_count, missing_weight_count, missing_rate_count, invalid_reward_count)):
+        modeladmin.message_user(
+            request,
+            "Tidak ada pickup selesai yang menunggu verifikasi pada pilihan ini.",
+            messages.INFO,
+        )
 
 
 def _run_transition(modeladmin, request, queryset, new_status, allowed, reason, done_label):
@@ -68,24 +127,31 @@ def release_pickups(modeladmin, request, queryset):
 class PickupRequestAdmin(admin.ModelAdmin):
     list_display = (
         "short_id", "giver", "collector", "status", "scheduled_date", "time_slot",
-        "total_estimated_weight", "created_at",
+        "total_estimated_weight", "completed_at", "verified_at",
     )
     list_filter = ("status", "scheduled_date", "time_slot", "incentive_allocation", "created_at")
-    search_fields = ("pickup_address", "address_detail", "giver__username", "giver__email", "collector__username")
+    search_fields = (
+        "=id", "pickup_address", "address_detail",
+        "giver__username", "giver__email", "collector__username",
+    )
     date_hierarchy = "created_at"
     list_select_related = ("giver", "collector")
     inlines = (PickupItemInline, PickupStatusHistoryInline)
-    actions = (cancel_pickups, release_pickups)
-    # Status and people only change through the workflow, so history stays complete.
+    actions = (verify_pickups, cancel_pickups, release_pickups)
+    # Status, people, and verification only change through the workflow,
+    # so the status history stays complete. Address and schedule can be fixed.
     readonly_fields = (
         "giver", "collector", "status", "status_reason", "incentive_allocation",
         "created_at", "updated_at", "assigned_at", "completed_at", "cancelled_at",
+        "verified_at", "verified_by",
     )
     fieldsets = (
         ("Status", {"fields": ("status", "status_reason", "giver", "collector", "incentive_allocation")}),
         ("Lokasi", {"fields": ("pickup_address", "address_detail", "latitude", "longitude", "contact_phone", "courier_note")}),
         ("Jadwal", {"fields": ("scheduled_date", "time_slot")}),
-        ("Waktu", {"fields": ("created_at", "updated_at", "assigned_at", "completed_at", "cancelled_at")}),
+        ("Waktu & verifikasi", {"fields": (
+            "created_at", "updated_at", "assigned_at", "completed_at", "cancelled_at", "verified_at", "verified_by",
+        )}),
     )
 
     def get_queryset(self, request):

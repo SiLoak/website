@@ -149,7 +149,11 @@ def _pickup_entry(pickup):
         weight=weight,
         weight_is_actual=is_actual,
         status=pickup.status,
-        status_display=pickup.get_status_display(),
+        status_display=(
+            "Selesai · menunggu verifikasi insentif"
+            if pickup.status == PickupStatus.COMPLETED and pickup.verified_at is None
+            else pickup.get_status_display()
+        ),
         status_group=_status_group("pickup", pickup.status),
         cancellable=pickup.is_cancellable,
         detail_url=reverse("pickup:show_pickup_detail", args=[pickup.pk]),

@@ -129,9 +129,8 @@ class PickupRequestForm(forms.ModelForm):
 
   def __init__(self, *args, **kwargs):
     super().__init__(*args, **kwargs)
-    self.fields["pickup_address"].error_messages["required"] = (
-      "Cari alamatmu atau geser pin di peta agar petugas tahu lokasi penjemputan."
-    )
+    # Older clients send only address_detail; clean() then uses it as the address.
+    self.fields["pickup_address"].required = False
     today = timezone.localdate()
     if self.instance.pk and not self.is_bound and self.instance.scheduled_date:
       self._initial_date_option(self.instance.scheduled_date, today)
@@ -159,7 +158,7 @@ class PickupRequestForm(forms.ModelForm):
 
   def clean_pickup_address(self):
     address = (self.cleaned_data.get("pickup_address") or "").strip()
-    if len(address) < 10:
+    if address and len(address) < 10:
       raise ValidationError(
         "Cari alamatmu atau geser pin di peta agar petugas tahu lokasi penjemputan."
       )
@@ -229,6 +228,16 @@ class PickupRequestForm(forms.ModelForm):
     if "latitude" in cleaned_data and "longitude" in cleaned_data:
       if (cleaned_data["latitude"] is None) != (cleaned_data["longitude"] is None):
         self.add_error(None, "Titik lokasi di peta belum lengkap. Pilih ulang lokasi penjemputan.")
+
+    if not cleaned_data.get("pickup_address") and "pickup_address" not in self.errors:
+      detail = cleaned_data.get("address_detail") or ""
+      if len(detail) >= 10:
+        cleaned_data["pickup_address"] = detail
+      else:
+        self.add_error(
+          "pickup_address",
+          "Cari alamatmu atau geser pin di peta agar petugas tahu lokasi penjemputan.",
+        )
 
     cleaned_data["scheduled_date"] = scheduled_date
     return cleaned_data

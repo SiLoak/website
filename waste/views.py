@@ -139,7 +139,11 @@ def _submission_form_view(request, submission=None, pickup=None):
     elif editing:
         delivery_method = "antar_sendiri"
     else:
-        delivery_method = (data or {}).get("delivery_method") or "antar_sendiri"
+        # /pickup/ links here with ?delivery_method=minta_dijemput preselected.
+        source = data if data is not None else request.GET
+        delivery_method = source.get("delivery_method") or "antar_sendiri"
+        if delivery_method not in ("antar_sendiri", "minta_dijemput"):
+            delivery_method = "antar_sendiri"
     is_pickup = delivery_method == "minta_dijemput"
 
     if is_pickup:
@@ -198,12 +202,6 @@ def _submission_form_view(request, submission=None, pickup=None):
 @login_required(login_url="auth_page")
 @rate_limit("submission-create", "10/m")
 def new_submission(request):
-    return _submission_form_view(request)
-
-
-@login_required(login_url="auth_page")
-@rate_limit("submission-create", "10/m")
-def dropoff_submission(request):
     return _submission_form_view(request)
 
 

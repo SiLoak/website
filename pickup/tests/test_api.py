@@ -172,7 +172,9 @@ class PickupActionApiTests(PickupTestCase):
         self.assertEqual(response.json()["status"], Status.COMPLETED)
         pickup.refresh_from_db()
         self.assertIsNotNone(pickup.completed_at)
-        self.assertEqual(pickup.status_history.count(), 6)
+        self.assertIsNotNone(pickup.verified_at)
+        # created, assigned, on the way, arrived, weighing, completed, verified
+        self.assertEqual(pickup.status_history.count(), 7)
 
     def test_collector_can_release_an_assignment_back_to_pending(self):
         pickup = self.make_pickup(status=Status.ASSIGNED)
@@ -203,7 +205,8 @@ class PickupActionApiTests(PickupTestCase):
         skip = self.post("pickup:update_pickup_status_ajax", pickup, {"status": Status.COMPLETED})
         bogus = self.post("pickup:update_pickup_status_ajax", pickup, {"status": "CANCELLED"})
 
-        self.assertEqual(skip.status_code, 409)
+        # Completion only happens through weighing, never via the status endpoint.
+        self.assertEqual(skip.status_code, 400)
         self.assertEqual(bogus.status_code, 400)
 
     def test_other_collector_cannot_move_someone_elses_pickup(self):

@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
+from pickup.models import PickupRequest
 from waste.models import CollectionPoint, Submission, SubmissionItem, WasteType
 
 
@@ -17,10 +18,10 @@ class WasteSubmissionFlowTests(TestCase):
             username="other", email="other@example.com", password="secret"
         )
         self.waste_type = WasteType.objects.create(
-            name="Kardus Lama", rate_per_kg=Decimal("5000.00")
+            name="Kardus Uji", rate_per_kg=Decimal("5000.00")
         )
         self.point = CollectionPoint.objects.create(
-            name="Depo Pasar Minggu",
+            name="Depo Pasar Minggu Uji",
             address="Jl. Raya Pasar Minggu No. 14",
             operating_hours="08.00 - 16.00 WIB",
         )
@@ -75,8 +76,8 @@ class WasteSubmissionFlowTests(TestCase):
 
         page = self.client.get(reverse("waste:new"))
         self.assertEqual(page.status_code, 200)
-        self.assertContains(page, "Kardus Lama — Rp 5.000/kg")
-        self.assertContains(page, "Depo Pasar Minggu — Jl. Raya Pasar Minggu No. 14")
+        self.assertContains(page, "Kardus Uji — Rp 5.000/kg")
+        self.assertContains(page, "Depo Pasar Minggu Uji — Jl. Raya Pasar Minggu No. 14")
         selected_point_id = page.context["form"]["collection_point"].value()
         selected_point = CollectionPoint.objects.get(pk=selected_point_id)
         self.assertIn("Pasar Minggu", selected_point.name)
@@ -84,7 +85,10 @@ class WasteSubmissionFlowTests(TestCase):
             page.context["form"]["incentive_allocation"].value(),
             Submission.IncentiveAllocation.WALLET,
         )
-        self.assertEqual(self.client.get(reverse("waste:dropoff")).status_code, 200)
+        self.assertRedirects(
+            self.client.get(reverse("waste:dropoff")),
+            reverse("waste:new"),
+        )
 
         response = self.client.post(
             reverse("waste:new"), self.submission_payload()
@@ -120,6 +124,34 @@ class WasteSubmissionFlowTests(TestCase):
         rejected_pickup = self.client.post(reverse("waste:new"), pickup_payload)
         self.assertEqual(rejected_pickup.status_code, 200)
         self.assertEqual(Submission.objects.filter(user=self.user).count(), 1)
+
+    def test_pickup_choice_creates_pickup_from_shared_submission_form(self):
+        self.client.force_login(self.user)
+        payload = self.submission_payload()
+        payload.update(
+            {
+                "delivery_method": "minta_dijemput",
+                "address_detail": "Jl. Mawar No. 12, gerbang hijau",
+                "contact_phone": "081234567890",
+                "latitude": "",
+                "longitude": "",
+                "time_slot": "08:00-10:00",
+                "pickup_date_option": "tomorrow",
+                "custom_date": "",
+            }
+        )
+
+        response = self.client.post(reverse("waste:new"), payload)
+
+        pickup = PickupRequest.objects.get(giver=self.user)
+        self.assertRedirects(
+            response,
+            reverse("pickup:show_pickup_detail", kwargs={"pickup_id": pickup.pk}),
+        )
+        self.assertEqual(pickup.status, PickupRequest.Status.PENDING)
+        self.assertEqual(pickup.pickup_address, payload["address_detail"])
+        self.assertEqual(pickup.items.get().unit_rate_snapshot, self.waste_type.rate_per_kg)
+        self.assertFalse(Submission.objects.filter(user=self.user).exists())
 
     def test_form_rejects_nonpositive_weights_duplicate_types_and_more_than_six_items(self):
         self.client.force_login(self.user)
@@ -245,7 +277,6 @@ class WasteSubmissionFlowTests(TestCase):
         self.client.force_login(self.user)
 
         history = self.client.get(reverse("history"))
-        self.assertEqual(history.status_code, 302)
         self.assertRedirects(history, reverse("waste:submissions"))
 
         listing = self.client.get(reverse("waste:submissions"))

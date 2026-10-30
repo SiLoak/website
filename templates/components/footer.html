@@ -1,17 +1,33 @@
-<footer class="mt-10 w-full bg-siloak-navy py-8 text-white">
-    <div class="mx-auto flex max-w-[1200px] flex-col justify-between gap-5 px-4 sm:flex-row sm:items-center">
-        <div>
-            <div class="text-lg font-bold">♻ SiLoak</div>
-            <p class="mt-1 text-sm text-white/75">Pengelolaan barang bekas yang mudah, terukur, dan bermanfaat.</p>
-        </div>
-        
-        <nav class="flex flex-wrap gap-4 text-sm text-white/80">
-            <a class="no-underline hover:text-white" href="/#manfaat">Tentang SiLoak</a>
-            <a class="no-underline hover:text-white" href="mailto:support@siloak.id">Bantuan</a>
-            <a class="no-underline hover:text-white" href="/terms/">Syarat &amp; Ketentuan</a>
-            <a class="no-underline hover:text-white" href="/privacy/">Kebijakan Privasi</a>
-        </nav>
-        
-        <p class="text-xs text-white/60">© {% now "Y" %} SiLoak</p>
+{% load static %}
+<footer class="{% if flush %}mt-0{% else %}mt-10{% endif %} w-full bg-siloak-navy py-8 text-white">
+  <div
+    class="mx-auto flex max-w-[1200px] flex-col justify-between gap-5 px-4 sm:flex-row sm:items-center"
+  >
+    <div>
+      <div class="flex items-center gap-2 text-lg font-bold">
+        <img src="{% static 'images/mascot.png' %}" alt="SiLoak" class="h-7 w-7 rounded object-contain" width="28" height="28">
+        SiLoak
+      </div>
+      <p class="mt-1 text-sm text-white/75">
+        Pengelolaan barang bekas yang mudah, terukur, dan bermanfaat.
+      </p>
     </div>
+
+    <nav class="flex flex-wrap gap-4 text-sm text-white/80">
+      <a class="no-underline hover:text-white" href="/#manfaat"
+        >Tentang SiLoak</a
+      >
+      <a class="no-underline hover:text-white" href="mailto:support@siloak.id"
+        >Bantuan</a
+      >
+      <a class="no-underline hover:text-white" href="/terms/"
+        >Syarat &amp; Ketentuan</a
+      >
+      <a class="no-underline hover:text-white" href="/privacy/"
+        >Kebijakan Privasi</a
+      >
+    </nav>
+
+    <p class="text-xs text-white/60">© {% now "Y" %} SiLoak</p>
+  </div>
 </footer>

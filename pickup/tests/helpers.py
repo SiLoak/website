@@ -27,6 +27,11 @@ class PickupTestCase(TestCase):
         self.collector.groups.add(collectors)
         self.other_collector = User.objects.create_user("collector-2", password=TEST_PASSWORD)
         self.other_collector.groups.add(collectors)
+        # New accounts join Giver automatically (auth/signals.py); collector
+        # accounts in these tests are collector-only.
+        givers = Group.objects.get(name="Giver")
+        self.collector.groups.remove(givers)
+        self.other_collector.groups.remove(givers)
         self.admin = User.objects.create_user("admin", password=TEST_PASSWORD, is_staff=True)
         self.waste_type = WasteType.objects.create(name="Kardus Uji", rate_per_kg=Decimal("2000.00"))
         self.other_type = WasteType.objects.create(name="Botol Uji", rate_per_kg=Decimal("3000.00"))

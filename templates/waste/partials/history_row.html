@@ -6,7 +6,7 @@
   </td>
   <td class="whitespace-nowrap">
     <span class="history-number">{{ entry.number }}</span>
-    <span class="history-kind is-{{ entry.kind }}">{% if entry.kind == "pickup" %}Dijemput{% else %}Antar sendiri{% endif %}</span>
+    <span class="history-kind is-{{ entry.kind }}">{% if entry.kind == "pickup" %}Minta dijemput{% else %}Antar sendiri{% endif %}</span>
     <span class="history-meta">{{ entry.created_at|date:"j M Y, H:i" }}</span>
   </td>
   <td class="history-place">{{ entry.place }}</td>
