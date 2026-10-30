@@ -7,7 +7,7 @@
     <section
       class="w-full max-w-md rounded-2xl border border-[#E2E8F0] bg-white p-5 shadow-sm sm:p-8"
     >
-      <p class="text-sm font-semibold text-[#A52A2A]">Satu langkah lagi</p>
+      <p class="text-sm font-semibold text-[#2457D6]">Satu langkah lagi</p>
       <h1 class="mt-2 text-2xl font-bold text-[#0F172A]">Lengkapi profilmu</h1>
       <p class="mt-2 text-sm leading-6 text-[#64748B]">
         Masukkan nomor HP agar petugas dapat menghubungimu untuk layanan pick
@@ -33,14 +33,14 @@
             autocomplete="tel"
             value="{{ form.phone_number.value|default_if_none:'' }}"
             placeholder="08xx-xxxx-xxxx"
-            class="h-12 w-full rounded-lg border border-[#E2E8F0] px-3.5 text-sm focus:border-[#A52A2A] focus:outline-none"
+            class="h-12 w-full rounded-lg border border-[#E2E8F0] px-3.5 text-sm focus:border-[#2457D6] focus:outline-none"
           />{% for error in form.phone_number.errors %}
           <p class="mt-1.5 text-xs text-red-700">{{ error }}</p>
           {% endfor %}
         </div>
         <button
           type="submit"
-          class="w-full rounded-lg bg-[#A52A2A] px-5 py-3 text-sm font-semibold text-white hover:bg-[#8B0000]"
+          class="w-full rounded-lg bg-[#2457D6] px-5 py-3 text-sm font-semibold text-white hover:bg-[#1D4ED8]"
         >
           Simpan dan lanjutkan
         </button>
