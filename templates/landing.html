@@ -15,6 +15,7 @@ Barang Bekas{% endblock %} {% block extra_head %}
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="{% static 'js/leaflet-maps.js' %}"></script>
 <script src="{% static 'js/location-landing.js' %}" defer></script>
+<script src="{% static 'js/landing-nav.js' %}" defer></script>
 {% endblock %} {% block content %}
 <a
   class="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:rounded-xl focus:bg-primary-container focus:px-4 focus:py-3 focus:font-semibold focus:text-white"
@@ -28,6 +29,7 @@ Barang Bekas{% endblock %} {% block extra_head %}
   class="bg-[#f8fafc] pt-16 text-[#0f172a] max-[760px]:pt-8"
 >
   <section
+    id="beranda"
     aria-labelledby="landing-title"
     class="bg-[#f8fafc] px-[72px] py-16 max-lg:px-10 max-[760px]:px-6 max-[760px]:pb-14 max-[760px]:pt-10 max-[420px]:px-5"
   >
