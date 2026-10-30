@@ -14,7 +14,7 @@
 - [Integrasi dan Data Eksternal](#integrasi-dan-data-eksternal)
 - [Jenis Pengguna](#jenis-pengguna)
 - [Penggunaan AI dan Sumber Eksternal](#penggunaan-ai-dan-sumber-eksternal)
-- [Penerapan dan Desain](#penerapan-dan-desain)
+- [Deployment dan Desain](#deployment-dan-desain)
 - [Lisensi](#lisensi)
 
 ## Deskripsi
@@ -356,9 +356,9 @@ Pihak yang mengelola operasional SiLoak.
 
 ---
 
-# Penerapan dan Desain
+# Deployment dan Desain
 
-## Tautan Penerapan PWS
+## Tautan Deployment PWS
 
 https://bagas-aulia-siloak.pws.cs.ui.ac.id/
 
@@ -366,7 +366,8 @@ https://bagas-aulia-siloak.pws.cs.ui.ac.id/
 
 ## Desain Figma
 
-https://www.figma.com/files/team/1681860133051205638/folder/655408932?fuid=1546679538808144971
+https://www.figma.com/design/RM3qzbguZi2bnwTcPOvS0L/Untitled?node-id=55-5835&t=zS2RR4Pwshy449TY-1
+
 **Penanggung jawab desain:** Tiffany Ekklesia dan Nadin Putri Cahyani
 
 ## Lisensi
