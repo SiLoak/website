@@ -110,3 +110,8 @@ class SubmissionOwnershipTests(TestCase):
         )
 
         self.assertNotEqual(response.status_code, 200)
+
+    def test_anonymous_user_cannot_view_submission_history(self):
+        response = self.client.get(reverse("waste:submissions"))
+
+        self.assertNotEqual(response.status_code, 200)
