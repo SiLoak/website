@@ -1,4 +1,4 @@
-{% extends "base.html" %} {% block title %}Masuk · SiLoak{% endblock %} {% block content %}
+{% extends "base.html" %} {% load static %} {% block title %}Masuk · SiLoak{% endblock %} {% block content %}
 <main class="flex-1 flex flex-col md:flex-row min-h-screen">
 
   <aside
@@ -18,27 +18,7 @@
         href="/"
         class="inline-flex items-center gap-3 group focus:outline-none focus:ring-2 focus:ring-white/40 rounded-lg p-1"
       >
-        <div
-          class="w-10 h-10 rounded-xl bg-white/15 flex items-center justify-center border border-white/25 shadow-sm group-hover:bg-white/20 transition-all"
-        >
-          <svg
-            class="w-6 h-6 text-white"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"
-            ></path>
-            <path
-              d="M11 19h8.2a1.8 1.8 0 0 0 1.554-.89 1.8 1.8 0 0 0-.012-1.78l-3.95-6.83"
-            ></path>
-            <path d="m15.5 4.5-2.9 5h5.8z"></path>
-          </svg>
-        </div>
+        <img src="{% static 'images/mascot.png' %}" alt="SiLoak" class="w-10 h-10 rounded-xl object-contain" width="40" height="40">
         <div>
           <span
             class="text-2xl font-bold tracking-tight text-white block leading-none"
@@ -446,27 +426,13 @@
 
 
       <div class="flex flex-col items-center text-center">
-        <div
-          class="w-12 h-12 rounded-xl bg-[#F7F6F3] border border-[#E7E2CE] flex items-center justify-center text-[#112250] shadow-sm mb-3"
+        <img
+          src="{% static 'images/mascot.png' %}"
+          alt="SiLoak"
+          class="w-12 h-12 rounded-xl object-contain mb-3"
+          width="48"
+          height="48"
         >
-          <svg
-            class="w-7 h-7"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2.2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <path
-              d="M7 19H4.815a1.83 1.83 0 0 1-1.57-.881 1.785 1.785 0 0 1-.004-1.784L7.196 9.5"
-            ></path>
-            <path
-              d="M11 19h8.2a1.8 1.8 0 0 0 1.554-.89 1.8 1.8 0 0 0-.012-1.78l-3.95-6.83"
-            ></path>
-            <path d="m15.5 4.5-2.9 5h5.8z"></path>
-          </svg>
-        </div>
 
 
         <h2 class="text-2xl font-semibold text-[#112250] tracking-tight">
