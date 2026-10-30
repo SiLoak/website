@@ -250,7 +250,7 @@ def get_pickup_json(request):
         "status_display": pickup.get_status_display(),
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
-        "address": pickup.pickup_address,
+        "address_detail": pickup.address_detail,
         "collector_name": _display_name(pickup.collector),
       }
     })
@@ -289,7 +289,7 @@ def get_collector_pickup_json(request):
         "status_display": pickup.get_status_display(),
         "scheduled_date": pickup.scheduled_date,
         "time_slot": pickup.time_slot,
-        "address": pickup.pickup_address,
+        "address_detail": pickup.address_detail,
         "pickup_address": pickup.pickup_address,
         "completed_at": pickup.completed_at,
         "estimated_weight": str(pickup.estimated_weight),
@@ -380,9 +380,11 @@ def accept_pickup_ajax(request, pickup_id):
   if not is_collector(request.user):
     return JsonResponse({"error": "Anda tidak memiliki akses."}, status=403)
 
-  return _transition_response(
+  _transition_response(
     request, pickup_id, Status.ASSIGNED, collector=request.user
   )
+
+  return redirect("pickup:show_pickup_detail", pickup_id=pickup_id)
 
 
 @require_POST
