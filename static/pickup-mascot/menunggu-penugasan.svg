@@ -1,0 +1,172 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      #beaver-bob { transform-box: view-box; transform-origin: 130px 205px; animation: beaverBreathing 3.5s ease-in-out infinite; }
+      #clock-hand { transform-box: view-box; transform-origin: 80px 80px; animation: clockRotate 3.5s linear infinite; }
+      #dot-1, #dot-2, #dot-3 { transform-box: fill-box; transform-origin: center; animation: dotPulse 1.2s ease-in-out infinite; }
+      #dot-2 { animation-delay: 0.4s; }
+      #dot-3 { animation-delay: 0.8s; }
+      @keyframes beaverBreathing { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-2px) scaleY(1.015); } }
+      @keyframes clockRotate { to { transform: rotate(360deg); } }
+      @keyframes dotPulse { 0%, 100% { opacity: 0.2; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.2); } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+    </style>
+  </defs>
+  <g id="scene">
+    
+    <g id="backdrop">
+      <path d="M 60 120 C 60 50 140 40 200 40 C 270 40 310 80 310 140 C 310 190 250 210 180 210 C 100 210 60 180 60 120 Z" fill="#FFFBEB" />
+    </g>
+
+    
+    <line id="ground-line" x1="20" y1="205" x2="340" y2="205" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" />
+
+    
+    <g id="props">
+      
+      <path id="doorstep" d="M 20 160 L 160 160 L 160 205 L 20 205 Z" fill="#E2E8F0" opacity="0.5" />
+      <line x1="20" y1="160" x2="160" y2="160" stroke="#CBD5F5" stroke-width="2" />
+
+      
+      <g id="clock">
+        <circle cx="80" cy="80" r="22" fill="#FFFFFF" stroke="#FCD34D" stroke-width="3" />
+        <circle cx="80" cy="80" r="18" fill="#FFFBEB" />
+        
+        <line x1="80" y1="62" x2="80" y2="65" stroke="#B45309" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="80" y1="95" x2="80" y2="98" stroke="#B45309" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="62" y1="80" x2="65" y2="80" stroke="#B45309" stroke-width="1.5" stroke-linecap="round" />
+        <line x1="95" y1="80" x2="98" y2="80" stroke="#B45309" stroke-width="1.5" stroke-linecap="round" />
+        <circle cx="80" cy="80" r="2" fill="#B45309" />
+        
+        <g id="clock-hand">
+          <line x1="80" y1="80" x2="80" y2="68" stroke="#B45309" stroke-width="2" stroke-linecap="round" />
+          <line x1="80" y1="80" x2="88" y2="80" stroke="#B45309" stroke-width="1.5" stroke-linecap="round" />
+        </g>
+      </g>
+
+      
+      <g id="cardboard">
+        <path d="M 220 205 L 280 205 L 275 192 L 225 192 Z" fill="#D09F5F" />
+        <path d="M 225 192 L 275 192 L 270 182 L 230 182 Z" fill="#E6B97C" />
+        <line x1="250" y1="182" x2="250" y2="205" stroke="#C48F4E" stroke-width="1.5" />
+      </g>
+      <g id="trash-bag">
+        <path d="M 255 205 C 245 205 240 185 250 170 C 260 155 290 155 300 170 C 310 185 305 205 295 205 Z" fill="#A9B8D6" opacity="0.75" />
+        <path d="M 270 160 L 275 152 L 280 160 Z" fill="#6F86B5" />
+        <rect x="268" y="158" width="14" height="4" rx="1.5" fill="#526080" />
+      </g>
+
+      
+      <g id="phone">
+        <rect x="160" y="130" width="30" height="48" rx="5" fill="#142653" />
+        <rect x="163" y="135" width="24" height="38" rx="3" fill="#FFFFFF" />
+        
+        <circle id="dot-1" cx="169" cy="154" r="2.5" fill="#FCD34D" opacity="0.3" />
+        <circle id="dot-2" cx="175" cy="154" r="2.5" fill="#FCD34D" opacity="0.6" />
+        <circle id="dot-3" cx="181" cy="154" r="2.5" fill="#B45309" />
+      </g>
+    </g>
+
+    
+    <g id="beaver">
+      <g id="beaver-bob">
+        
+        <g id="tail">
+          <path d="M 80 185 C 50 180 20 168 15 188 C 10 202 40 208 80 198 Z" stroke="rgba(255,255,255,0.18)" stroke-width="2" fill="none" />
+          <path d="M 80 183 C 50 178 20 166 15 186 C 10 200 40 206 80 196 Z" fill="#5C3A1E" />
+          <path d="M 15 186 C 25 200 50 204 80 196 C 55 200 30 198 15 186 Z" fill="#3D2513" />
+        </g>
+
+        
+        <g id="foot-back">
+          <ellipse cx="100" cy="203" rx="12" ry="5" fill="#5C3A1E" />
+        </g>
+
+        
+        <g id="body">
+          <path d="M 95 140 C 75 160 75 195 95 203 L 145 203 C 165 195 165 160 145 140 Z" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="2" />
+          <path d="M 95 137 C 75 157 75 192 95 201 L 145 201 C 165 192 165 157 145 137 Z" fill="#A06235" />
+          <path d="M 95 137 C 75 157 75 192 95 201 L 112 201 C 90 180 85 150 100 137 Z" fill="#6B3F20" />
+          <path d="M 110 150 C 98 165 98 185 115 196 L 135 196 C 150 185 150 165 138 150 Z" fill="#F8E8CC" opacity="0.35" />
+        </g>
+
+        
+        <g id="arm-back">
+          <ellipse cx="142" cy="167" rx="6" ry="4" fill="#6B3F20" />
+        </g>
+
+        
+        <g id="foot-front">
+          <ellipse cx="130" cy="203" rx="12" ry="5" fill="#5C3A1E" />
+        </g>
+
+        
+        <g id="arm-front">
+          <path d="M 110 160 C 115 172 125 180 140 176 C 144 175 146 170 142 165 C 130 165 122 162 116 155 Z" fill="#A06235" />
+          <ellipse cx="142" cy="170" rx="6" ry="5" fill="#A06235" />
+        </g>
+
+        
+        <g id="head">
+          
+          <g id="ear-left">
+            <circle cx="82" cy="75" r="12" fill="#A06235" />
+            <circle cx="82" cy="75" r="7" fill="#5C3A1E" />
+          </g>
+          <g id="ear-right">
+            <circle cx="158" cy="75" r="12" fill="#A06235" />
+            <circle cx="158" cy="75" r="7" fill="#5C3A1E" />
+          </g>
+
+          
+          <ellipse cx="120" cy="100" rx="46" ry="38" fill="#A06235" />
+          <path d="M 120 62 C 95 62 74 79 74 100 C 74 121 95 138 120 138 C 105 130 86 115 86 100 C 86 85 105 70 120 62 Z" fill="#6B3F20" />
+
+          
+          <g id="cheek-left"><ellipse cx="92" cy="110" rx="7" ry="4" fill="#E58A6B" opacity="0.25" /></g>
+          <g id="cheek-right"><ellipse cx="148" cy="110" rx="7" ry="4" fill="#E58A6B" opacity="0.25" /></g>
+
+          
+          <g id="muzzle">
+            <path d="M 102 108 C 102 96 114 94 128 94 C 142 94 152 96 152 108 C 152 120 142 124 128 124 C 114 124 102 120 102 108 Z" fill="#F8E8CC" />
+          </g>
+          <g id="teeth">
+            <path d="M 122 118 L 134 118 L 133 129 C 133 130 132 131 130 131 L 126 131 C 124 131 123 130 123 129 Z" fill="#FFFFFF" />
+            <line x1="128" y1="118" x2="128" y2="130" stroke="#D9B88F" stroke-width="1" />
+          </g>
+          <g id="nose">
+            <path d="M 122 115 Q 128 119 134 115" stroke="#1B2A55" stroke-width="1.8" stroke-linecap="round" fill="none" />
+            <line x1="128" y1="108" x2="128" y2="116" stroke="#1B2A55" stroke-width="1.5" />
+            <path d="M 121 105 C 121 101 124 98 128 98 C 132 98 135 101 135 105 C 135 109 131 111 128 111 C 125 111 121 109 121 105 Z" fill="#1B2A55" />
+            <ellipse cx="126" cy="103" rx="1.2" ry="0.6" fill="#FFFFFF" opacity="0.6" />
+          </g>
+
+          
+          <g id="eye-left-closed"><path d="M 94 96 Q 100 88 106 96" stroke="#1B2A55" stroke-width="2.8" stroke-linecap="round" fill="none" /></g>
+          <g id="eye-right-closed"><path d="M 136 96 Q 142 88 148 96" stroke="#1B2A55" stroke-width="2.8" stroke-linecap="round" fill="none" /></g>
+          <g id="eye-left-open" opacity="0">
+            <circle cx="100" cy="94" r="4.5" fill="#1B2A55" />
+            <circle cx="98" cy="92" r="1.5" fill="#FFFFFF" />
+          </g>
+          <g id="eye-right-open" opacity="0">
+            <circle cx="142" cy="94" r="4.5" fill="#1B2A55" />
+            <circle cx="140" cy="92" r="1.5" fill="#FFFFFF" />
+          </g>
+          <g id="eye-left-happy" opacity="0">
+            <path d="M 94 94 Q 100 86 106 94" stroke="#1B2A55" stroke-width="3" stroke-linecap="round" fill="none" />
+          </g>
+          <g id="eye-right-happy" opacity="0">
+            <path d="M 136 94 Q 142 86 148 94" stroke="#1B2A55" stroke-width="3" stroke-linecap="round" fill="none" />
+          </g>
+        </g>
+      </g>
+    </g>
+
+    
+    <g id="sparkles">
+      <g id="sparkle-1">
+        <path d="M 200 65 Q 200 70 195 70 Q 200 70 200 75 Q 200 70 205 70 Q 200 70 200 65 Z" fill="#FCD34D" opacity="0.6" />
+      </g>
+    </g>
+  </g>
+</svg>

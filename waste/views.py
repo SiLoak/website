@@ -1,3 +1,5 @@
+from functools import wraps
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
@@ -9,10 +11,21 @@ from main.history import build_history_context
 from pickup.models import PickupRequest, PickupStatusHistory
 from .forms import SubmissionForm, SubmissionItemFormSet
 from pickup.forms import PickupRequestForm, PickupItemFormSet
+from pickup.permissions import is_collector, is_giver
 from .models import Submission
 from wallet.models import Wallet
 
 PICKUP_PREFILL_FIELDS = ("address_detail", "contact_phone", "latitude", "longitude")
+
+
+def redirect_collector_only(view):
+    @wraps(view)
+    def wrapped(request, *args, **kwargs):
+        if is_collector(request.user) and not is_giver(request.user):
+            return redirect("pickup:show_collector_pickup_list")
+        return view(request, *args, **kwargs)
+
+    return wrapped
 
 
 def _saved_pickup_initial(user):
@@ -134,11 +147,13 @@ def _submission_form_view(request, submission=None):
 
 
 @login_required(login_url="auth_page")
+@redirect_collector_only
 def new_submission(request):
     return _submission_form_view(request)
 
 
 @login_required(login_url="auth_page")
+@redirect_collector_only
 def edit_submission(request, submission_id):
     submission = get_object_or_404(
         Submission, pk=submission_id, user=request.user
@@ -147,6 +162,7 @@ def edit_submission(request, submission_id):
 
 
 @login_required(login_url="auth_page")
+@redirect_collector_only
 @require_POST
 def cancel_submission(request, submission_id):
     submission = get_object_or_404(
@@ -163,6 +179,7 @@ def cancel_submission(request, submission_id):
 
 
 @login_required(login_url="auth_page")
+@redirect_collector_only
 def submission_detail(request, submission_id):
     submission = get_object_or_404(
         Submission.objects.select_related("collection_point", "user")
@@ -178,5 +195,6 @@ def submission_detail(request, submission_id):
 
 
 @login_required(login_url="auth_page")
+@redirect_collector_only
 def submission_history(request):
     return render(request, "history.html", build_history_context(request.user))
