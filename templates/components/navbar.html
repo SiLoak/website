@@ -1,6 +1,6 @@
 {% load static %}
 <header class="sticky top-0 z-50 w-full bg-siloak-navy shadow-sm">
-  <nav class="mx-auto max-w-[1200px] px-3 sm:px-6" aria-label="Navigasi utama">
+  <nav class="mx-auto max-w-[1200px] px-3 sm:px-6" {% if landing %}data-landing-nav{% endif %} aria-label="Navigasi utama">
     <div class="flex h-16 items-center justify-between gap-2 xl:grid xl:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
       <a class="flex shrink-0 items-center gap-2 text-white" href="{% url 'landing_page' %}" aria-label="SiLoak, beranda">
         <img src="{% static 'images/mascot.png' %}" alt="SiLoak" class="h-9 w-9 rounded-lg object-contain" width="36" height="36">
@@ -9,10 +9,10 @@
 
       {% if public %}
         <div class="hidden items-center gap-3 xl:flex xl:justify-self-center">
-          <a class="rounded-lg bg-[#2457D6] px-3 py-2 text-sm font-semibold text-white" href="{% url 'landing_page' %}">Beranda</a>
-          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#cara-kerja">Cara Kerja</a>
-          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#titik-pengumpulan">Titik Pengumpulan</a>
-          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#manfaat">Manfaat</a>
+          <a class="rounded-lg px-3 py-2 text-sm {% if landing %}text-white/90 hover:bg-white/10{% else %}bg-[#2457D6] font-semibold text-white{% endif %}" {% if landing %}data-landing-nav-link="beranda" aria-current="true"{% endif %} href="{% url 'landing_page' %}#beranda">Beranda</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" {% if landing %}data-landing-nav-link="cara-kerja" aria-current="false"{% endif %} href="/#cara-kerja">Cara Kerja</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" {% if landing %}data-landing-nav-link="titik-pengumpulan" aria-current="false"{% endif %} href="/#titik-pengumpulan">Titik Pengumpulan</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" {% if landing %}data-landing-nav-link="manfaat" aria-current="false"{% endif %} href="/#manfaat">Manfaat</a>
         </div>
         <div class="ml-auto flex shrink-0 items-center gap-1 sm:gap-3 xl:ml-0 xl:justify-self-end">
           {% if request.user.is_authenticated %}
@@ -49,10 +49,10 @@
     <div id="mobile-nav-panel" class="hidden border-t border-white/10 py-2 xl:hidden" data-mobile-nav-panel>
       {% if public %}
         <div class="grid grid-cols-1 gap-1 sm:grid-cols-2">
-          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="{% url 'landing_page' %}">Beranda</a>
-          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#cara-kerja">Cara Kerja</a>
-          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#titik-pengumpulan">Titik Pengumpulan</a>
-          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="/#manfaat">Manfaat</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" {% if landing %}data-landing-nav-link="beranda" aria-current="true"{% endif %} href="{% url 'landing_page' %}#beranda">Beranda</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" {% if landing %}data-landing-nav-link="cara-kerja" aria-current="false"{% endif %} href="/#cara-kerja">Cara Kerja</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" {% if landing %}data-landing-nav-link="titik-pengumpulan" aria-current="false"{% endif %} href="/#titik-pengumpulan">Titik Pengumpulan</a>
+          <a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" {% if landing %}data-landing-nav-link="manfaat" aria-current="false"{% endif %} href="/#manfaat">Manfaat</a>
           {% if request.user.is_authenticated %}<a class="rounded-lg px-3 py-2 text-sm text-white/90 hover:bg-white/10" href="{% url 'dashboard' %}">Dashboard</a>{% endif %}
         </div>
       {% else %}

@@ -38,7 +38,10 @@
 
   function createMap(element, points, options = {}) {
     if (!window.L || !element) return null;
-    const map = L.map(element, { scrollWheelZoom: false }).setView(options.center || DEFAULT_CENTER, options.zoom || 12);
+    const scrollWheelZoom = options.scrollWheelZoom === undefined
+      ? element.dataset.scrollWheelZoom !== "false"
+      : options.scrollWheelZoom;
+    const map = L.map(element, { scrollWheelZoom }).setView(options.center || DEFAULT_CENTER, options.zoom || 12);
     L.tileLayer(TILE_URL, {
       maxZoom: 19,
       referrerPolicy: "strict-origin-when-cross-origin",

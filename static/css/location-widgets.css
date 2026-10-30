@@ -39,6 +39,10 @@
 }
 
 /* Landing finder states (driven by static/js/location-landing.js). */
+[data-landing-nav] [data-landing-nav-link] { transition: background-color .15s, color .15s; }
+[data-landing-nav] [data-landing-nav-link][aria-current="true"] { background: #2457d6; color: #fff; font-weight: 600; }
+[data-landing-nav] [data-landing-nav-link]:focus-visible { outline: 2px solid rgba(255, 255, 255, .8); outline-offset: 2px; }
+#main-content > section[id] { scroll-margin-top: 5rem; }
 .landing-point-card { cursor: pointer; transition: border-color .15s, box-shadow .15s; }
 .landing-point-card:hover { border-color: #3b507d; }
 .landing-point-card:focus-visible { outline: 3px solid rgba(59, 80, 125, .35); outline-offset: 2px; }
