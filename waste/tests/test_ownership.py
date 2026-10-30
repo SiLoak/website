@@ -70,3 +70,12 @@ class SubmissionOwnershipTests(TestCase):
 
         item.refresh_from_db()
         self.assertEqual(item.estimated_weight, Decimal("2.50"))
+
+    def test_anonymous_user_cannot_cancel_submission(self):
+        response = self.client.post(
+            reverse("waste:cancel", kwargs={"submission_id": self.submission.pk})
+        )
+
+        self.assertNotEqual(response.status_code, 200)
+        self.submission.refresh_from_db()
+        self.assertEqual(self.submission.status, Submission.Status.PENDING)
