@@ -189,6 +189,8 @@ def _get_current_month_string():
 
 @login_required(login_url="auth_page")
 def show_pickup_list(request):
+  if is_collector(request.user):
+    return redirect("pickup:show_collector_pickup_list")
   if not is_giver(request.user):
     raise PermissionDenied
   return redirect(
