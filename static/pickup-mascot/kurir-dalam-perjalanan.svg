@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      #wheel-front { transform-box: view-box; transform-origin: 210px 195px; animation: wheelSpin 1.2s linear infinite; }
+      #wheel-back { transform-box: view-box; transform-origin: 120px 195px; animation: wheelSpin 1.2s linear infinite; }
+      #scooter, #beaver-bob { animation: roadVibration 0.3s ease-in-out infinite alternate; }
+      #map-pin { transform-box: view-box; transform-origin: 290px 85px; animation: pinBob 2.5s ease-in-out infinite; }
+      @keyframes wheelSpin { to { transform: rotate(360deg); } }
+      @keyframes roadVibration { to { transform: translateY(-1.5px); } }
+      @keyframes pinBob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+    </style>
+  </defs>
+  <g id="scene">
+    
+    <g id="backdrop">
+      <path d="M 40 120 C 40 50 120 40 210 40 C 290 40 330 80 330 140 C 330 200 250 210 160 210 C 80 210 40 180 40 120 Z" fill="#E5EEFF" />
+    </g>
+
+    
+    <line id="ground-line" x1="20" y1="205" x2="340" y2="205" stroke="#94A3B8" stroke-width="3" stroke-dasharray="12 8" />
+
+    
+    <g id="props">
+      
+      <g id="map-pin">
+        <path d="M 290 60 C 275 60 270 75 290 100 C 310 75 305 60 290 60 Z" fill="#2457D6" />
+        <circle cx="290" cy="73" r="6" fill="#FFFFFF" />
+      </g>
+
+      
+      <g id="scooter">
+        <path d="M 110 185 L 210 185 L 200 155 L 140 155 Z" fill="#2457D6" />
+        <path d="M 195 155 L 210 120 L 195 120" stroke="#203F91" stroke-width="4" stroke-linecap="round" fill="none" />
+        <rect x="100" y="140" width="35" height="25" rx="3" fill="#E6B97C" /> 
+        <line x1="117" y1="140" x2="117" y2="165" stroke="#2457D6" stroke-width="2" />
+
+        
+        <g id="wheel-back">
+          <circle cx="120" cy="195" r="14" fill="#64748B" />
+          <circle cx="120" cy="195" r="8" fill="#CBD5F5" />
+          <line x1="120" y1="181" x2="120" y2="209" stroke="#64748B" stroke-width="1.5" />
+        </g>
+        <g id="wheel-front">
+          <circle cx="210" cy="195" r="14" fill="#64748B" />
+          <circle cx="210" cy="195" r="8" fill="#CBD5F5" />
+          <line x1="210" y1="181" x2="210" y2="209" stroke="#64748B" stroke-width="1.5" />
+        </g>
+      </g>
+    </g>
+
+    
+    <g id="beaver">
+      <g id="beaver-bob">
+        <g id="tail">
+          <path d="M 110 160 C 80 155 50 145 45 165 C 40 180 70 185 110 175 Z" fill="#5C3A1E" />
+        </g>
+
+        <g id="body">
+          <path d="M 135 120 C 120 135 120 160 135 170 L 170 170 C 185 160 185 135 170 120 Z" fill="#A06235" />
+        </g>
+
+        <g id="backpack">
+          <rect x="115" y="125" width="16" height="26" rx="3" fill="#203F91" />
+        </g>
+
+        <g id="arm-front">
+          <line x1="150" y1="135" x2="195" y2="125" stroke="#A06235" stroke-width="10" stroke-linecap="round" />
+        </g>
+
+        <g id="head">
+          <circle cx="130" cy="70" r="10" fill="#A06235" />
+          <circle cx="180" cy="70" r="10" fill="#A06235" />
+          <ellipse cx="155" cy="90" rx="38" ry="30" fill="#A06235" />
+
+          <g id="cap">
+            <path d="M 122 68 C 122 48 188 48 188 68 Z" fill="#2457D6" />
+            <path d="M 150 68 L 198 66 L 195 72 L 150 72 Z" fill="#203F91" />
+          </g>
+
+          <path d="M 140 98 C 140 88 150 86 162 86 C 174 86 182 88 182 98 Z" fill="#F8E8CC" />
+          <path d="M 152 104 L 162 104 L 161 112 L 153 112 Z" fill="#FFFFFF" />
+          <path d="M 151 96 C 151 93 154 90 157 90 C 160 90 163 93 163 96 Z" fill="#1B2A55" />
+
+          <g id="eye-left-closed"><path d="M 134 86 Q 140 78 146 86" stroke="#1B2A55" stroke-width="2.5" stroke-linecap="round" fill="none" /></g>
+          <g id="eye-right-closed"><path d="M 168 86 Q 174 78 180 86" stroke="#1B2A55" stroke-width="2.5" stroke-linecap="round" fill="none" /></g>
+        </g>
+      </g>
+    </g>
+
+    
+    <g id="sparkles">
+      <line x1="40" y1="100" x2="70" y2="100" stroke="#CBD5F5" stroke-width="2" stroke-linecap="round" />
+      <line x1="30" y1="130" x2="55" y2="130" stroke="#CBD5F5" stroke-width="2" stroke-linecap="round" />
+    </g>
+  </g>
+</svg>

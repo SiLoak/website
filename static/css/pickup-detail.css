@@ -1,0 +1,31 @@
+.pickup-status-panel {
+  padding: 1rem;
+}
+
+.pickup-status-title {
+  font-size: 1.25rem;
+  line-height: 1.75rem;
+}
+
+.pickup-status-illustration {
+  width: 8rem;
+  height: 7rem;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+@media (min-width: 640px) {
+  .pickup-status-panel {
+    padding: 1.25rem;
+  }
+
+  .pickup-status-title {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+
+  .pickup-status-illustration {
+    width: 11rem;
+    height: 9rem;
+  }
+}

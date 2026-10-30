@@ -19,6 +19,49 @@ from pickup.permissions import is_giver, is_collector, is_admin
 
 Status = PickupRequest.Status
 
+STATUS_PRESENTATION = {
+  Status.PENDING: {
+    "illustration": "menunggu-penugasan.svg",
+    "alt": "Maskot menunggu kurir ditugaskan",
+    "message": "Pengajuan diterima. Kami sedang mencarikan kurir untuk menjemput barang loakmu.",
+  },
+  Status.ASSIGNED: {
+    "illustration": "kurir-ditugaskan.svg",
+    "alt": "Maskot menerima kabar kurir telah ditugaskan",
+    "message": "Kurir sudah ditugaskan untuk menjemput barang loakmu sesuai jadwal.",
+  },
+  Status.ON_THE_WAY: {
+    "illustration": "kurir-dalam-perjalanan.svg",
+    "alt": "Maskot kurir sedang dalam perjalanan",
+    "message": "Kurir sedang menuju alamat penjemputan.",
+  },
+  Status.ARRIVED: {
+    "illustration": "kurir-tiba.svg",
+    "alt": "Maskot kurir sudah tiba di lokasi",
+    "message": "Kurir sudah tiba di lokasi penjemputan.",
+  },
+  Status.WEIGHING: {
+    "illustration": "penimbangan-verifikasi.svg",
+    "alt": "Maskot sedang menimbang dan memeriksa barang",
+    "message": "Barang sedang ditimbang dan hasilnya diperiksa.",
+  },
+  Status.COMPLETED: {
+    "illustration": "selesai.svg",
+    "alt": "Maskot merayakan penjemputan yang selesai",
+    "message": "Penjemputan selesai. Lihat berat aktual dan rincian insentif di bawah.",
+  },
+  Status.CANCELLED: {
+    "illustration": "dibatalkan.svg",
+    "alt": "Maskot untuk status penjemputan dibatalkan",
+    "message": "Permintaan penjemputan ini telah dibatalkan.",
+  },
+  Status.FAILED: {
+    "illustration": "dibatalkan.svg",
+    "alt": "Maskot untuk status penjemputan gagal",
+    "message": "Permintaan penjemputan ini ditandai gagal.",
+  },
+}
+
 # Status yang boleh dituju lewat endpoint update status (bukan cancel/accept).
 PROGRESS_STATUSES = {
   Status.PENDING,
@@ -216,6 +259,7 @@ def show_pickup_detail(request, pickup_id):
     "active_item": "history",
     "submission_id": pickup_id,
     "pickup": pickup,
+    "status_presentation": STATUS_PRESENTATION[pickup.status],
     "payout_pending": pickup.status == Status.COMPLETED and pickup.verified_at is None,
     "is_owner": is_owner,
     "is_assigned": is_assigned,
