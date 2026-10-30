@@ -86,11 +86,7 @@
   }
 
   function renderList(results) {
-    const cards = results.map((point, index) => {
-      const card = fill(els.template.content.firstElementChild.cloneNode(true), point);
-      card.classList.toggle("is-first", index === 0 && !state.selectedId);
-      return card;
-    });
+    const cards = results.map((point) => fill(els.template.content.firstElementChild.cloneNode(true), point));
     if (!cards.length) {
       const empty = document.createElement("p");
       empty.className = "landing-point-empty";
@@ -143,11 +139,14 @@
   }
 
   function highlight() {
-    els.list.querySelectorAll("[data-landing-card]").forEach((card) => {
-      const selected = Number(card.dataset.pointId) === state.selectedId;
+    const cards = Array.from(els.list.querySelectorAll("[data-landing-card]"));
+    cards.forEach((card) => {
+      const selected = state.selectedId !== null && Number(card.dataset.pointId) === state.selectedId;
+      card.classList.remove("is-first");
       card.classList.toggle("is-selected", selected);
       card.setAttribute("aria-current", selected ? "true" : "false");
     });
+    if (state.selectedId === null && cards.length) cards[0].classList.add("is-first");
   }
 
   function select(id, { fromMap = false } = {}) {
