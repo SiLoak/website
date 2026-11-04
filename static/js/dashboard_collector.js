@@ -300,7 +300,7 @@ async function fetchPickupList() {
     todaysPickupsStatCard.textContent = `${todaysCompletedPickups} selesai • ${todaysActivePickups} aktif • ${todaysWaitingPickups} menunggu`;
     todaysWeightCard.textContent = `Dari ${todaysCompletedPickups} pick up selesai`;
 
-    pickupsCount.textContent = `${pickupData.length} tugas`;
+    pickupsCount.textContent = `${activePickups.length} tugas`;
     helloSubmsg.textContent = `Ada ${todaysPickups.length - todaysCompletedPickups} tugas jemput yang belum selesai hari ini.`
   } catch (error) {
     if (error.name === 'AbortError') return;
