@@ -12,7 +12,7 @@ from pickup.forms import PickupRequestForm, PickupItemFormSet
 from .models import Submission
 from wallet.models import Wallet
 
-PICKUP_PREFILL_FIELDS = ("address_detail", "contact_phone", "latitude", "longitude")
+PICKUP_PREFILL_FIELDS = ("pickup_address", "address_detail", "contact_phone", "latitude", "longitude")
 
 
 def _saved_pickup_initial(user):
@@ -33,7 +33,6 @@ def _create_pickup_request(request, pickup_form, formset):
     with transaction.atomic():
         pickup = pickup_form.save(commit=False)
         pickup.giver = request.user
-        pickup.pickup_address = pickup.address_detail
         pickup.save()
 
         formset.instance = pickup

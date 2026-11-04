@@ -1,4 +1,6 @@
-{% extends "base.html" %} {% load l10n %} {% block title %}Detail Pickup #{{ pickup.pk }} · SiLoak{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="history" %}
+{% extends "base.html" %}
+{% load l10n static %}
+{% block title %}Detail Pickup #{{ pickup.pk }} · SiLoak{% endblock %} {% block content %} {% include "components/navbar.html" with active_item="history" %}
 <main
   id="main-content"
   class="min-h-screen bg-page-bg px-4 py-8 sm:px-6 lg:px-8"
@@ -137,14 +139,12 @@
                 {{ pickup.get_time_slot_display }}
               </dd>
             </div>
-            {% if pickup.pickup_address %}
             <div class="sm:col-span-2">
               <dt class="text-text-body">Alamat</dt>
               <dd class="mt-1 text-text-primary">
                 {{ pickup.pickup_address }}
               </dd>
             </div>
-            {% endif %}
             <div class="sm:col-span-2">
               <dt class="text-text-body">Detail alamat dan patokan</dt>
               <dd class="mt-1 text-text-primary">
@@ -509,6 +509,12 @@
 </main>
 {% include "components/footer.html" %}
 
+{% endblock %}
+
+{% block extra_js %}
+
+<script src="{% static 'js/dashboard_collector.js' %}" defer></script>
+
 <script>
   (function () {
     const csrfToken = "{{ csrf_token }}";
@@ -596,6 +602,7 @@
           );
           if (result.ok) {
             window.location.reload();
+            fetchPickupList();
             return;
           }
 
@@ -625,4 +632,5 @@
     }
   })();
 </script>
+
 {% endblock %}

@@ -80,6 +80,7 @@ class PickupRequestForm(forms.ModelForm):
   class Meta:
     model = PickupRequest
     fields = [
+      "pickup_address",
       "address_detail",
       "contact_phone",
       "latitude",
@@ -88,11 +89,21 @@ class PickupRequestForm(forms.ModelForm):
       "incentive_allocation",
     ]
     labels = {
+      "pickup_address": "Alamat penjemputan",
       "address_detail": "Detail alamat & patokan",
       "contact_phone": "Nomor HP yang bisa dihubungi",
       "incentive_allocation": "Insentifmu",
     }
     widgets = {
+      "pickup_address": forms.TextInput(
+        attrs={
+          "class": "waste-address-control",
+          "type": "search",
+          "maxlength": 500,
+          "autocomplete": "off",
+          "placeholder": "Cari alamat, mis. Jl. Margonda Raya, Depok",
+        }
+      ),
       "address_detail": forms.Textarea(
         attrs={
           "class": "waste-address-control",
@@ -125,6 +136,14 @@ class PickupRequestForm(forms.ModelForm):
 
   def clean_incentive_allocation(self):
     return self.cleaned_data.get("incentive_allocation") or Submission.IncentiveAllocation.WALLET
+
+  def clean_pickup_address(self):
+    address = re.sub(r"\s+", " ", self.cleaned_data.get("pickup_address") or "").strip()
+    if len(address) < 5:
+      raise ValidationError("Cari dan pilih alamat penjemputan terlebih dahulu.")
+    if len(address) > 500:
+      raise ValidationError("Alamat terlalu panjang (maksimal 500 karakter).")
+    return address
 
   def clean_address_detail(self):
     address = (self.cleaned_data.get("address_detail") or "").strip()
@@ -181,7 +200,8 @@ class PickupRequestForm(forms.ModelForm):
     time_slot = cleaned_data.get("time_slot")
     if scheduled_date == today and time_slot:
       slot_start = datetime.strptime(time_slot.split("-")[0], "%H:%M").time()
-      if slot_start <= timezone.localtime().time():
+      slot_end = datetime.strptime(time_slot.split("-")[1], "%H:%M").time()
+      if slot_end <= timezone.localtime().time():
         self.add_error("time_slot", "Rentang waktu ini sudah lewat. Pilih rentang waktu lain atau tanggal lain.")
 
     if "latitude" in cleaned_data and "longitude" in cleaned_data:

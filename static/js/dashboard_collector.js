@@ -216,7 +216,7 @@ function buildNewPickupRowElement(item) {
   const newPickupId = item.pk;
 
   const articleElement = document.createElement("article");
-  articleElement.className = "h-16 flex items-center justify-between py-2 transition-colors hover:bg-surface-soft/40 px-2 rounded-lg -mx-2"
+  articleElement.className = "new-pickup-row h-16 flex items-center justify-between py-2 transition-colors hover:bg-surface-soft/40 px-2 rounded-lg -mx-2"
 
   const detailUrl = DETAIL_URL_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', newPickupId);
   const acceptUrl = ACCEPT_URL_TEMPLATE.replace('00000000-0000-0000-0000-000000000000', newPickupId);
@@ -309,26 +309,6 @@ async function fetchPickupList() {
   }
 }
 
-newPickupGridContainer.addEventListener("click", async (event) => {
-  const button = event.target.closest("[data-accept-url]");
-  if (!button) return;
-  button.disabled = true;
-  try {
-    const response = await fetch(button.dataset.acceptUrl, {
-      method: "POST",
-      headers: { "X-CSRFToken": CSRF_TOKEN, "Accept": "application/json" },
-      mode: "same-origin",
-    });
-    const result = await response.json();
-    if (!response.ok) throw new Error(result.error || "Pickup tidak dapat diterima.");
-    await Promise.all([fetchPickupList(), fetchNewPickupList()]);
-  } catch (error) {
-    newErrorState.textContent = error.message || "Pickup tidak dapat diterima.";
-    displayNewPickupSection({ showError: true });
-    button.disabled = false;
-  }
-});
-
 // fetch new pickup list
 async function fetchNewPickupList() {
   if (newPickupAbortController) newPickupAbortController.abort();
@@ -367,7 +347,7 @@ async function fetchNewPickupList() {
 }
 
 document.addEventListener("submit", async (event) => {
-  const form = event.target.closest(".accept-form");
+  const form = event.target.closest("#accept-form");
 
   if (!form) return;
 
@@ -388,8 +368,10 @@ document.addEventListener("submit", async (event) => {
       throw new Error(data.message || "Gagal menerima pickup.");
     }
 
-    // Hapus card setelah berhasil
-    form.closest(".pickup-card")?.remove();
+    form.closest(".new-pickup-row")?.remove();
+
+    fetchPickupList();
+    fetchNewPickupList();
 
   } catch (error) {
     console.error(error);

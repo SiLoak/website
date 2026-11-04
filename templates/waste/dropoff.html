@@ -464,6 +464,8 @@
                     id="pickup-address-search"
                     class="waste-address-control"
                     type="search"
+                    name="{{ pickup_form.pickup_address.html_name }}"
+                    value="{{ pickup_form.pickup_address.value|default_if_none:'' }}"
                     placeholder="Cari alamat, mis. Jl. Margonda Raya, Depok"
                     autocomplete="off"
                     aria-label="Cari alamat penjemputan"
@@ -875,7 +877,7 @@
       document.querySelectorAll("[data-time-slot]"),
     );
     const customDateWrap = document.querySelector("[data-custom-date-wrap]");
-    const addressInput = document.getElementById("id_address_detail");
+    const addressInput = document.getElementById("pickup-address-search");
     const customDateInput = document.getElementById("id_custom_date");
 
     function setPickupLocation(latitude, longitude, center) {
@@ -893,6 +895,11 @@
     document.addEventListener("siloak:set-pickup-location", (event) =>
       setPickupLocation(event.detail.latitude, event.detail.longitude, true),
     );
+
+    if (addressInput) {
+      addressInput.addEventListener("input", updatePickupSummary);
+      addressInput.addEventListener("change", updatePickupSummary);
+    }
 
     if (pickupPreview && window.L) {
       const latitude = Number(pickupPreview.dataset.latitude);

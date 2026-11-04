@@ -187,10 +187,6 @@ def show_collector_pickup_history(request):
   )
 
 
-def request_pickup(request):
-  return render(request, "waste/request.html", {"active_item": "waste"})
-
-
 @login_required(login_url="auth_page")
 def show_pickup_detail(request, pickup_id):
   pickup, is_owner, is_assigned = _get_accessible_pickup(request.user, pickup_id)
