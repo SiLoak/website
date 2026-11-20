@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      #beaver-bob { transform-box: view-box; transform-origin: 180px 205px; animation: doubleHop 3s ease-in-out infinite; }
+      #badge { transform-box: view-box; transform-origin: 180px 100px; animation: badgePulse 3s ease-in-out infinite; }
+      #coin-1 { transform-box: view-box; transform-origin: 110px 80px; animation: floatCoin 2.8s ease-in-out infinite alternate; }
+      #banknote { transform-box: view-box; transform-origin: 240px 120px; animation: floatNote 3.2s ease-in-out 0.4s infinite alternate; }
+      @keyframes doubleHop { 0%, 100% { transform: translateY(0); } 15% { transform: translateY(-8px); } 30% { transform: translateY(0); } 42% { transform: translateY(-5px); } 55% { transform: translateY(0); } }
+      @keyframes badgePulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+      @keyframes floatCoin { 0% { transform: translateY(0) rotate(-2deg); } 100% { transform: translateY(-8px) rotate(4deg); } }
+      @keyframes floatNote { 0% { transform: translateY(0) rotate(-2deg); } 100% { transform: translateY(-8px) rotate(4deg); } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+    </style>
+  </defs>
+  <g id="scene">
+    
+    <g id="backdrop">
+      <path d="M 50 110 C 50 40 130 35 210 35 C 280 35 320 75 320 135 C 320 195 240 215 160 215 C 80 215 50 180 50 110 Z" fill="#ECFDF5" />
+    </g>
+
+    
+    <line id="ground-line" x1="20" y1="205" x2="340" y2="205" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" />
+
+    
+    <g id="props">
+      
+      <g id="badge">
+        <circle cx="180" cy="100" r="45" fill="#86EFAC" opacity="0.3" />
+        <circle cx="180" cy="100" r="35" fill="#15803D" />
+        <path d="M 165 100 L 175 110 L 195 90" stroke="#FFFFFF" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" fill="none" />
+      </g>
+
+      
+      <g id="coin-1">
+        <circle cx="110" cy="80" r="8" fill="#FBE3A0" stroke="#F5C451" stroke-width="2" />
+      </g>
+      <g id="coin-2">
+        <circle cx="250" cy="70" r="10" fill="#FBE3A0" stroke="#F5C451" stroke-width="2" />
+      </g>
+      <g id="banknote">
+        <rect x="225" y="112" width="30" height="16" rx="2" fill="#7FD1A3" stroke="#4FA97C" stroke-width="1.5" />
+        <circle cx="240" cy="120" r="4" fill="#4FA97C" />
+      </g>
+
+      
+      <circle id="confetti-1" cx="130" cy="50" r="3" fill="#86EFAC" />
+      <circle id="confetti-2" cx="230" cy="45" r="4" fill="#FCD34D" />
+      <circle id="confetti-3" cx="270" cy="100" r="3" fill="#86EFAC" />
+    </g>
+
+    
+    <g id="beaver">
+      <g id="beaver-bob">
+        <g id="tail"><path d="M 140 185 C 110 180 80 168 75 188 C 70 202 100 208 140 198 Z" fill="#5C3A1E" /></g>
+        <g id="foot-back"><ellipse cx="160" cy="203" rx="12" ry="5" fill="#5C3A1E" /></g>
+        <g id="body"><path d="M 155 137 C 135 157 135 192 155 201 L 205 201 C 225 192 225 157 205 137 Z" fill="#A06235" /></g>
+
+        
+        <g id="arm-back">
+          <path d="M 155 150 L 135 115" stroke="#A06235" stroke-width="8" stroke-linecap="round" />
+        </g>
+        <g id="arm-front">
+          <path d="M 205 150 L 225 115" stroke="#A06235" stroke-width="8" stroke-linecap="round" />
+        </g>
+
+        <g id="foot-front"><ellipse cx="200" cy="203" rx="12" ry="5" fill="#5C3A1E" /></g>
+
+        <g id="head">
+          <circle cx="142" cy="75" r="12" fill="#A06235" />
+          <circle cx="218" cy="75" r="12" fill="#A06235" />
+          <ellipse cx="180" cy="100" rx="46" ry="38" fill="#A06235" />
+
+          <g id="cap">
+            <path d="M 142 72 C 142 52 218 52 218 72 Z" fill="#2457D6" />
+            <path d="M 175 72 L 228 70 L 225 77 L 175 76 Z" fill="#203F91" />
+          </g>
+
+          <path d="M 162 108 C 162 96 174 94 188 94 C 202 94 212 96 212 108 Z" fill="#F8E8CC" />
+          <path d="M 182 118 L 194 118 L 193 129 Z" fill="#FFFFFF" />
+          <path d="M 181 105 C 181 101 184 98 188 98 C 192 98 195 101 195 105 Z" fill="#1B2A55" />
+
+          
+          <g id="eye-left-happy"><path d="M 154 94 Q 160 86 166 94" stroke="#1B2A55" stroke-width="3" stroke-linecap="round" fill="none" /></g>
+          <g id="eye-right-happy"><path d="M 194 94 Q 200 86 206 94" stroke="#1B2A55" stroke-width="3" stroke-linecap="round" fill="none" /></g>
+        </g>
+      </g>
+    </g>
+
+    <g id="sparkles">
+      <g id="sparkle-1">
+        <path d="M 100 105 Q 100 110 95 110 Q 100 110 100 115 Q 100 110 105 110 Q 100 110 100 105 Z" fill="#15803D" opacity="0.6" />
+      </g>
+    </g>
+  </g>
+</svg>

@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      #arm-front { transform-box: view-box; transform-origin: 145px 155px; animation: gentleFarewell 4s ease-in-out infinite; }
+      #beaver-bob { transform-box: view-box; transform-origin: 130px 205px; animation: calmBreath 4s ease-in-out infinite; }
+      @keyframes gentleFarewell { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(6deg); } }
+      @keyframes calmBreath { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-1.5px); } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+    </style>
+  </defs>
+  <g id="scene">
+    
+    <g id="backdrop">
+      <path d="M 50 110 C 50 40 130 35 210 35 C 280 35 320 75 320 135 C 320 195 240 215 160 215 C 80 215 50 180 50 110 Z" fill="#FEF2F2" />
+    </g>
+
+    
+    <line id="ground-line" x1="20" y1="205" x2="340" y2="205" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" />
+
+    
+    <g id="props">
+      
+      <g id="badge">
+        <circle cx="250" cy="90" r="22" fill="#FCA5A5" opacity="0.4" />
+        <circle cx="250" cy="90" r="16" fill="#B91C1C" />
+        
+        <path d="M 243 83 L 257 97 M 257 83 L 243 97" stroke="#FFFFFF" stroke-width="3" stroke-linecap="round" />
+      </g>
+
+      
+      <g id="trash-bag">
+        <path d="M 220 205 C 210 205 205 185 215 170 C 225 155 255 155 265 170 C 275 185 270 205 260 205 Z" fill="#A9B8D6" opacity="0.6" />
+      </g>
+    </g>
+
+    
+    <g id="beaver">
+      <g id="beaver-bob">
+        <g id="tail"><path d="M 90 185 C 60 180 30 168 25 188 C 20 202 50 208 90 198 Z" fill="#5C3A1E" /></g>
+        <g id="foot-back"><ellipse cx="110" cy="203" rx="12" ry="5" fill="#5C3A1E" /></g>
+        <g id="body"><path d="M 105 137 C 85 157 85 192 105 201 L 155 201 C 175 192 175 157 155 137 Z" fill="#A06235" /></g>
+
+        
+        <g id="arm-front">
+          <path d="M 145 155 L 170 135" stroke="#A06235" stroke-width="8" stroke-linecap="round" />
+        </g>
+
+        <g id="foot-front"><ellipse cx="140" cy="203" rx="12" ry="5" fill="#5C3A1E" /></g>
+
+        <g id="head">
+          <circle cx="92" cy="75" r="12" fill="#A06235" />
+          <circle cx="168" cy="75" r="12" fill="#A06235" />
+          <ellipse cx="130" cy="100" rx="46" ry="38" fill="#A06235" />
+
+          <path d="M 112 108 C 112 96 124 94 138 94 C 152 94 162 96 162 108 Z" fill="#F8E8CC" />
+          <path d="M 132 118 L 144 118 L 143 129 Z" fill="#FFFFFF" />
+          <path d="M 131 105 C 131 101 134 98 138 98 C 142 98 145 101 145 105 Z" fill="#1B2A55" />
+
+          <g id="eye-left-closed"><path d="M 104 96 Q 110 88 116 96" stroke="#1B2A55" stroke-width="2.8" stroke-linecap="round" fill="none" /></g>
+          <g id="eye-right-closed"><path d="M 146 96 Q 152 88 158 96" stroke="#1B2A55" stroke-width="2.8" stroke-linecap="round" fill="none" /></g>
+        </g>
+      </g>
+    </g>
+
+    <g id="sparkles" />
+  </g>
+</svg>

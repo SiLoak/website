@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <style>
+      #beaver-bob { transform-box: view-box; transform-origin: 150px 205px; animation: beaverBreathing 3.5s ease-in-out infinite; }
+      #arm-back { transform-box: view-box; transform-origin: 140px 145px; animation: armWave 1.6s ease-in-out infinite; }
+      #arm-front { transform-box: view-box; transform-origin: 175px 155px; animation: pressDoorbell 3.2s ease-in-out infinite; }
+      #map-pin { transform-box: view-box; transform-origin: 270px 65px; animation: pinBounce 3.2s ease-in-out infinite; }
+      @keyframes beaverBreathing { 0%, 100% { transform: translateY(0) scaleY(1); } 50% { transform: translateY(-2px) scaleY(1.015); } }
+      @keyframes armWave { 0%, 100% { transform: rotate(0); } 50% { transform: rotate(14deg); } }
+      @keyframes pressDoorbell { 0%, 70%, 100% { transform: translateX(0); } 78% { transform: translateX(3px); } 84% { transform: translateX(0); } }
+      @keyframes pinBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+      @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+    </style>
+  </defs>
+  <g id="scene">
+    
+    <g id="backdrop">
+      <path d="M 50 110 C 50 40 140 35 220 35 C 290 35 325 80 325 140 C 325 195 240 215 160 215 C 80 215 50 180 50 110 Z" fill="#E5EEFF" />
+    </g>
+
+    
+    <line id="ground-line" x1="20" y1="205" x2="340" y2="205" stroke="#E2E8F0" stroke-width="2" stroke-linecap="round" />
+
+    
+    <g id="props">
+      
+      <g id="door">
+        <path d="M 230 205 L 230 110 L 310 110 L 310 205 Z" fill="#CBD5F5" />
+        <path d="M 230 110 L 270 85 L 310 110 Z" fill="#94A3B8" />
+        
+        <g id="doorbell">
+          <rect x="215" y="132" width="10" height="16" rx="2" fill="#142653" />
+          <circle cx="220" cy="140" r="3" fill="#2457D6" />
+        </g>
+      </g>
+
+      
+      <g id="map-pin">
+        <path d="M 270 45 C 258 45 254 57 270 77 C 286 57 282 45 270 45 Z" fill="#2457D6" />
+        <path d="M 265 55 L 268 58 L 275 51" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round" fill="none" />
+      </g>
+
+      
+      <g id="scooter">
+        <path d="M 30 190 L 90 190 L 80 165 L 45 165 Z" fill="#94A3B8" />
+        <circle cx="42" cy="195" r="10" fill="#64748B" />
+        <circle cx="78" cy="195" r="10" fill="#64748B" />
+      </g>
+    </g>
+
+    
+    <g id="beaver">
+      <g id="beaver-bob">
+        <g id="tail">
+          <path d="M 120 185 C 90 180 60 168 55 188 C 50 202 80 208 120 198 Z" fill="#5C3A1E" />
+        </g>
+
+        <g id="foot-back"><ellipse cx="140" cy="203" rx="12" ry="5" fill="#5C3A1E" /></g>
+
+        <g id="body">
+          <path d="M 135 137 C 115 157 115 192 135 201 L 185 201 C 205 192 205 157 185 137 Z" fill="#A06235" />
+        </g>
+
+        <g id="backpack">
+          <rect x="115" y="145" width="16" height="30" rx="3" fill="#2457D6" />
+        </g>
+
+        
+        <g id="arm-back">
+          <path d="M 140 145 L 120 120" stroke="#A06235" stroke-width="8" stroke-linecap="round" />
+          <circle cx="118" cy="118" r="5" fill="#A06235" />
+        </g>
+
+        <g id="foot-front"><ellipse cx="170" cy="203" rx="12" ry="5" fill="#5C3A1E" /></g>
+
+        
+        <g id="arm-front">
+          <path d="M 175 155 L 218 140" stroke="#A06235" stroke-width="8" stroke-linecap="round" />
+        </g>
+
+        <g id="head">
+          <circle cx="122" cy="75" r="12" fill="#A06235" />
+          <circle cx="198" cy="75" r="12" fill="#A06235" />
+          <ellipse cx="160" cy="100" rx="46" ry="38" fill="#A06235" />
+
+          <g id="cap">
+            <path d="M 122 72 C 122 52 198 52 198 72 Z" fill="#2457D6" />
+            <path d="M 155 72 L 208 70 L 205 77 L 155 76 Z" fill="#203F91" />
+          </g>
+
+          <path d="M 142 108 C 142 96 154 94 168 94 C 182 94 192 96 192 108 Z" fill="#F8E8CC" />
+          <path d="M 162 118 L 174 118 L 173 129 Z" fill="#FFFFFF" />
+          <path d="M 161 105 C 161 101 164 98 168 98 C 172 98 175 101 175 105 Z" fill="#1B2A55" />
+
+          <g id="eye-left-closed"><path d="M 134 96 Q 140 88 146 96" stroke="#1B2A55" stroke-width="2.8" stroke-linecap="round" fill="none" /></g>
+          <g id="eye-right-closed"><path d="M 176 96 Q 182 88 188 96" stroke="#1B2A55" stroke-width="2.8" stroke-linecap="round" fill="none" /></g>
+        </g>
+      </g>
+    </g>
+
+    <g id="sparkles">
+      <g id="sparkle-1">
+        <circle cx="210" cy="120" r="3" fill="#2457D6" opacity="0.5" />
+      </g>
+    </g>
+  </g>
+</svg>
