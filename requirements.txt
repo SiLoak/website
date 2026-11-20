@@ -6,3 +6,4 @@ requests
 urllib3
 python-dotenv
 google-auth>=2.0,<3
+djangorestframework~=3.18.3
