@@ -38,4 +38,5 @@ urlpatterns = [
     path('pickup/', include('pickup.urls')),
     path('waste/', include('waste.urls')),
     path('wallet/', include('wallet.urls')),
+    path('api/v1/pickup/', include('pickup.api_urls')),
 ]
